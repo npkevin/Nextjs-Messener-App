@@ -1,0 +1,81 @@
+.container {
+    display: flex;
+    flex-direction: column;
+    padding: 1em;
+    background: #262626;
+    width: 22rem;
+    min-width: 22rem;
+    max-width: 22rem;
+    height: 100vh;
+    word-wrap: break-word;
+}
+
+.container input,
+.container button {
+    width: 100%;
+    padding: 0.5em;
+    border-radius: 0.5em;
+    border: none;
+    margin-bottom: 1em;
+}
+
+.container input {
+    padding-left: 1em;
+}
+
+.container button {
+    color: #ffffff;
+    font-weight: bold;
+    margin-bottom: 0;
+}
+
+.container button:enabled {
+    background-color: #0060ce;
+    cursor: pointer;
+}
+
+.container button:enabled:hover {
+    background-color: #0051ad;
+}
+
+.convo_container {
+    flex-grow: 1;
+}
+
+.convo_list {
+    padding: 0;
+    margin: 0;
+    list-style-type: none;
+}
+
+.convo {
+    display: flex;
+    flex-direction: row;
+    cursor: pointer;
+    background: #333333;
+    color: #ffffff;
+    padding: 0.5em;
+    margin-bottom: 0.2em;
+}
+
+.convo:last-child {
+    margin: 0;
+}
+
+.convo .glance {
+    display: flex;
+    flex-direction: column;
+    user-select: none;
+}
+
+.convo .glance span:last-child {
+    font-size: 0.8em;
+}
+
+.profile_pic {
+    background: red;
+    margin-right: 1em;
+    width: 3em;
+    height: 3em;
+    border-radius: 50%;
+}

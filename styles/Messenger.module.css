@@ -1,0 +1,108 @@
+.container {
+    display: flex;
+    flex-direction: column;
+    background: #333333;
+    /* position: absolute; */
+    width: 100%;
+    height: 100vh;
+    padding: 1em;
+}
+
+.message {
+    background: #a5f0af;
+    max-width: 48%;
+    padding: 0.8em;
+    margin: 1em 1em 0 1em;
+    border-radius: 1em;
+    border-top-left-radius: 0;
+    align-self: flex-start;
+    white-space: pre-wrap;
+}
+
+.message_sent {
+    background: #e4e4e4;
+    align-self: flex-end;
+    border-radius: 1em;
+    border-top-right-radius: 0;
+}
+
+.messageHistory {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    background: #ffffff;
+    overflow-y: auto;
+}
+
+.messageSender {
+    display: flex;
+    align-items: center;
+    background: #262626;
+    min-height: 5em;
+    max-height: 40em;
+    padding: 1em;
+}
+
+.messageSender textarea {
+    background: #ffffff;
+    flex-grow: 1;
+    min-height: 2.5em;
+    padding: 0.5em;
+    margin-right: 1em;
+    padding-left: 1em;
+    border-radius: 0.5em;
+    border: none;
+    resize: none;
+}
+
+
+.messageSender button[type="submit"] {
+    width: 8em;
+    height: 3em;
+    border: none;
+    border-radius: 0.5em;
+    color: #ffffff;
+    font-weight: bold;
+    transition: 0.2s linear;
+}
+
+.messageSender button:enabled {
+    background-color: #0060ce;
+    cursor: pointer;
+}
+
+.messageSender button:enabled:hover {
+    background-color: #0051ad;
+}
+
+.recipient_container {
+    display: flex;
+    align-items: center;
+    background-color: #262626;
+    height: 5em;
+    padding: 0.8em;
+    white-space: pre-line;
+}
+
+.recipient_container img {
+    background-color: #e4e4e4;
+    width: 3em;
+    height: 3em;
+    margin-right: 0.8em;
+    border-radius: 50%;
+}
+
+.recipient__status {
+    /* align-self: flex-end; */
+    user-select: none;
+    color: #16bd48
+}
+
+.recipient__name {
+    color: #ffffff;
+}
+
+.recipient {
+    display: flex;
+    flex-direction: column;
+}
