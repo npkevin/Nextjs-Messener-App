@@ -3,7 +3,7 @@
 // DO NOT USE IN ANY PRODUCTION
 
 import type { NextApiRequest, NextApiResponse } from "next"
-import type { WithId, Document, InsertOneResult, Collection } from "mongodb";
+import type { WithId, Document, InsertOneResult, Collection, UpdateResult } from "mongodb";
 import { MongoClient } from "mongodb";
 
 // JWT doesn't support ES6 😢
@@ -33,7 +33,6 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
         });
 
         if (result !== null) {
-            console.log(result)
             res.status(200).send(result);
         } else {
             res.status(500).send('');
@@ -85,17 +84,23 @@ const login = async (cred: Credential): Promise<tUserInfo | null> => {
 const SignUp = async (cred: Credential, users: Collection<Document>): Promise<tUserInfo | null> => {
     console.log("Signing up new login")
     try {
-        const token: JsonWebKey = JWT.sign(cred, _SECRET_, { expiresIn: _EXIPIRY_ })
         const insertResult: InsertOneResult<Document> = await users.insertOne({
             ...cred,
-            jwt: token,
             conversations: [],
         });
-        if (insertResult !== null)
+
+        const token: JsonWebKey = JWT.sign({ ...cred, user_oid: insertResult.insertedId }, _SECRET_, { expiresIn: _EXIPIRY_ })
+        const updateResult: UpdateResult = await users.updateOne(
+            { _id: { $eq: insertResult.insertedId } },
+            { $set: { jwt: token } }
+        );
+
+        if (updateResult.acknowledged && updateResult.modifiedCount === 1) {
             return {
                 display_name: cred.username,
                 jwt: token,
             };
+        }
     } catch (err) {
         console.error(err)
     }
