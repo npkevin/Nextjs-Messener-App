@@ -3,29 +3,44 @@ import { Collection, MongoClient, UpdateResult } from "mongodb";
 import type { WithId, Document } from "mongodb";
 
 import type { tMessage } from "../../components/Messenger/ConversationView";
+import { _SECRET_ } from './auth'
 import { verify } from "./authjwt";
 
-const uri = "mongodb://127.0.0.1:27017/"
-const client = new MongoClient(uri)
+const client = new MongoClient("mongodb://127.0.0.1:27017/")
 
 export default async (req: NextApiRequest, res: NextApiResponse) => {
-    if (req.method === "GET") {
-        const oid: string = (typeof req.query.oid) === "string" ? req.query.oid as string : '';
-        const token: JsonWebKey = req.cookies.auth_jwt as JsonWebKey;
-        const result = await getConversation(token, oid);
 
-        // 200 OK or 500 Internal
-        if (result !== null) res.status(200).json(result);
-        else res.status(500).send({});
+    const token: JsonWebKey | null = typeof req.cookies.auth_jwt === "string" ? req.cookies.auth_jwt as JsonWebKey : null;
+    if (token === null) {
+        res.status(400).send("JWT Required");
         return;
     }
 
-    if (req.method === "PUT" && req.headers["content-type"] === "application/json") {
-        const oid: string = (typeof req.query.oid) === "string" ? req.query.oid as string : '';
-        const message: string = typeof (req.body.message) === "string" ? req.body.message as string : '';
+    // Get messages of a conversation
+    if (req.method === "GET") {
+        const oid: string = typeof req.query.oid === "string" ? req.query.oid as string : '';
+        const result = await getConversation(token, oid);
+
+        // 500 Internal
+        if (result === null) {
+            res.status(500).send({
+                error: "Invalid_OID",
+                message: "Could not find conversation with given oid."
+            });
+            return;
+        }
+
+        res.status(200).json(result);
+        return;
+    }
+
+    // Post message to Conversation
+    if (req.method === "POST" && req.headers["content-type"] === "application/json") {
+        const oid: string = typeof req.query.oid === "string" ? req.query.oid as string : '';
+        const message: string = typeof req.body.message === "string" ? req.body.message as string : '';
 
         if (message) {
-            const result = await insertMessage(message, oid);
+            const result = await insertMessage(message, token, oid);
 
             // 201 Created or 500 Internal Error
             if (result !== null) res.status(201).send({});
@@ -38,8 +53,15 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
     res.status(400).send({});
 }
 
-// TODO: add sender
-const insertMessage = async (draft: string, oid: string): Promise<UpdateResult | null> => {
+const insertMessage = async (draft: string, token: JsonWebKey, oid: string): Promise<UpdateResult | null> => {
+
+    if (!verify(token)) return null;
+
+    const JWT = require('jsonwebtoken');
+    const user_info = JWT.verify(token, _SECRET_, () => {
+
+    })
+
     try {
         await client.connect()
         const convos = client.db("next-messenger").collection("conversations");

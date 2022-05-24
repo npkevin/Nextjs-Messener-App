@@ -5,6 +5,7 @@ import MessengerView from '../components/Messenger/MessengerView'
 
 import styles from '../styles/index.module.css'
 import { createContext, Dispatch, SetStateAction, useContext, useEffect, useState } from 'react'
+import { tUserInfo } from './api/auth'
 
 type UserContextType = {
 
@@ -36,8 +37,17 @@ const Home: NextPage = (): JSX.Element => {
                 },
             })
             if (response.status === 200) {
-                const token = cookies.get('auth_jwt') ? cookies.get('auth_jwt') as JsonWebKey : null
-                setToken(token);
+
+                const { jwt }: tUserInfo = await response.json();
+                if (jwt !== undefined) { // Token was verified but expired... token refreshed
+                    cookies.set('auth_jwt', jwt, { sameSite: 'strict', secure: true })
+                    setToken(jwt);
+                }
+                else { // Token was verified, not expired
+                    const token = cookies.get('auth_jwt') ? cookies.get('auth_jwt') as JsonWebKey : null
+                    setToken(token);
+                }
+
 
             } else {
                 cookies.remove('auth_jwt');

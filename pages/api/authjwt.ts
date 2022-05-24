@@ -11,7 +11,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
     if (req.method === "GET" && req.cookies?.auth_jwt) {
         const result = await refreshToken(req.cookies.auth_jwt as JsonWebKey)
 
-        if (result) res.status(200).json(result);
+        if (result !== null) res.status(200).json(result);
         else res.status(401).send("");
         console.log(result);
 
@@ -40,6 +40,7 @@ const refreshToken = async (token: JsonWebKey): Promise<tUserInfo | null> => {
         const foundUser = await users.findOne({
             jwt: { $eq: token }
         });
+
         if (foundUser === null) {
             process.stdout.write(" Not Found\n")
             return null;
@@ -49,7 +50,11 @@ const refreshToken = async (token: JsonWebKey): Promise<tUserInfo | null> => {
             if (err.name === "TokenExpiredError") {
                 process.stdout.write(" Time Expired! - Renewing JWT.\n");
                 const newJwt = JWT.sign(
-                    { username: foundUser.username, password: foundUser.password },
+                    {
+                        username: foundUser.username,
+                        password: foundUser.password,
+                        id: foundUser._id
+                    },
                     _SECRET_,
                     {
                         expiresIn: _EXIPIRY_

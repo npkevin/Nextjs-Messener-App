@@ -25,9 +25,11 @@ const MessengerView = (): JSX.Element => {
                                 setMessages(value.messages)
                             })
                         }
-                        else {
+                        else if (fetch_response.status == 500) {
                             // TODO: 500 internal server error handle
-                            console.error(fetch_response)
+                            fetch_response.json().then(value => {
+                                console.error(value)
+                            })
                         }
                     })
             }
@@ -39,9 +41,7 @@ const MessengerView = (): JSX.Element => {
         // return () => {} CLEANUP
     })
 
-    if (!convo_ctx.ID) return (
-        <div className={styles.container} />
-    )
+    if (!convo_ctx.ID) return <div className={styles.container} />
 
     return (
         <div className={styles.container}>

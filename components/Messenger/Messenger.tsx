@@ -17,7 +17,7 @@ const Messenger = ({ oid }: MessengerProps): JSX.Element => {
             params.append("oid", oid)
 
             const response: Response = await fetch("http://localhost:3000/api/conv?" + params.toString(), {
-                method: "PUT",
+                method: "POST",
                 headers: {
                     "content-type": "application/json"
                 },

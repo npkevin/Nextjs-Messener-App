@@ -9,10 +9,9 @@ import { MongoClient } from "mongodb";
 // JWT doesn't support ES6 😢
 const JWT = require('jsonwebtoken');
 export const _SECRET_ = "DEM0_(KE3p)It-a[S3cr3t]"
-export const _EXIPIRY_ = "1h"
+export const _EXIPIRY_ = "3mins"
 
-const uri = "mongodb://127.0.0.1:27017/"
-const client = new MongoClient(uri)
+const client = new MongoClient("mongodb://127.0.0.1:27017/")
 
 type Credential = {
     username: string,
