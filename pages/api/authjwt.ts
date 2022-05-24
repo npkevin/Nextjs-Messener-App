@@ -1,6 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from "next"
 import { MongoClient } from "mongodb";
-import { _EXIPIRY_, _SECRET_, tUserInfo } from "./auth";
+import { _EXIPIRY_, _SECRET_, tUserInfo, tJwtPayload } from "./auth";
 
 const JWT = require('jsonwebtoken');
 
@@ -49,12 +49,13 @@ const refreshToken = async (token: JsonWebKey): Promise<tUserInfo | null> => {
         if (err) {
             if (err.name === "TokenExpiredError") {
                 process.stdout.write(" Time Expired! - Renewing JWT.\n");
+                const payload: tJwtPayload = {
+                    username: foundUser.username,
+                    password: foundUser.password,
+                    user_oid: foundUser._id
+                }
                 const newJwt = JWT.sign(
-                    {
-                        username: foundUser.username,
-                        password: foundUser.password,
-                        user_oid: foundUser._id
-                    },
+                    payload,
                     _SECRET_,
                     {
                         expiresIn: _EXIPIRY_

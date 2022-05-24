@@ -3,7 +3,7 @@
 // DO NOT USE IN ANY PRODUCTION
 
 import type { NextApiRequest, NextApiResponse } from "next"
-import type { WithId, Document, InsertOneResult, Collection, UpdateResult } from "mongodb";
+import type { WithId, Document, InsertOneResult, Collection, UpdateResult, ObjectId } from "mongodb";
 import { MongoClient } from "mongodb";
 
 // JWT doesn't support ES6 😢
@@ -21,6 +21,12 @@ type Credential = {
 export type tUserInfo = {
     display_name: string,
     jwt?: JsonWebKey
+}
+
+export type tJwtPayload = {
+    username: string,
+    password: string,
+    user_oid: ObjectId
 }
 
 export default async (req: NextApiRequest, res: NextApiResponse) => {
@@ -54,8 +60,12 @@ const login = async (cred: Credential): Promise<tUserInfo | null> => {
         if (foundUser !== null) {
             console.log("Existing user login found... Creating new JWT")
             if (foundUser.username === cred.username && foundUser.password === cred.password) {
+                const payload: tJwtPayload = {
+                    ...cred,
+                    user_oid: foundUser._id
+                }
                 const token: JsonWebKey = JWT.sign(
-                    { ...cred, user_oid: foundUser._id },
+                    payload,
                     _SECRET_,
                     { expiresIn: _EXIPIRY_ }
                 );
@@ -92,8 +102,11 @@ const SignUp = async (cred: Credential, users: Collection<Document>): Promise<tU
             ...cred,
             conversations: [],
         });
-
-        const token: JsonWebKey = JWT.sign({ ...cred, user_oid: insertResult.insertedId }, _SECRET_, { expiresIn: _EXIPIRY_ })
+        const payload: tJwtPayload = {
+            ...cred,
+            user_oid: insertResult.insertedId
+        }
+        const token: JsonWebKey = JWT.sign(payload, _SECRET_, { expiresIn: _EXIPIRY_ })
         const updateResult: UpdateResult = await users.updateOne(
             { _id: { $eq: insertResult.insertedId } },
             { $set: { jwt: token } }
