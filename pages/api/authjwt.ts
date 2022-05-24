@@ -53,7 +53,7 @@ const refreshToken = async (token: JsonWebKey): Promise<tUserInfo | null> => {
                     {
                         username: foundUser.username,
                         password: foundUser.password,
-                        id: foundUser._id
+                        user_oid: foundUser._id
                     },
                     _SECRET_,
                     {

@@ -9,7 +9,7 @@ import { MongoClient } from "mongodb";
 // JWT doesn't support ES6 😢
 const JWT = require('jsonwebtoken');
 export const _SECRET_ = "DEM0_(KE3p)It-a[S3cr3t]"
-export const _EXIPIRY_ = "3mins"
+export const _EXIPIRY_ = "10s"
 
 const client = new MongoClient("mongodb://127.0.0.1:27017/")
 
@@ -54,7 +54,11 @@ const login = async (cred: Credential): Promise<tUserInfo | null> => {
         if (foundUser !== null) {
             console.log("Existing user login found... Creating new JWT")
             if (foundUser.username === cred.username && foundUser.password === cred.password) {
-                const token: JsonWebKey = JWT.sign(cred, _SECRET_, { expiresIn: _EXIPIRY_ })
+                const token: JsonWebKey = JWT.sign(
+                    { ...cred, user_oid: foundUser._id },
+                    _SECRET_,
+                    { expiresIn: _EXIPIRY_ }
+                );
                 const result = await users.updateOne(
                     { _id: { $eq: foundUser._id } },
                     { $set: { jwt: token } },
