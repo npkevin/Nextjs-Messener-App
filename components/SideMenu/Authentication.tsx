@@ -7,18 +7,18 @@ import { tUserInfo } from '../../pages/api/auth'
 
 const Authentication = (): JSX.Element => {
 
-    const user_ctx = useContext(UserContext);
+    const user_ctx = useContext(UserContext)
 
-    const [username, setUsername] = useState<string | undefined>("");
-    const [password, setPassword] = useState<string | undefined>("");
-    const [btnDisable, setBtnDisable] = useState<boolean>(false);
+    const [username, setUsername] = useState<string | undefined>("")
+    const [password, setPassword] = useState<string | undefined>("")
+    const [btnDisable, setBtnDisable] = useState<boolean>(false)
 
     useEffect(() => {
-        setBtnDisable(!username || !password);
-    });
+        setBtnDisable(!username || !password)
+    })
 
     const login = async (event: React.FormEvent<HTMLFormElement>) => {
-        event.preventDefault();
+        event.preventDefault()
         if (cookies.get('auth_jwt')) return
         try {
             const response: Response = await fetch("http://localhost:3000/api/auth", {
@@ -33,24 +33,24 @@ const Authentication = (): JSX.Element => {
             })
 
             if (response.status === 200) {
-                const result: tUserInfo = await response.json();
+                const result: tUserInfo = await response.json()
                 const jwt: string = result.jwt as string
                 cookies.set('auth_jwt', jwt, { sameSite: 'strict', secure: true })
-                user_ctx.setJwt(jwt);
+                user_ctx.setJwt(jwt)
             } else {
-                user_ctx.setJwt(null);
+                user_ctx.setJwt(null)
             }
         } catch (err) {
             console.error(err)
-            signOut();
+            signOut()
         }
     }
 
     const signOut = () => {
-        cookies.remove('auth_jwt');
-        user_ctx.setJwt(null);
-        setUsername("");
-        setPassword("");
+        cookies.remove('auth_jwt')
+        user_ctx.setJwt(null)
+        setUsername("")
+        setPassword("")
     }
 
     // Render

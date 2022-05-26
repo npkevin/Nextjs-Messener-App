@@ -1,11 +1,11 @@
 import { FormEvent, useContext, useEffect, useState } from "react"
-import { UserContext, ConvoContext } from "../../pages";
+import { UserContext, ConvoContext } from "../../pages"
 
 import styles from '../../styles/SideMenu.module.css'
 
 type Status = {
-    loading: boolean;
-    complete: boolean;
+    loading: boolean
+    complete: boolean
 }
 
 type Conversation = {
@@ -14,31 +14,47 @@ type Conversation = {
 
 const ConversationList = (props: any): JSX.Element => {
 
-    const user_ctx = useContext(UserContext);
-    const convo_ctx = useContext(ConvoContext);
-    const [status, setStatus] = useState<Status>({ loading: false, complete: false });
-    const [search, setSearch] = useState<string>("");
-    const [convoList, setConvoList] = useState<Conversation[]>([]);
+    const user_ctx = useContext(UserContext)
+    const convo_ctx = useContext(ConvoContext)
+    const [status, setStatus] = useState<Status>({ loading: false, complete: false })
+    const [search, setSearch] = useState<string>("")
+    const [convoList, setConvoList] = useState<Conversation[]>([])
 
     useEffect(() => {
 
-        // TODO: Implement API (api/conv.ts)
+        if (user_ctx.jwt === null || user_ctx.jwt === '') return
+
         const getConvos = async (): Promise<Conversation[]> => {
-            return [{ oid: "kDJf018hE10idh!@fh9a911vf" }];
+            setStatus({ loading: true, complete: false })
+            try {
+                const fetch_response: Response = await fetch("http://localhost:3000/api/conv?search=")
+
+                if (fetch_response.status == 200) {
+                    console.log(200)
+                }
+
+                if (fetch_response.status == 500) {
+                    console.log(500)
+                }
+            }
+            catch (err) {
+                console.error(err)
+            }
+            return [{ oid: "kDJf018hE10idh!@fh9a911vf" }]
         }
 
         if (!status.loading && !status.complete && convoList.length < 1) {
-            setStatus({ loading: true, complete: false });
+            setStatus({ loading: true, complete: false })
             getConvos().then(convos => {
-                setStatus({ loading: false, complete: true });
+                setStatus({ loading: false, complete: true })
                 setConvoList(convos)
-            });
+            })
         }
-    });
+    })
 
     const findContact = (event: FormEvent<HTMLFormElement>) => {
-        event.preventDefault();
-        console.log(search);
+        event.preventDefault()
+        console.log(search)
     }
 
     return user_ctx.jwt ? (

@@ -1,6 +1,6 @@
 import { useContext, useState } from 'react'
 import TextareaAutosize from 'react-textarea-autosize'
-import { ConvoContext } from '../../pages';
+import { ConvoContext } from '../../pages'
 
 import styles from '../../styles/Messenger.module.css'
 
@@ -11,10 +11,10 @@ const Messenger = ({ oid }: MessengerProps): JSX.Element => {
     const [draft, setDraft] = useState("")
 
     const sendMessage = async (event: React.FormEvent<HTMLFormElement>, message: string) => {
-        event.preventDefault();
+        event.preventDefault()
         try {
             const params: URLSearchParams = new URLSearchParams()
-            params.append("oid", oid)
+            params.append("convo_oid", oid)
 
             const response: Response = await fetch("http://localhost:3000/api/conv?" + params.toString(), {
                 method: "POST",
@@ -43,4 +43,4 @@ const Messenger = ({ oid }: MessengerProps): JSX.Element => {
     )
 }
 
-export default Messenger;
+export default Messenger

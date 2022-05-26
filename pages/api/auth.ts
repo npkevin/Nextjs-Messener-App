@@ -3,15 +3,16 @@
 // DO NOT USE IN ANY PRODUCTION
 
 import type { NextApiRequest, NextApiResponse } from "next"
-import type { WithId, Document, InsertOneResult, Collection, UpdateResult, ObjectId } from "mongodb";
-import { MongoClient } from "mongodb";
+import type { WithId, Document, InsertOneResult, Collection, UpdateResult, ObjectId } from "mongodb"
+import { MongoClient } from "mongodb"
 
 // JWT doesn't support ES6 😢
-const JWT = require('jsonwebtoken');
-export const _SECRET_ = "DEM0_(KE3p)It-a[S3cr3t]"
-export const _EXIPIRY_ = "10s"
+const JWT = require('jsonwebtoken')
+export const _SECRET_: string = "DEM0_(KE3p)It-a[S3cr3t]"
+export const _EXIPIRY_: string = "12h"
 
-const client = new MongoClient("mongodb://127.0.0.1:27017/")
+export const _URI_: string = "mongodb://127.0.0.1:27017/"
+const client = new MongoClient(_URI_)
 
 type Credential = {
     username: string,
@@ -36,12 +37,12 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
         const result = await login({
             username: req.body.username,
             password: req.body.password,
-        });
+        })
 
         if (result !== null) {
-            res.status(200).send(result);
+            res.status(200).send(result)
         } else {
-            res.status(500).send('');
+            res.status(500).send('')
         }
     }
 }
@@ -50,11 +51,11 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
 const login = async (cred: Credential): Promise<tUserInfo | null> => {
     try {
         await client.connect()
-        const users = client.db("next-messenger").collection("users");
+        const users = client.db("next-messenger").collection("users")
         const foundUser: WithId<Document> | null = await users.findOne({
             username: { $eq: cred.username },
             password: { $eq: cred.password },
-        });
+        })
 
         // Login without jwt... create a new jwt
         if (foundUser !== null) {
@@ -68,30 +69,30 @@ const login = async (cred: Credential): Promise<tUserInfo | null> => {
                     payload,
                     _SECRET_,
                     { expiresIn: _EXIPIRY_ }
-                );
+                )
                 const result = await users.updateOne(
                     { _id: { $eq: foundUser._id } },
                     { $set: { jwt: token } },
-                );
+                )
 
                 if (result !== null) {
                     return {
                         display_name: foundUser.username,
                         jwt: token,
-                    };
+                    }
                 } else {
-                    return null;
+                    return null
                 }
             }
             return null
         }
 
         // Sign up
-        return await SignUp(cred, users);
+        return await SignUp(cred, users)
     }
     catch (err) {
-        console.error(err);
-        return null;
+        console.error(err)
+        return null
     }
 }
 
@@ -101,7 +102,7 @@ const SignUp = async (cred: Credential, users: Collection<Document>): Promise<tU
         const insertResult: InsertOneResult<Document> = await users.insertOne({
             ...cred,
             conversations: [],
-        });
+        })
         const payload: tJwtPayload = {
             ...cred,
             user_oid: insertResult.insertedId
@@ -110,13 +111,13 @@ const SignUp = async (cred: Credential, users: Collection<Document>): Promise<tU
         const updateResult: UpdateResult = await users.updateOne(
             { _id: { $eq: insertResult.insertedId } },
             { $set: { jwt: token } }
-        );
+        )
 
         if (updateResult.acknowledged && updateResult.modifiedCount === 1) {
             return {
                 display_name: cred.username,
                 jwt: token,
-            };
+            }
         }
     } catch (err) {
         console.error(err)

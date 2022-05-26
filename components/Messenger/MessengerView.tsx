@@ -6,37 +6,40 @@ import styles from '../../styles/Messenger.module.css'
 
 const MessengerView = (): JSX.Element => {
 
-    const convo_ctx = useContext(ConvoContext);
+    const convo_ctx = useContext(ConvoContext)
     const [messages, setMessages] = useState([])
 
     useEffect(() => {
 
-        if (!convo_ctx.ID) return
+        if (convo_ctx.ID === null) return
 
         const params: URLSearchParams = new URLSearchParams()
-        params.append("oid", convo_ctx.ID)
+        params.append("convo_oid", convo_ctx.ID)
 
-        if (messages.length === 0) {
-            try {
-                fetch("http://localhost:3000/api/conv?" + params.toString())
-                    .then((fetch_response: Response) => {
-                        if (fetch_response.status == 200) {
-                            fetch_response.json().then((value) => {
-                                setMessages(value.messages)
-                            })
-                        }
-                        else if (fetch_response.status == 500) {
-                            // TODO: 500 internal server error handle
-                            fetch_response.json().then(value => {
-                                console.error(value)
-                            })
-                        }
-                    })
-            }
-            catch (err) {
-                console.error(err)
+        const getMessages = async () => {
+            if (messages.length === 0) {
+                try {
+                    const fetch_response: Response = await fetch("http://localhost:3000/api/conv?" + params.toString())
+
+                    if (fetch_response.status == 200) {
+                        const value = await fetch_response.json()
+                        setMessages(value.messages)
+                    }
+
+                    if (fetch_response.status == 500) {
+                        // TODO: 500 internal server error handle
+                        const value = await fetch_response.json()
+                        console.error(value)
+
+                    }
+                }
+                catch (err) {
+                    console.error(err)
+                }
             }
         }
+
+        getMessages()
         // unmount:
         // return () => {} CLEANUP
     })
@@ -68,4 +71,4 @@ const StatusView = (): JSX.Element => {
     )
 }
 
-export default MessengerView;
+export default MessengerView

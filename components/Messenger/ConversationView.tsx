@@ -1,3 +1,4 @@
+import { ObjectId } from 'mongodb'
 import React from 'react'
 
 import styles from '../../styles/Messenger.module.css'
@@ -5,7 +6,7 @@ import styles from '../../styles/Messenger.module.css'
 export type tMessage = {
     posted: Date,
     value: string,
-    sender: string,
+    sender: ObjectId,
 }
 
 
@@ -30,7 +31,9 @@ const Message = (props: { message: tMessage }): JSX.Element => {
     // - Read Status
     return (
         <div className={styles.message + (props.message.sender ? (" " + styles.message_sent) : " ")}>
-            {props.message.value}
+            <span>
+                {props.message.value}
+            </span>
         </div>
     )
 }
