@@ -21,19 +21,16 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
 
     if (req.method === "GET") {
 
-        // Search Convos as list
+        // Search Conversation by string
         const search_query: string | null = typeof req.query.search === "string" ? req.query.search as string : null
         if (search_query !== null) {
             // TODO: Get list of user's conversations
-            const result = await searchConvos(search_query)
-            console.log(result)
-
-            res.status(200).json({})
-
+            const result = await searchConvos(search_query, token)
+            res.status(200).json(result)
             return
         }
 
-        // Get convo by id as convo
+        // Get Conversation by it's ID
         const convo_oid: string = typeof req.query.convo_oid === "string" ? req.query.convo_oid as string : ''
         if (convo_oid !== '') {
             const result = await getConversation(convo_oid)
@@ -55,7 +52,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
         }
     }
 
-    // Post message to Conversation
+    // Post message to a Conversation
     if (req.method === "POST" && req.headers["content-type"] === "application/json") {
         const message: string = typeof req.body.message === "string" ? req.body.message as string : ''
         const convo_oid: string = typeof req.query.convo_oid === "string" ? req.query.convo_oid as string : ''
@@ -63,7 +60,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
             const result = await insertMessage(message, convo_oid, token)
 
             // 201 Created or 500 Internal Error
-            if (result !== null) res.status(201).send({})
+            if (result !== null) res.status(201).send(result)
             else res.status(500).send({})
             return
         }
@@ -73,11 +70,21 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
     res.status(400).send('')
 }
 
-const searchConvos = async (search: string) => {
-    try {
+// TODO:
+//  - '' = covos user in a participant in
+//  - 'string' = Search Name > Content
+const searchConvos = async (search: string, token: JsonWebKey) => {
 
+    const JWT = require('jsonwebtoken')
+    const payload: tJwtPayload = await JWT.verify(token, _SECRET_)
+
+    try {
         await client.connect()
         const convos = client.db("next-messenger").collection("conversations")
+        const searchResult = convos.find({
+            participants: { $all: [payload.user_oid] }
+        })
+        return searchResult.toArray()
     } catch (err) {
         console.error(err)
     }
@@ -85,7 +92,7 @@ const searchConvos = async (search: string) => {
 
 
 
-const insertMessage = async (draft: string, oid: string, token: JsonWebKey): Promise<UpdateResult | null> => {
+const insertMessage = async (draft: string, oid: string, token: JsonWebKey): Promise<tMessage | null> => {
 
 
     const JWT = require('jsonwebtoken')
@@ -117,7 +124,11 @@ const insertMessage = async (draft: string, oid: string, token: JsonWebKey): Pro
             },
             { upsert: true }
         )
-        return upsertResult
+
+        if (upsertResult.modifiedCount === 1 && upsertResult.acknowledged === true) {
+            return new_message
+        }
+        return null
     }
     catch (err) {
         console.error(err)

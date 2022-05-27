@@ -1,13 +1,13 @@
 import React, { useContext, useEffect, useState } from 'react'
 import Messenger from './Messenger'
-import ConversationView from './ConversationView'
+import ConversationView, { tMessage } from './ConversationView'
 import { ConvoContext } from '../../pages'
 import styles from '../../styles/Messenger.module.css'
 
 const MessengerView = (): JSX.Element => {
 
     const convo_ctx = useContext(ConvoContext)
-    const [messages, setMessages] = useState([])
+    const [messages, setMessages] = useState<tMessage[]>([])
 
     useEffect(() => {
 
@@ -44,13 +44,20 @@ const MessengerView = (): JSX.Element => {
         // return () => {} CLEANUP
     })
 
+    const addToMessageState = (new_message: tMessage) => {
+        setMessages([
+            ...messages,
+            new_message,
+        ])
+    }
+
     if (!convo_ctx.ID) return <div className={styles.container} />
 
     return (
         <div className={styles.container}>
             <StatusView />
             <ConversationView messages={messages} />
-            <Messenger oid={convo_ctx.ID} />
+            <Messenger oid={convo_ctx.ID} addMessage={addToMessageState} />
         </div>
     )
 }
