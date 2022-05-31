@@ -1,7 +1,8 @@
 import React, { useContext, useEffect, useState } from 'react'
-import Messenger from './Messenger'
-import ConversationView, { tMessage } from './ConversationView'
 import { ConvoContext } from '../../pages'
+import ConversationView, { tMessage } from './ConversationView'
+import Messenger from './Messenger'
+
 import styles from '../../styles/Messenger.module.css'
 
 const MessengerView = (): JSX.Element => {
@@ -30,7 +31,6 @@ const MessengerView = (): JSX.Element => {
                         // TODO: 500 internal server error handle
                         const value = await fetch_response.json()
                         console.error(value)
-
                     }
                 }
                 catch (err) {

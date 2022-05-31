@@ -24,7 +24,6 @@ export const ConvoContext = createContext<ConvoContextType>({ ID: null, setID: (
 // TODO: get oid from contacts... build a contacts system
 const Home: NextPage = (): JSX.Element => {
 
-    const user_ctx = useContext(UserContext)
     const [token, setToken] = useState<JsonWebKey | string | null>(null)
     const [convoID, setConvoID] = useState<string | null>(null)
 
