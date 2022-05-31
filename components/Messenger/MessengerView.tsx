@@ -11,11 +11,10 @@ const MessengerView = (): JSX.Element => {
     const [messages, setMessages] = useState<tMessage[]>([])
 
     useEffect(() => {
-
-        if (app_ctx.convo_id === null) return
+        if (app_ctx.state.convo_id === "") return
 
         const params: URLSearchParams = new URLSearchParams()
-        params.append("convo_oid", app_ctx.convo_id)
+        params.append("convo_oid", app_ctx.state.convo_id)
 
         const getMessages = async () => {
             if (messages.length === 0) {
@@ -51,13 +50,13 @@ const MessengerView = (): JSX.Element => {
         ])
     }
 
-    if (!app_ctx.convo_id) return <div className={styles.container} />
+    if (!app_ctx.state.convo_id) return <div className={styles.container} />
 
     return (
         <div className={styles.container}>
             <StatusView />
             <ConversationView messages={messages} />
-            <Messenger oid={app_ctx.convo_id} addMessage={addToMessageState} />
+            <Messenger oid={app_ctx.state.convo_id} addMessage={addToMessageState} />
         </div>
     )
 }
