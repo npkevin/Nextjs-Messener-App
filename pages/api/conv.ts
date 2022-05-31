@@ -114,7 +114,10 @@ const insertMessage = async (draft: string, oid: string, token: JsonWebKey): Pro
             {
                 $setOnInsert: {
                     participants: [
-                        payload.user_oid,
+                        {
+                            display_name: payload.user_cred.firstName + " " + payload.user_cred.lastName,
+                            oid: payload.user_oid,
+                        }
                         // TODO: add other user
                     ]
                 },

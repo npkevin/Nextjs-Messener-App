@@ -5,6 +5,7 @@
 import type { NextApiRequest, NextApiResponse } from "next"
 import type { WithId, Document, InsertOneResult, Collection, UpdateResult, ObjectId } from "mongodb"
 import { MongoClient } from "mongodb"
+import { passThroughSymbol } from "next/dist/server/web/spec-compliant/fetch-event"
 
 // JWT doesn't support ES6 😢
 const JWT = require('jsonwebtoken')
@@ -17,6 +18,8 @@ const client = new MongoClient(_URI_)
 type Credential = {
     username: string,
     password: string,
+    firstName: string,
+    lastName: string,
 }
 
 export type tUserInfo = {
@@ -25,8 +28,7 @@ export type tUserInfo = {
 }
 
 export type tJwtPayload = {
-    username: string,
-    password: string,
+    user_cred: Credential,
     user_oid: ObjectId
 }
 
@@ -37,6 +39,8 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
         const result = await login({
             username: req.body.username,
             password: req.body.password,
+            firstName: req.body.firstName,
+            lastName: req.body.lastName,
         })
 
         if (result !== null) {
@@ -62,7 +66,12 @@ const login = async (cred: Credential): Promise<tUserInfo | null> => {
             console.log("Existing user login found... Creating new JWT")
             if (foundUser.username === cred.username && foundUser.password === cred.password) {
                 const payload: tJwtPayload = {
-                    ...cred,
+                    user_cred: {
+                        username: foundUser.username,
+                        password: foundUser.password,
+                        firstName: foundUser.firstName,
+                        lastName: foundUser.lastName,
+                    },
                     user_oid: foundUser._id
                 }
                 const token: JsonWebKey = JWT.sign(
@@ -77,7 +86,7 @@ const login = async (cred: Credential): Promise<tUserInfo | null> => {
 
                 if (result !== null) {
                     return {
-                        display_name: foundUser.username,
+                        display_name: foundUser.firstName + " " + foundUser.lastName,
                         jwt: token,
                     }
                 } else {
@@ -88,7 +97,12 @@ const login = async (cred: Credential): Promise<tUserInfo | null> => {
         }
 
         // Sign up
-        return await SignUp(cred, users)
+        if (cred.firstName !== "" && cred.lastName !== "") {
+            return await SignUp(cred, users)
+        } else {
+            console.error("First and Last name missing to SignUp", cred)
+            return null
+        }
     }
     catch (err) {
         console.error(err)
@@ -104,7 +118,12 @@ const SignUp = async (cred: Credential, users: Collection<Document>): Promise<tU
             conversations: [],
         })
         const payload: tJwtPayload = {
-            ...cred,
+            user_cred: {
+                username: cred.username,
+                password: cred.password,
+                firstName: cred.firstName,
+                lastName: cred.lastName,
+            },
             user_oid: insertResult.insertedId
         }
         const token: JsonWebKey = JWT.sign(payload, _SECRET_, { expiresIn: _EXIPIRY_ })
@@ -115,7 +134,7 @@ const SignUp = async (cred: Credential, users: Collection<Document>): Promise<tU
 
         if (updateResult.acknowledged && updateResult.modifiedCount === 1) {
             return {
-                display_name: cred.username,
+                display_name: cred.firstName + " " + cred.lastName,
                 jwt: token,
             }
         }

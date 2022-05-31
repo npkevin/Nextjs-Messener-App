@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react'
-import { ConvoContext } from '../../pages'
+import { AppContext } from '../../pages'
 import ConversationView, { tMessage } from './ConversationView'
 import Messenger from './Messenger'
 
@@ -7,15 +7,15 @@ import styles from '../../styles/Messenger.module.css'
 
 const MessengerView = (): JSX.Element => {
 
-    const convo_ctx = useContext(ConvoContext)
+    const app_ctx = useContext(AppContext)
     const [messages, setMessages] = useState<tMessage[]>([])
 
     useEffect(() => {
 
-        if (convo_ctx.ID === null) return
+        if (app_ctx.convo_id === null) return
 
         const params: URLSearchParams = new URLSearchParams()
-        params.append("convo_oid", convo_ctx.ID)
+        params.append("convo_oid", app_ctx.convo_id)
 
         const getMessages = async () => {
             if (messages.length === 0) {
@@ -51,13 +51,13 @@ const MessengerView = (): JSX.Element => {
         ])
     }
 
-    if (!convo_ctx.ID) return <div className={styles.container} />
+    if (!app_ctx.convo_id) return <div className={styles.container} />
 
     return (
         <div className={styles.container}>
             <StatusView />
             <ConversationView messages={messages} />
-            <Messenger oid={convo_ctx.ID} addMessage={addToMessageState} />
+            <Messenger oid={app_ctx.convo_id} addMessage={addToMessageState} />
         </div>
     )
 }

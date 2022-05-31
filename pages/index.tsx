@@ -7,25 +7,23 @@ import styles from '../styles/index.module.css'
 import { createContext, Dispatch, SetStateAction, useContext, useEffect, useState } from 'react'
 import { tUserInfo } from './api/auth'
 
-type UserContextType = {
-
+type AppStatetype = {
+    display_name: string,
     jwt: JsonWebKey | string | null,
-    setJwt: Dispatch<SetStateAction<JsonWebKey | string | null>>,
+    convo_id: string,
 }
 
-type ConvoContextType = {
-    ID: string | null,
-    setID: Dispatch<SetStateAction<string | null>>,
+type AppContextType = {
+    state: AppStatetype,
+    setState: Dispatch<SetStateAction<AppStatetype>>,
 }
 
-export const UserContext = createContext<UserContextType>({ jwt: null, setJwt: () => { } })
-export const ConvoContext = createContext<ConvoContextType>({ ID: null, setID: () => { } })
+export const AppContext = createContext<AppContextType>({ state: { display_name: "", jwt: null, convo_id: "" }, setState: () => { } })
 
 // TODO: get oid from contacts... build a contacts system
 const Home: NextPage = (): JSX.Element => {
 
-    const [token, setToken] = useState<JsonWebKey | string | null>(null)
-    const [convoID, setConvoID] = useState<string | null>(null)
+    const [appState, setAppState] = useState<AppStatetype>({ display_name: "", jwt: null, convo_id: "" })
 
     useEffect(() => {
         const validateJwt = async () => {
@@ -37,37 +35,49 @@ const Home: NextPage = (): JSX.Element => {
             })
             if (response.status === 200) {
 
-                const { jwt }: tUserInfo = await response.json()
+                const { display_name, jwt }: tUserInfo = await response.json()
                 if (jwt !== undefined) { // Token was verified but expired... token refreshed
                     cookies.set('auth_jwt', jwt, { sameSite: 'strict', secure: true })
-                    setToken(jwt)
-                }
-                else { // Token was verified, not expired
+                    setAppState({
+                        ...appState,
+                        display_name: display_name,
+                        jwt: jwt,
+                    })
+                } else { // Token was verified, not expired
                     const token = cookies.get('auth_jwt') ? cookies.get('auth_jwt') as JsonWebKey : null
-                    setToken(token)
+                    setAppState({
+                        ...appState,
+                        display_name: display_name,
+                        jwt: token,
+                    })
                 }
 
 
             } else {
                 cookies.remove('auth_jwt')
-                setToken(null)
+                setAppState({
+                    ...appState,
+                    display_name: "",
+                    jwt: null,
+                })
             }
         }
 
-        if (cookies.get('auth_jwt') && !token) {
-            setToken("Validating")
+        if (cookies.get('auth_jwt') && !appState.jwt) {
+            setAppState({
+                ...appState,
+                jwt: "Validating",
+            })
             validateJwt()
         }
     })
 
     return (
         <div className={styles.container}>
-            <UserContext.Provider value={{ jwt: token, setJwt: setToken }}>
-                <ConvoContext.Provider value={{ ID: convoID, setID: setConvoID }}>
-                    <SideMenu />
-                    <MessengerView />
-                </ConvoContext.Provider>
-            </UserContext.Provider>
+            <AppContext.Provider value={{ state: appState, setState: setAppState }}>
+                <SideMenu />
+                <MessengerView />
+            </AppContext.Provider>
         </div>
     )
 }

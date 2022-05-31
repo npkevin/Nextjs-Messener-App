@@ -47,8 +47,12 @@ const refreshToken = async (token: JsonWebKey): Promise<tUserInfo | null> => {
             if (err.name === "TokenExpiredError") {
                 process.stdout.write(" Time Expired! - Renewing JWT.\n")
                 const payload: tJwtPayload = {
-                    username: foundUser.username,
-                    password: foundUser.password,
+                    user_cred: {
+                        username: foundUser.username,
+                        password: foundUser.password,
+                        firstName: foundUser.firstName,
+                        lastName: foundUser.lastName,
+                    },
                     user_oid: foundUser._id
                 }
                 const newJwt = JWT.sign(
@@ -64,7 +68,7 @@ const refreshToken = async (token: JsonWebKey): Promise<tUserInfo | null> => {
                     { $set: { jwt: newJwt } }
                 )
                 return {
-                    display_name: foundUser.username,
+                    display_name: foundUser.firstName + " " + foundUser.lastName,
                     jwt: newJwt,
                 }
             }
@@ -72,10 +76,10 @@ const refreshToken = async (token: JsonWebKey): Promise<tUserInfo | null> => {
             return null
 
         } else { // No Error, validate
-            if (decoded.username === foundUser.username && decoded.password === foundUser.password) {
+            if (decoded.user_cred.username === foundUser.username && decoded.user_cred.password === foundUser.password) {
                 process.stdout.write(" Valid (" + ((decoded.exp - Date.now() / 1000) / 60).toFixed(2) + "min)\n")
                 return {
-                    display_name: foundUser.username,
+                    display_name: foundUser.firstName + " " + foundUser.lastName,
                 }
             } else {
                 process.stdout.write(" Invalid\n")
@@ -97,7 +101,10 @@ export const verify = async (jwtToken: JsonWebKey): Promise<boolean> => {
     }
     // verify jwt
     return await JWT.verify(jwtToken, _SECRET_, async (err: Error, decoded: any) => {
-        if (err) return err
+        if (err) {
+            console.error(err)
+            return false
+        }
         const users = client.db("next-messenger").collection("users")
         const found = await users.findOne({
             jwt: { $eq: jwtToken },

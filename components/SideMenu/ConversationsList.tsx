@@ -1,7 +1,6 @@
 import { ObjectId } from "mongodb"
 import { useContext, useEffect, useState } from "react"
-import { clearTimeout } from "timers"
-import { UserContext, ConvoContext } from "../../pages"
+import { AppContext } from "../../pages"
 
 import styles from '../../styles/SideMenu.module.css'
 import { tMessage } from "../Messenger/ConversationView"
@@ -11,16 +10,20 @@ type Status = {
     complete: boolean
 }
 
+type participant = {
+    display_name: string,
+    oid: ObjectId
+}
+
 type Conversation = {
     _id: string,
     messages: tMessage[],
-    participants: ObjectId[]
+    participants: participant[]
 }
 
 const ConversationList = (props: any): JSX.Element => {
 
-    const user_ctx = useContext(UserContext)
-    const convo_ctx = useContext(ConvoContext)
+    const app_ctx = useContext(AppContext)
     const [status, setStatus] = useState<Status>({ loading: false, complete: false })
     const [search, setSearch] = useState<string>("")
     const [convoList, setConvoList] = useState<Conversation[]>([])
@@ -28,7 +31,7 @@ const ConversationList = (props: any): JSX.Element => {
 
     useEffect(() => {
 
-        if (user_ctx.jwt === null || user_ctx.jwt === '') return
+        if (app_ctx.state.jwt === null || app_ctx.state.jwt === '') return
 
         if (!status.loading && !status.complete && convoList.length < 1) {
             searchConvos("").then(convos => {
@@ -38,12 +41,12 @@ const ConversationList = (props: any): JSX.Element => {
         }
     })
 
-    const searchTimer = (search_string: string) => {
+    const searchDelayed = (search_string: string, delay_ms: number) => {
         setSearch(search_string)
         if (timerID !== undefined) window.clearTimeout(timerID)
 
         if (search_string) {
-            setTimerID(setTimeout(() => searchConvos(search_string), 1000))
+            setTimerID(setTimeout(() => searchConvos(search_string), delay_ms))
         }
     }
 
@@ -73,18 +76,18 @@ const ConversationList = (props: any): JSX.Element => {
         return null
     }
 
-    return user_ctx.jwt ? (
+    return app_ctx.state.jwt ? (
         <div className={styles.convo_container}>
             <input
                 type="text"
                 placeholder="Search"
                 value={search}
-                onChange={e => searchTimer(e.target.value)}
+                onChange={e => searchDelayed(e.target.value, 1000)}
             />
             <ul className={styles.convo_list}>
                 {convoList.map(convo => {
                     return (
-                        <li className={styles.convo} onClick={() => convo_ctx.setID(convo._id)}>
+                        <li className={styles.convo} onClick={() => app_ctx.state.convo_id = convo._id}>
                             <div className={styles.profile_pic}>
                                 <img src="" alt="" />
                             </div>
