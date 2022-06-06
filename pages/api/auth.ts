@@ -5,7 +5,6 @@
 import type { NextApiRequest, NextApiResponse } from "next"
 import type { WithId, Document, InsertOneResult, Collection, UpdateResult, ObjectId } from "mongodb"
 import { MongoClient } from "mongodb"
-import { passThroughSymbol } from "next/dist/server/web/spec-compliant/fetch-event"
 
 // JWT doesn't support ES6 😢
 const JWT = require('jsonwebtoken')
@@ -15,20 +14,29 @@ export const _EXIPIRY_: string = "12h"
 export const _URI_: string = "mongodb://127.0.0.1:27017/"
 const client = new MongoClient(_URI_)
 
-type Credential = {
+type Error = {
+    error: string,
+    message: string,
+}
+
+type UserCredential = {
     username: string,
     password: string,
-    firstName: string,
-    lastName: string,
 }
 
-export type tUserInfo = {
+type UserInfo = {
+    firstname: string,
+    lastname: string,
+}
+
+export type SignInResponse = {
     display_name: string,
-    jwt?: JsonWebKey
+    jwt?: JsonWebKey,
+    error?: string,
 }
 
-export type tJwtPayload = {
-    user_cred: Credential,
+export type JwtPayload = {
+    user_cred: UserCredential,
     user_oid: ObjectId
 }
 
@@ -36,23 +44,46 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
     // Login / Signup
     if (req.method === "POST" && req.headers["content-type"] === "application/json") {
 
-        const result = await login({
-            username: req.body.username,
-            password: req.body.password,
-            firstName: req.body.firstName,
-            lastName: req.body.lastName,
-        })
-
-        if (result !== null) {
-            res.status(200).send(result)
-        } else {
-            res.status(500).send('')
+        let result;
+        // Sign Up
+        if (req.query.signup === "true") {
+            result = await signUp({
+                username: req.body.username,
+                password: req.body.password,
+            }, {
+                firstname: req.body.firstname,
+                lastname: req.body.lastname
+            })
+            if (!result.error) {
+                res.status(201).json(result)
+                return
+            }
         }
+        // Sign In
+        else {
+            result = await signIn({
+                username: req.body.username,
+                password: req.body.password,
+            })
+            if (!result.error) {
+                res.status(200).json(result)
+                return
+            }
+        }
+
+        // Error
+        res.status(500).json(result)
     }
 }
 
-// Signup if user does not exist
-const login = async (cred: Credential): Promise<tUserInfo | null> => {
+const signIn = async (cred: UserCredential): Promise<SignInResponse | Error> => {
+
+    if (!cred.username || !cred.password)
+        return {
+            error: "Invalid User Credential",
+            message: "Username or Password is empty",
+        }
+
     try {
         await client.connect()
         const users = client.db("next-messenger").collection("users")
@@ -65,12 +96,10 @@ const login = async (cred: Credential): Promise<tUserInfo | null> => {
         if (foundUser !== null) {
             console.log("Existing user login found... Creating new JWT")
             if (foundUser.username === cred.username && foundUser.password === cred.password) {
-                const payload: tJwtPayload = {
+                const payload: JwtPayload = {
                     user_cred: {
                         username: foundUser.username,
                         password: foundUser.password,
-                        firstName: foundUser.firstName,
-                        lastName: foundUser.lastName,
                     },
                     user_oid: foundUser._id
                 }
@@ -86,43 +115,55 @@ const login = async (cred: Credential): Promise<tUserInfo | null> => {
 
                 if (result !== null) {
                     return {
-                        display_name: foundUser.firstName + " " + foundUser.lastName,
+                        display_name: foundUser.firstname + " " + foundUser.lastname,
                         jwt: token,
                     }
-                } else {
-                    return null
                 }
             }
-            return null
         }
-
-        // Sign up
-        if (cred.firstName !== "" && cred.lastName !== "") {
-            return await SignUp(cred, users)
-        } else {
-            console.error("First and Last name missing to SignUp", cred)
-            return null
+        // No user Found
+        else {
+            return {
+                error: "Invalid Username/Password",
+                message: ""
+            }
         }
     }
     catch (err) {
         console.error(err)
-        return null
+    }
+    return {
+        error: "Internal Error",
+        message: "",
     }
 }
 
-const SignUp = async (cred: Credential, users: Collection<Document>): Promise<tUserInfo | null> => {
+const signUp = async (cred: UserCredential, form: UserInfo): Promise<SignInResponse | Error> => {
     console.log("Signing up new login")
     try {
+
+        await client.connect()
+        const users = client.db("next-messenger").collection("users")
+        const foundUser: WithId<Document> | null = await users.findOne({
+            username: { $eq: cred.username },
+        })
+
+        // User already exists
+        if (foundUser !== null)
+            return {
+                error: "Invalid Username",
+                message: "Username already exists"
+            }
+
         const insertResult: InsertOneResult<Document> = await users.insertOne({
             ...cred,
+            ...form,
             conversations: [],
         })
-        const payload: tJwtPayload = {
+        const payload: JwtPayload = {
             user_cred: {
                 username: cred.username,
                 password: cred.password,
-                firstName: cred.firstName,
-                lastName: cred.lastName,
             },
             user_oid: insertResult.insertedId
         }
@@ -134,12 +175,15 @@ const SignUp = async (cred: Credential, users: Collection<Document>): Promise<tU
 
         if (updateResult.acknowledged && updateResult.modifiedCount === 1) {
             return {
-                display_name: cred.firstName + " " + cred.lastName,
+                display_name: form.firstname + " " + form.lastname,
                 jwt: token,
             }
         }
     } catch (err) {
         console.error(err)
     }
-    return null
+    return {
+        error: "Internal Error",
+        message: "",
+    }
 }

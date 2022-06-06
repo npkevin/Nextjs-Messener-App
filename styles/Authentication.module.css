@@ -2,5 +2,30 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    /* padding: 1em; */
+}
+
+.signUp {
+    user-select: none;
+    pointer-events: none;
+    max-height: 0em;
+    opacity: 0%;
+    transition: 0.3s ease-in-out;
+}
+
+.signUp__unhide {
+    user-select: initial;
+    pointer-events: initial;
+    max-height: 10em;
+    opacity: 100%;
+}
+
+.signOptions {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    width: 100%;
+}
+
+.signOptions button:first-child {
+    margin-right: 1em;
 }

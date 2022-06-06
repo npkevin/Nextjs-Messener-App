@@ -1,6 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from "next"
 import { MongoClient } from "mongodb"
-import { _EXIPIRY_, _SECRET_, _URI_, tUserInfo, tJwtPayload } from "./auth"
+import { _EXIPIRY_, _SECRET_, _URI_, SignInResponse, JwtPayload } from "./auth"
+import { Sign } from "crypto"
 
 const JWT = require('jsonwebtoken')
 const client = new MongoClient(_URI_)
@@ -20,7 +21,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
 // Given a token check that it is:
 //  - Verified
 //  - Not Expired
-const refreshToken = async (token: JsonWebKey): Promise<tUserInfo | null> => {
+const refreshToken = async (token: JsonWebKey): Promise<SignInResponse | null> => {
     process.stdout.write("Attempting to verify token ...")
 
     try {
@@ -32,7 +33,7 @@ const refreshToken = async (token: JsonWebKey): Promise<tUserInfo | null> => {
 
     const users = client.db("next-messenger").collection("users")
 
-    return await JWT.verify(token, _SECRET_, async (err: Error, decoded: any): Promise<tUserInfo | null> => {
+    return await JWT.verify(token, _SECRET_, async (err: Error, decoded: any): Promise<SignInResponse | null> => {
 
         const foundUser = await users.findOne({
             jwt: { $eq: token }
@@ -46,12 +47,10 @@ const refreshToken = async (token: JsonWebKey): Promise<tUserInfo | null> => {
         if (err) {
             if (err.name === "TokenExpiredError") {
                 process.stdout.write(" Time Expired! - Renewing JWT.\n")
-                const payload: tJwtPayload = {
+                const payload: JwtPayload = {
                     user_cred: {
                         username: foundUser.username,
                         password: foundUser.password,
-                        firstName: foundUser.firstName,
-                        lastName: foundUser.lastName,
                     },
                     user_oid: foundUser._id
                 }
@@ -68,7 +67,7 @@ const refreshToken = async (token: JsonWebKey): Promise<tUserInfo | null> => {
                     { $set: { jwt: newJwt } }
                 )
                 return {
-                    display_name: foundUser.firstName + " " + foundUser.lastName,
+                    display_name: foundUser.firstname + " " + foundUser.lastname,
                     jwt: newJwt,
                 }
             }
@@ -79,7 +78,7 @@ const refreshToken = async (token: JsonWebKey): Promise<tUserInfo | null> => {
             if (decoded.user_cred.username === foundUser.username && decoded.user_cred.password === foundUser.password) {
                 process.stdout.write(" Valid (" + ((decoded.exp - Date.now() / 1000) / 60).toFixed(2) + "min)\n")
                 return {
-                    display_name: foundUser.firstName + " " + foundUser.lastName,
+                    display_name: foundUser.firstname + " " + foundUser.lastname,
                 }
             } else {
                 process.stdout.write(" Invalid\n")

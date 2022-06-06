@@ -3,7 +3,7 @@ import { AppContext } from '../../pages'
 import cookies from 'js-cookie'
 
 import styles from '../../styles/Authentication.module.css'
-import { tUserInfo } from '../../pages/api/auth'
+import { SignInResponse } from '../../pages/api/auth'
 
 const Authentication = (): JSX.Element => {
 
@@ -11,19 +11,23 @@ const Authentication = (): JSX.Element => {
 
     const [username, setUsername] = useState<string | undefined>("")
     const [password, setPassword] = useState<string | undefined>("")
-    const [firstName, setFirstName] = useState<string | undefined>("")
-    const [lastName, setLastName] = useState<string | undefined>("")
-    const [btnDisable, setBtnDisable] = useState<boolean>(false)
+    const [firstname, setFirstname] = useState<string | undefined>("")
+    const [lastname, setLastname] = useState<string | undefined>("")
+    const [btnSignInDisable, setBtnSignInDisable] = useState<boolean>(false)
+    const [btnSignUpDisable, setBtnSignUpDisable] = useState<boolean>(true)
 
     useEffect(() => {
-        setBtnDisable(!username || !password)
+        const credInvalid: boolean = username === "" || password === ""
+        setBtnSignInDisable(credInvalid || firstname !== "" || lastname !== "")
     })
 
-    const signIn = async (event: React.FormEvent<HTMLFormElement>) => {
-        event.preventDefault()
+    const signIn = async () => {
         if (cookies.get('auth_jwt')) return
+
+        const params: URLSearchParams = new URLSearchParams()
+        params.append("signup", "false")
         try {
-            const response: Response = await fetch("http://localhost:3000/api/auth", {
+            const response: Response = await fetch("http://localhost:3000/api/auth?" + params, {
                 method: "POST",
                 headers: {
                     "content-type": "application/json"
@@ -31,25 +35,21 @@ const Authentication = (): JSX.Element => {
                 body: JSON.stringify({
                     username: username,
                     password: password,
-                    firstName: firstName,
-                    lastName: lastName,
                 })
             })
 
+            const result: SignInResponse = await response.json()
+
             if (response.status === 200) {
-                const result: tUserInfo = await response.json()
                 const jwt: string = result.jwt as string
                 cookies.set('auth_jwt', jwt, { sameSite: 'strict', secure: true })
-                // app_ctx.display_name = result.display_name
-                // app_ctx.jwt = jwt
                 app_ctx.setState({
                     ...app_ctx.state,
                     display_name: result.display_name,
                     jwt: jwt
                 })
             } else {
-                // app_ctx.display_name = ""
-                // app_ctx.jwt = null
+                alert(result.error)
                 app_ctx.setState({
                     ...app_ctx.state,
                     display_name: "",
@@ -62,9 +62,61 @@ const Authentication = (): JSX.Element => {
         }
     }
 
+    const signUp = async () => {
+
+        if (btnSignUpDisable === true) {
+            setBtnSignUpDisable(false)
+            return
+        }
+
+        // TODO: Pretty invalid form instead of alert
+        if (!firstname || !lastname || !username || !password) {
+            alert("Please complete the SignUp form before submission")
+            return
+        }
+
+        const params: URLSearchParams = new URLSearchParams()
+        params.append("signup", "true")
+
+        const response: Response = await fetch("http://localhost:3000/api/auth?" + params, {
+            method: "POST",
+            headers: {
+                "content-type": "application/json"
+            },
+            body: JSON.stringify({
+                firstname: firstname,
+                lastname: lastname,
+                username: username,
+                password: password,
+            })
+        })
+
+        const result: SignInResponse = await response.json()
+
+        if (response.status === 201) {
+            const jwt: string = result.jwt as string
+            cookies.set('auth_jwt', jwt, { sameSite: 'strict', secure: true })
+            app_ctx.setState({
+                ...app_ctx.state,
+                display_name: result.display_name,
+                jwt: jwt
+            })
+        } else {
+            alert(result.error)
+            app_ctx.setState({
+                ...app_ctx.state,
+                display_name: "",
+                jwt: null
+            })
+        }
+    }
+
     const signOut = () => {
         setUsername("")
         setPassword("")
+        setFirstname("")
+        setLastname("")
+        setBtnSignUpDisable(true)
         cookies.remove('auth_jwt')
         // app_ctx.display_name = ""
         // app_ctx.jwt = null
@@ -77,33 +129,40 @@ const Authentication = (): JSX.Element => {
 
     // Render
     return (!app_ctx.state.jwt ?
-        <form className={styles.container} onSubmit={signIn}>
-            <input
-                type="text"
-                placeholder='First name'
-                value={firstName}
-                onChange={event => setFirstName(event.target.value)}
-            />
-            <input
-                type="text"
-                placeholder='Last name'
-                value={lastName}
-                onChange={event => setLastName(event.target.value)}
-            />
-            <input
-                type="username"
-                placeholder='Username'
-                value={username}
-                onChange={event => setUsername(event.target.value)}
-            />
-            <input
-                type="password"
-                placeholder='Password'
-                value={password}
-                onChange={event => setPassword(event.target.value)}
-            />
-            <button type="submit" disabled={btnDisable}>Login</button>
-        </form>
+        <div className={styles.container}>
+            <div className={styles.signUp + (btnSignUpDisable ? "" : " " + styles.signUp__unhide)}>
+                <input
+                    type="text"
+                    placeholder='First name'
+                    value={firstname}
+                    onChange={event => setFirstname(event.target.value)}
+                />
+                <input
+                    type="text"
+                    placeholder='Last name'
+                    value={lastname}
+                    onChange={event => setLastname(event.target.value)}
+                />
+            </div>
+            <div>
+                <input
+                    type="username"
+                    placeholder='Username'
+                    value={username}
+                    onChange={event => setUsername(event.target.value)}
+                />
+                <input
+                    type="password"
+                    placeholder='Password'
+                    value={password}
+                    onChange={event => setPassword(event.target.value)}
+                />
+            </div>
+            <div className={styles.signOptions}>
+                <button onClick={signUp}>Sign Up</button>
+                <button onClick={signIn} disabled={btnSignInDisable}>Login</button>
+            </div>
+        </div>
         :
         <>
             <button onClick={signOut}>Sign Out</button>
