@@ -3,7 +3,7 @@ import { Collection, MongoClient, ObjectId, UpdateResult } from "mongodb"
 import type { WithId, Document } from "mongodb"
 
 import type { tMessage } from "../../components/Messenger/ConversationView"
-import { tJwtPayload, _SECRET_, _URI_ } from './auth'
+import { JwtPayload, _SECRET_, _URI_ } from './auth'
 import { verify } from "./authjwt"
 
 const client = new MongoClient(_URI_)
@@ -76,7 +76,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
 const searchConvos = async (search: string, token: JsonWebKey) => {
 
     const JWT = require('jsonwebtoken')
-    const payload: tJwtPayload = await JWT.verify(token, _SECRET_)
+    const payload: JwtPayload = await JWT.verify(token, _SECRET_)
 
     try {
         await client.connect()
@@ -96,7 +96,7 @@ const insertMessage = async (draft: string, oid: string, token: JsonWebKey): Pro
 
 
     const JWT = require('jsonwebtoken')
-    const payload: tJwtPayload = await JWT.verify(token, _SECRET_)
+    const payload: JwtPayload = await JWT.verify(token, _SECRET_)
 
     try {
         await client.connect()
@@ -115,7 +115,7 @@ const insertMessage = async (draft: string, oid: string, token: JsonWebKey): Pro
                 $setOnInsert: {
                     participants: [
                         {
-                            display_name: payload.user_cred.firstName + " " + payload.user_cred.lastName,
+                            // display_name: payload.user_info.firstname + " " + payload.user_info.lastname,
                             oid: payload.user_oid,
                         }
                         // TODO: add other user

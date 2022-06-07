@@ -166,9 +166,9 @@ const Authentication = (): JSX.Element => {
         :
         <>
             <button onClick={signOut}>Sign Out</button>
-            <span style={{ fontSize: 10, color: app_ctx.state.jwt === 'Validating' ? 'yellow' : 'green' }}>
+            {/* <span style={{ fontSize: 10, color: app_ctx.state.jwt === 'Validating' ? 'yellow' : 'green' }}>
                 {app_ctx.state.jwt}
-            </span>
+            </span> */}
         </>
     )
 }

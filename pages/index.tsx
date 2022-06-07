@@ -5,7 +5,7 @@ import MessengerView from '../components/Messenger/MessengerView'
 
 import styles from '../styles/index.module.css'
 import { createContext, Dispatch, SetStateAction, useContext, useEffect, useState } from 'react'
-import { tUserInfo } from './api/auth'
+import { SignInResponse } from './api/auth'
 
 type AppStatetype = {
     display_name: string,
@@ -35,7 +35,7 @@ const Home: NextPage = (): JSX.Element => {
             })
             if (response.status === 200) {
 
-                const { display_name, jwt }: tUserInfo = await response.json()
+                const { display_name, jwt }: SignInResponse = await response.json()
                 if (jwt !== undefined) { // Token was verified but expired... token refreshed
                     cookies.set('auth_jwt', jwt, { sameSite: 'strict', secure: true })
                     setAppState({
