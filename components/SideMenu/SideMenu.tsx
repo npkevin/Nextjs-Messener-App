@@ -10,7 +10,6 @@ const SideMenu = (): JSX.Element => {
 
     return (
         <div className={styles.container}>
-            {app_ctx.state.display_name}
             <ConversationList />
             <Authentication />
         </div>

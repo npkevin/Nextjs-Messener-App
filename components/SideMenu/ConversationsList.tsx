@@ -78,6 +78,19 @@ const ConversationList = (props: any): JSX.Element => {
 
     return app_ctx.state.jwt ? (
         <div className={styles.convo_container}>
+            <div className={styles.user_card}>
+                <div className={styles.user_pic_container}>
+                    <img
+                        src="profile.png" alt=""
+                        draggable={false}
+                        onDragStart={e => e.preventDefault()} // Firefox support
+                    />
+                </div>
+                <div className={styles.user_status_container}>
+                    <span>{app_ctx.state.display_name}</span>
+                    <span>Online</span>
+                </div>
+            </div>
             <input
                 type="text"
                 placeholder="Search"
