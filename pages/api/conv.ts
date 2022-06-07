@@ -70,21 +70,43 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
     res.status(400).send('')
 }
 
-// TODO:
-//  - '' = covos user in a participant in
-//  - 'string' = Search Name > Content
 const searchConvos = async (search: string, token: JsonWebKey) => {
-
     const JWT = require('jsonwebtoken')
     const payload: JwtPayload = await JWT.verify(token, _SECRET_)
 
     try {
         await client.connect()
         const convos = client.db("next-messenger").collection("conversations")
-        const searchResult = convos.find({
-            participants: { $all: [payload.user_oid] }
-        })
-        return searchResult.toArray()
+        const users = client.db("next-messenger").collection("users")
+
+        // Search by ID (of caller)
+        if (search === '') {
+            const foundConvosByID = convos.find({
+                participants: { $all: [payload.user_oid] }
+            })
+            const result = await foundConvosByID.toArray()
+            console.log(result)
+            return result
+        }
+        // Search by name
+        else {
+            await users.createIndex({ firstname: "text", lastname: "text" });
+            const foundUsersByName = users
+                .find({
+                    $text: {
+                        $search: search,
+                        $caseSensitive: false,
+                    },
+                })
+                .project({
+                    _id: 1,
+                    firstname: 1,
+                    lastname: 1
+                })
+            const result = await foundUsersByName.toArray()
+            console.log(result)
+            return result
+        }
     } catch (err) {
         console.error(err)
     }
