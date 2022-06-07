@@ -1,7 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from "next"
 import { MongoClient } from "mongodb"
-import { _EXIPIRY_, _SECRET_, _URI_, SignInResponse, JwtPayload } from "./auth"
-import { Sign } from "crypto"
+import { _EXIPIRY_, _SECRET_, _URI_, SignInResponse, JwtPayload, pretifyName } from "./auth"
 
 const JWT = require('jsonwebtoken')
 const client = new MongoClient(_URI_)
@@ -67,7 +66,7 @@ const refreshToken = async (token: JsonWebKey): Promise<SignInResponse | null> =
                     { $set: { jwt: newJwt } }
                 )
                 return {
-                    display_name: foundUser.firstname + " " + foundUser.lastname,
+                    display_name: pretifyName(foundUser.firstname, foundUser.lastname),
                     jwt: newJwt,
                 }
             }
@@ -78,7 +77,7 @@ const refreshToken = async (token: JsonWebKey): Promise<SignInResponse | null> =
             if (decoded.user_cred.username === foundUser.username && decoded.user_cred.password === foundUser.password) {
                 process.stdout.write(" Valid (" + ((decoded.exp - Date.now() / 1000) / 60).toFixed(2) + "min)\n")
                 return {
-                    display_name: foundUser.firstname + " " + foundUser.lastname,
+                    display_name: pretifyName(foundUser.firstname, foundUser.lastname),
                 }
             } else {
                 process.stdout.write(" Invalid\n")

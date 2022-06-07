@@ -40,6 +40,13 @@ export type JwtPayload = {
     user_oid: ObjectId
 }
 
+export const pretifyName = (firstname: string, lastname: string): string => {
+    const firstName = firstname[0].toUpperCase() + firstname.substring(1)
+    const lastName = lastname[0].toUpperCase() + lastname.substring(1)
+    const fullName = firstName + " " + lastName
+    return fullName
+}
+
 export default async (req: NextApiRequest, res: NextApiResponse) => {
     // Login / Signup
     if (req.method === "POST" && req.headers["content-type"] === "application/json") {
@@ -115,7 +122,7 @@ const signIn = async (cred: UserCredential): Promise<SignInResponse | Error> => 
 
                 if (result !== null) {
                     return {
-                        display_name: foundUser.firstname + " " + foundUser.lastname,
+                        display_name: pretifyName(foundUser.firstname, foundUser.lastname),
                         jwt: token,
                     }
                 }
@@ -175,7 +182,7 @@ const signUp = async (cred: UserCredential, form: UserInfo): Promise<SignInRespo
 
         if (updateResult.acknowledged && updateResult.modifiedCount === 1) {
             return {
-                display_name: form.firstname + " " + form.lastname,
+                display_name: pretifyName(form.firstname, form.lastname),
                 jwt: token,
             }
         }
