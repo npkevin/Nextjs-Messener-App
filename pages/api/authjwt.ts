@@ -66,6 +66,7 @@ const refreshToken = async (token: JsonWebKey): Promise<SignInResponse | null> =
                     { $set: { jwt: newJwt } }
                 )
                 return {
+                    user_oid: foundUser._id,
                     display_name: pretifyName(foundUser.firstname, foundUser.lastname),
                     jwt: newJwt,
                 }
@@ -77,6 +78,7 @@ const refreshToken = async (token: JsonWebKey): Promise<SignInResponse | null> =
             if (decoded.user_cred.username === foundUser.username && decoded.user_cred.password === foundUser.password) {
                 process.stdout.write(" Valid (" + ((decoded.exp - Date.now() / 1000) / 60).toFixed(2) + "min)\n")
                 return {
+                    user_oid: foundUser._id,
                     display_name: pretifyName(foundUser.firstname, foundUser.lastname),
                 }
             } else {

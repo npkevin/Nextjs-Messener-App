@@ -6,11 +6,13 @@ import MessengerView from '../components/Messenger/MessengerView'
 import styles from '../styles/index.module.css'
 import { createContext, Dispatch, SetStateAction, useContext, useEffect, useState } from 'react'
 import { SignInResponse } from './api/auth'
+import { ObjectID } from 'bson'
 
 type AppStatetype = {
+    user_oid: ObjectID | string | null,
     display_name: string,
     jwt: JsonWebKey | string | null,
-    convo_id: string,
+    convo_id: ObjectID | string | null,
 }
 
 type AppContextType = {
@@ -18,11 +20,11 @@ type AppContextType = {
     setState: Dispatch<SetStateAction<AppStatetype>>,
 }
 
-export const AppContext = createContext<AppContextType>({ state: { display_name: "", jwt: null, convo_id: "" }, setState: () => { } })
+export const AppContext = createContext<AppContextType>({ state: { user_oid: null, display_name: "", jwt: null, convo_id: "" }, setState: () => { } })
 
 const Home: NextPage = (): JSX.Element => {
 
-    const [appState, setAppState] = useState<AppStatetype>({ display_name: "", jwt: null, convo_id: "" })
+    const [appState, setAppState] = useState<AppStatetype>({ user_oid: null, display_name: "", jwt: null, convo_id: "" })
 
     useEffect(() => {
         const validateJwt = async () => {
@@ -34,11 +36,12 @@ const Home: NextPage = (): JSX.Element => {
             })
             if (response.status === 200) {
 
-                const { display_name, jwt }: SignInResponse = await response.json()
+                const { user_oid, display_name, jwt }: SignInResponse = await response.json()
                 if (jwt !== undefined) { // Token was verified but expired... token refreshed
                     cookies.set('auth_jwt', jwt, { sameSite: 'strict', secure: true })
                     setAppState({
                         ...appState,
+                        user_oid: user_oid,
                         display_name: display_name,
                         jwt: jwt,
                     })
@@ -46,6 +49,7 @@ const Home: NextPage = (): JSX.Element => {
                     const token = cookies.get('auth_jwt') ? cookies.get('auth_jwt') as JsonWebKey : null
                     setAppState({
                         ...appState,
+                        user_oid: user_oid,
                         display_name: display_name,
                         jwt: token,
                     })
@@ -56,6 +60,7 @@ const Home: NextPage = (): JSX.Element => {
                 cookies.remove('auth_jwt')
                 setAppState({
                     ...appState,
+                    user_oid: null,
                     display_name: "",
                     jwt: null,
                 })

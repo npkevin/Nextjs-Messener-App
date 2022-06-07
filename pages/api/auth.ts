@@ -30,6 +30,7 @@ type UserInfo = {
 }
 
 export type SignInResponse = {
+    user_oid: ObjectId,
     display_name: string,
     jwt?: JsonWebKey,
     error?: string,
@@ -122,6 +123,7 @@ const signIn = async (cred: UserCredential): Promise<SignInResponse | Error> => 
 
                 if (result !== null) {
                     return {
+                        user_oid: foundUser._id,
                         display_name: pretifyName(foundUser.firstname, foundUser.lastname),
                         jwt: token,
                     }
@@ -182,6 +184,7 @@ const signUp = async (cred: UserCredential, form: UserInfo): Promise<SignInRespo
 
         if (updateResult.acknowledged && updateResult.modifiedCount === 1) {
             return {
+                user_oid: insertResult.insertedId,
                 display_name: pretifyName(form.firstname, form.lastname),
                 jwt: token,
             }

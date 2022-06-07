@@ -30,8 +30,7 @@ const ConversationList = (props: any): JSX.Element => {
     const [timerID, setTimerID] = useState<NodeJS.Timeout>()
 
     useEffect(() => {
-
-        if (app_ctx.state.jwt === null || app_ctx.state.jwt === '') return
+        if (!app_ctx.state.jwt || !app_ctx.state.user_oid) return
 
         if (!status.loading && !status.complete && convoList.length < 1) {
             searchConvos("").then(convos => {
@@ -52,6 +51,7 @@ const ConversationList = (props: any): JSX.Element => {
 
     const searchConvos = async (search_string: string): Promise<Conversation[] | null> => {
         const params: URLSearchParams = new URLSearchParams();
+        params.append("convo_oid", app_ctx.state.user_oid as string)
         params.append("search", search_string)
 
         try {

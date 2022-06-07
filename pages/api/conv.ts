@@ -21,9 +21,11 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
 
     if (req.method === "GET") {
 
+
         // Search Conversation by string
-        const search_query: string | null = typeof req.query.search === "string" ? req.query.search as string : null
-        if (search_query !== null) {
+        const search_query: string = typeof req.query.search === "string" ? req.query.search as string : ''
+        if (search_query) {
+            console.log("Searching by Name")
             // TODO: Get list of user's conversations
             const result = await searchConvos(search_query, token)
             res.status(200).json(result)
@@ -32,7 +34,8 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
 
         // Get Conversation by it's ID
         const convo_oid: string = typeof req.query.convo_oid === "string" ? req.query.convo_oid as string : ''
-        if (convo_oid !== '') {
+        if (convo_oid) {
+            console.log("Searching by ID")
             const result = await getConversation(convo_oid)
             if (result === null) {
                 res.status(404).send({
@@ -85,7 +88,6 @@ const searchConvos = async (search: string, token: JsonWebKey) => {
                 participants: { $all: [payload.user_oid] }
             })
             const result = await foundConvosByID.toArray()
-            console.log(result)
             return result
         }
         // Search by name
@@ -104,7 +106,6 @@ const searchConvos = async (search: string, token: JsonWebKey) => {
                     lastname: 1
                 })
             const result = await foundUsersByName.toArray()
-            console.log(result)
             return result
         }
     } catch (err) {
