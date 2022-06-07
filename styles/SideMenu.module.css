@@ -39,12 +39,9 @@
 }
 
 .user_card {
+    margin-bottom: 1em;
     display: flex;
     flex-direction: row;
-}
-
-.user_card {
-    margin-bottom: .5em;
 }
 
 .user_pic_container {

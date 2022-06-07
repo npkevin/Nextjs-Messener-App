@@ -20,7 +20,6 @@ type AppContextType = {
 
 export const AppContext = createContext<AppContextType>({ state: { display_name: "", jwt: null, convo_id: "" }, setState: () => { } })
 
-// TODO: get oid from contacts... build a contacts system
 const Home: NextPage = (): JSX.Element => {
 
     const [appState, setAppState] = useState<AppStatetype>({ display_name: "", jwt: null, convo_id: "" })
