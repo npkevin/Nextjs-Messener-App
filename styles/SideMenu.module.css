@@ -104,9 +104,14 @@
 }
 
 .profile_pic {
-    background: red;
+    background: white;
     margin-right: 1em;
     width: 3em;
     height: 3em;
     border-radius: 50%;
+}
+
+.profile_pic img {
+    width: inherit;
+    height: inherit;
 }

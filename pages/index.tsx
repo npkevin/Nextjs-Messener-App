@@ -6,13 +6,21 @@ import MessengerView from '../components/Messenger/MessengerView'
 import styles from '../styles/index.module.css'
 import { createContext, Dispatch, SetStateAction, useContext, useEffect, useState } from 'react'
 import { SignInResponse } from './api/auth'
-import { ObjectID } from 'bson'
+import { ConvoObj } from './api/conv'
+import { ObjectId } from 'mongodb'
 
 type AppStatetype = {
-    user_oid: ObjectID | string | null,
+    convo: ConvoObj,
+    user_oid: ObjectId | null,
     display_name: string,
-    jwt: JsonWebKey | string | null,
-    convo_id: ObjectID | string | null,
+    jwt: JsonWebKey | null | string,
+}
+
+const defaultAppState: AppStatetype = {
+    convo: null,
+    user_oid: null,
+    display_name: '',
+    jwt: null,
 }
 
 type AppContextType = {
@@ -20,11 +28,11 @@ type AppContextType = {
     setState: Dispatch<SetStateAction<AppStatetype>>,
 }
 
-export const AppContext = createContext<AppContextType>({ state: { user_oid: null, display_name: "", jwt: null, convo_id: "" }, setState: () => { } })
+export const AppContext = createContext<AppContextType>({ state: defaultAppState, setState: () => { } })
 
 const Home: NextPage = (): JSX.Element => {
 
-    const [appState, setAppState] = useState<AppStatetype>({ user_oid: null, display_name: "", jwt: null, convo_id: "" })
+    const [appState, setAppState] = useState<AppStatetype>(defaultAppState)
 
     useEffect(() => {
         const validateJwt = async () => {

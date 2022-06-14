@@ -1,31 +1,26 @@
-import { ObjectId } from 'mongodb'
 import React from 'react'
+import { Message } from '../../pages/api/conv'
+
 
 import styles from '../../styles/Messenger.module.css'
 
-export type tMessage = {
-    posted: Date,
-    value: string,
-    sender: ObjectId,
-}
-
-
 type ConvoProps = {
-    messages: tMessage[]
+    messages: Message[] | null
 }
 
 // TODO: add keys as message id from mongodb
 const ConversationView = (props: ConvoProps): JSX.Element => {
     return (
         <div className={styles.messageHistory}>
-            {props.messages.map(message => {
-                return <Message message={message} />
-            })}
+            {props.messages ? props.messages.map((message, index) => {
+                return <Message key={index} message={message} />
+            }) :
+                null}
         </div>
     )
 }
 
-const Message = (props: { message: tMessage }): JSX.Element => {
+const Message = (props: { message: Message }): JSX.Element => {
     // TODO:
     // - Add Dates (posted/updated)
     // - Read Status

@@ -1,20 +1,27 @@
 import { useState } from 'react'
+import { ObjectId } from 'mongodb'
+import { Message } from '../../pages/api/conv'
+
 import TextareaAutosize from 'react-textarea-autosize'
-
 import styles from '../../styles/Messenger.module.css'
-import { tMessage } from './ConversationView'
 
-type MessengerProps = { oid: string, addMessage: (message: tMessage) => void }
+type MessengerProps = {
+    convo_obj: {
+        convo_oid: ObjectId | null,
+        recipient_oid: ObjectId | null,
+    },
+    addMessage: (message: Message) => void
+}
 
-const Messenger = ({ oid, addMessage }: MessengerProps): JSX.Element => {
+const Messenger = ({ convo_obj, addMessage }: MessengerProps): JSX.Element => {
 
     const [draft, setDraft] = useState("")
 
-    const sendMessage = async (event: React.FormEvent<HTMLFormElement>, message: string) => {
+    const sendMessage = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault()
         try {
             const params: URLSearchParams = new URLSearchParams()
-            params.append("convo_oid", oid)
+            params.append("convo_obj", JSON.stringify(convo_obj))
 
             const sent_message = draft
             setDraft("")
@@ -27,7 +34,7 @@ const Messenger = ({ oid, addMessage }: MessengerProps): JSX.Element => {
             })
             // TODO: Cute animations while sending...
             if (response.status == 201) {
-                const json: tMessage = await response.json()
+                const json: Message = await response.json()
                 addMessage(json)
             }
 
@@ -37,7 +44,7 @@ const Messenger = ({ oid, addMessage }: MessengerProps): JSX.Element => {
     }
 
     return (
-        <form className={styles.messageSender} onSubmit={event => sendMessage(event, draft)}>
+        <form className={styles.messageSender} onSubmit={sendMessage}>
             <TextareaAutosize
                 onChange={(event) => setDraft(event.target.value)}
                 value={draft}
