@@ -6,7 +6,6 @@ import Messenger from './Messenger'
 import { Message } from '../../pages/api/conv'
 
 import styles from '../../styles/Messenger.module.css'
-import { ObjectId } from 'mongodb'
 
 const MessengerView = (): JSX.Element => {
 

@@ -5,11 +5,6 @@ import { Conversation, ConvoObj } from '../../pages/api/conv'
 
 import styles from '../../styles/SideMenu.module.css'
 
-type Status = {
-    loading: boolean
-    complete: boolean
-}
-
 type Person = {
     _id: ObjectId,
     firstname: string,
@@ -19,27 +14,24 @@ type Person = {
 const ConversationList = (): JSX.Element => {
 
     const app_ctx = useContext(AppContext)
-    const [status, setStatus] = useState<Status>({ loading: false, complete: false })
-    const [search, setSearch] = useState<string>("")
+
     const [searchList, setSearchList] = useState<Person[]>([])
     const [convoList, setConvoList] = useState<Conversation[]>([])
+
+    const [search, setSearch] = useState<string>("")
     const [timerID, setTimerID] = useState<NodeJS.Timeout>()
 
     useEffect(() => {
-        if (!app_ctx.state.jwt || !app_ctx.state.user_oid) return
-
-        if (!status.loading && !status.complete && convoList.length < 1) {
-            searchConvos("").then(convos => {
-                if (convos !== null)
-                    setConvoList(convos)
-            })
-        }
-    })
+        searchConvos("").then(convos => {
+            if (convos !== null)
+                setConvoList(convos)
+        })
+    }, [])
 
     // Search by Name
     const searchDelayed = (search_string: string, delay_ms: number) => {
         setSearch(search_string)
-        if (timerID !== undefined) window.clearTimeout(timerID)
+        if (timerID) window.clearTimeout(timerID)
 
         if (search_string) {
             setTimerID(setTimeout(
@@ -58,10 +50,8 @@ const ConversationList = (): JSX.Element => {
         params.append("search", search_string)
 
         try {
-            setStatus({ loading: true, complete: false })
             const fetch_response: Response = await fetch("http://localhost:3000/api/conv?" + params.toString())
             const json_respnse = await fetch_response.json()
-            setStatus({ loading: false, complete: true })
 
             if (fetch_response.status == 200) {
                 return json_respnse
@@ -75,10 +65,13 @@ const ConversationList = (): JSX.Element => {
         return null
     }
 
-    const switchConvo = (convo_obj: ConvoObj) => {
+    const switchConvo = (convoId: ObjectId | null, recipId: ObjectId | null) => {
         app_ctx.setState({
             ...app_ctx.state,
-            convo: convo_obj
+            convo: {
+                convo_oid: convoId,
+                recipient_oid: recipId,
+            }
         })
     }
 
@@ -108,13 +101,13 @@ const ConversationList = (): JSX.Element => {
                     return (
                         <li className={styles.convo}
                             key={person._id.toString()}
-                            onClick={() => switchConvo({ convo_oid: null, recipient_oid: person._id })}
+                            onClick={() => switchConvo(null, person._id)}
                         >
                             <div className={styles.profile_pic}>
                                 <img src="profile.png" alt="" />
                             </div>
                             <div className={styles.glance}>
-                                <span>{person.firstname + " " + person.lastname}</span>
+                                <span>{`${person.firstname} ${person.lastname}`}</span>
                                 <span>Offline</span>
                             </div>
                         </li>
@@ -124,7 +117,7 @@ const ConversationList = (): JSX.Element => {
                     return (
                         <li className={styles.convo}
                             key={convo.oid.toString()}
-                            onClick={() => switchConvo({ convo_oid: convo.oid, recipient_oid: null })}
+                            onClick={() => switchConvo(convo.oid, null)}
                         >
                             <div className={styles.profile_pic}>
                                 <img

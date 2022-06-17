@@ -13,14 +13,13 @@ type AppStatetype = {
     convo: ConvoObj,
     user_oid: ObjectId | null,
     display_name: string,
-    jwt: JsonWebKey | null | string,
+    jwt?: string,
 }
 
 const defaultAppState: AppStatetype = {
     convo: null,
     user_oid: null,
     display_name: '',
-    jwt: null,
 }
 
 type AppContextType = {
@@ -35,54 +34,50 @@ const Home: NextPage = (): JSX.Element => {
     const [appState, setAppState] = useState<AppStatetype>(defaultAppState)
 
     useEffect(() => {
-        const validateJwt = async () => {
-            const response: Response = await fetch("http://localhost:3000/api/authjwt", {
-                method: "GET",
-                headers: {
-                    "content-type": "application/json"
-                },
-            })
-            if (response.status === 200) {
+        if (cookies.get('auth_jwt'))
+            verifyJwtCookie()
+    }, [])
 
-                const { user_oid, display_name, jwt }: SignInResponse = await response.json()
-                if (jwt !== undefined) { // Token was verified but expired... token refreshed
-                    cookies.set('auth_jwt', jwt, { sameSite: 'strict', secure: true })
-                    setAppState({
-                        ...appState,
-                        user_oid: user_oid,
-                        display_name: display_name,
-                        jwt: jwt,
-                    })
-                } else { // Token was verified, not expired
-                    const token = cookies.get('auth_jwt') ? cookies.get('auth_jwt') as JsonWebKey : null
-                    setAppState({
-                        ...appState,
-                        user_oid: user_oid,
-                        display_name: display_name,
-                        jwt: token,
-                    })
-                }
+    const verifyJwtCookie = async () => {
+        const response: Response = await fetch("http://localhost:3000/api/authjwt", {
+            method: "GET",
+            headers: {
+                "content-type": "application/json"
+            },
+        })
+        if (response.status === 200) {
 
-
-            } else {
-                cookies.remove('auth_jwt')
+            const { user_oid, display_name, jwt }: SignInResponse = await response.json()
+            // Token was verified but expired... token refreshed
+            if (jwt) {
+                cookies.set('auth_jwt', jwt, { sameSite: 'strict', secure: true })
                 setAppState({
-                    ...appState,
-                    user_oid: null,
-                    display_name: "",
-                    jwt: null,
+                    convo: null,
+                    user_oid: user_oid,
+                    display_name: display_name,
+                    jwt: jwt,
                 })
             }
-        }
-
-        if (cookies.get('auth_jwt') && !appState.jwt) {
+            // Token was verified, not expired
+            else {
+                setAppState({
+                    convo: null,
+                    user_oid: user_oid,
+                    display_name: display_name,
+                    jwt: cookies.get('auth_jwt'),
+                })
+            }
+        } else {
+            cookies.remove('auth_jwt')
             setAppState({
-                ...appState,
-                jwt: "Validating",
+                convo: null,
+                user_oid: null,
+                display_name: "",
             })
-            validateJwt()
         }
-    })
+    }
+
+    console.log("RENDER INDEX")
 
     return (
         <div className={styles.container}>

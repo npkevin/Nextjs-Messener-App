@@ -1,8 +1,9 @@
 import type { NextApiRequest, NextApiResponse } from "next"
 import { Collection, InsertOneResult, MongoClient, ObjectId, UpdateResult } from "mongodb"
 import type { WithId, Document } from "mongodb"
+import * as JWT from "jsonwebtoken"
 
-import { JwtPayload, _SECRET_, _URI_ } from './auth'
+import { TokenPayload, _SECRET_, _URI_ } from './auth'
 import { verify } from "./authjwt"
 
 const client = new MongoClient(_URI_)
@@ -31,8 +32,8 @@ export type Message = {
 
 export default async (req: NextApiRequest, res: NextApiResponse) => {
 
-    const token: JsonWebKey | null = typeof req.cookies.auth_jwt === "string" ? req.cookies.auth_jwt as JsonWebKey : null
-    if (token === null || !verify(token)) {
+    const token: string = req.cookies.auth_jwt
+    if (!verify(token)) {
         res.status(400).json({
             error: "Invalid_JWT",
             message: "Failed to verify JWT or None given"
@@ -109,9 +110,8 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
 }
 
 // search -> returns a list of converstations glances
-const searchConvos = async (search: string, token: JsonWebKey) => {
-    const JWT = require('jsonwebtoken')
-    const payload: JwtPayload = await JWT.verify(token, _SECRET_)
+const searchConvos = async (search: string, token: string) => {
+    const payload: TokenPayload = await JWT.verify(token, _SECRET_) as TokenPayload
 
     try {
         await client.connect()
@@ -165,10 +165,9 @@ const getConversation = async (convo_oid: ObjectId): Promise<WithId<Document> | 
     return getResult
 }
 
-const insertConversation = async (user_oid: ObjectId, draft: string, token: JsonWebKey): Promise<ObjectId | null> => {
+const insertConversation = async (user_oid: ObjectId, draft: string, token: string): Promise<ObjectId | null> => {
 
-    const JWT = require('jsonwebtoken')
-    const payload: JwtPayload = await JWT.verify(token, _SECRET_)
+    const payload: TokenPayload = await JWT.verify(token, _SECRET_) as TokenPayload
 
     console.log(JSON.stringify(payload))
 
@@ -188,11 +187,11 @@ const insertConversation = async (user_oid: ObjectId, draft: string, token: Json
 
     const sender: participant = {
         user_oid: new ObjectId(payload.user_oid),
-        display_name: s.firstname + " " + s.lastname,
+        display_name: `${s.firstname} ${s.lastname}`,
     }
     const receiver: participant = {
         user_oid: new ObjectId(user_oid),
-        display_name: r.firstname + " " + r.lastname,
+        display_name: `${r.firstname} ${r.lastname}`,
     }
 
     const new_message: Message = {
@@ -215,11 +214,9 @@ const insertConversation = async (user_oid: ObjectId, draft: string, token: Json
 }
 
 
-const insertMessage = async (draft: string, oid: ObjectId, token: JsonWebKey): Promise<Message | null> => {
+const insertMessage = async (draft: string, oid: ObjectId, token: string): Promise<Message | null> => {
 
-
-    const JWT = require('jsonwebtoken')
-    const payload: JwtPayload = await JWT.verify(token, _SECRET_)
+    const payload: any = JWT.verify(token, _SECRET_)
 
     try {
         await client.connect()

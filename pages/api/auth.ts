@@ -5,9 +5,8 @@
 import type { NextApiRequest, NextApiResponse } from "next"
 import type { WithId, Document, InsertOneResult, Collection, UpdateResult, ObjectId } from "mongodb"
 import { MongoClient } from "mongodb"
+import * as JWT from "jsonwebtoken"
 
-// JWT doesn't support ES6 😢
-const JWT = require('jsonwebtoken')
 export const _SECRET_: string = "DEM0_(KE3p)It-a[S3cr3t]"
 export const _EXIPIRY_: string = "12h"
 
@@ -32,11 +31,11 @@ type UserInfo = {
 export type SignInResponse = {
     user_oid: ObjectId,
     display_name: string,
-    jwt?: JsonWebKey,
+    jwt?: string,
     error?: string,
 }
 
-export type JwtPayload = {
+export type TokenPayload = {
     user_cred: UserCredential,
     user_oid: ObjectId
 }
@@ -44,8 +43,7 @@ export type JwtPayload = {
 export const pretifyName = (firstname: string, lastname: string): string => {
     const firstName = firstname[0].toUpperCase() + firstname.substring(1)
     const lastName = lastname[0].toUpperCase() + lastname.substring(1)
-    const fullName = firstName + " " + lastName
-    return fullName
+    return `${firstName} ${lastName}`
 }
 
 export default async (req: NextApiRequest, res: NextApiResponse) => {
@@ -104,14 +102,14 @@ const signIn = async (cred: UserCredential): Promise<SignInResponse | Error> => 
         if (foundUser !== null) {
             console.log("Existing user login found... Creating new JWT")
             if (foundUser.username === cred.username && foundUser.password === cred.password) {
-                const payload: JwtPayload = {
+                const payload: TokenPayload = {
                     user_cred: {
                         username: foundUser.username,
                         password: foundUser.password,
                     },
                     user_oid: foundUser._id
                 }
-                const token: JsonWebKey = JWT.sign(
+                const token: string = JWT.sign(
                     payload,
                     _SECRET_,
                     { expiresIn: _EXIPIRY_ }
@@ -169,14 +167,14 @@ const signUp = async (cred: UserCredential, form: UserInfo): Promise<SignInRespo
             ...form,
             conversations: [],
         })
-        const payload: JwtPayload = {
+        const payload: TokenPayload = {
             user_cred: {
                 username: cred.username,
                 password: cred.password,
             },
             user_oid: insertResult.insertedId
         }
-        const token: JsonWebKey = JWT.sign(payload, _SECRET_, { expiresIn: _EXIPIRY_ })
+        const token: string = JWT.sign(payload, _SECRET_, { expiresIn: _EXIPIRY_ })
         const updateResult: UpdateResult = await users.updateOne(
             { _id: { $eq: insertResult.insertedId } },
             { $set: { jwt: token } }
