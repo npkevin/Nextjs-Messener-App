@@ -6,6 +6,9 @@ import styles from '../../styles/Authentication.module.css'
 import { SignInResponse } from '../../pages/api/auth'
 
 const Authentication = (): JSX.Element => {
+
+    const app_ctx = useContext(AppContext)
+
     const [username, setUsername] = useState<string | undefined>("")
     const [password, setPassword] = useState<string | undefined>("")
     const [firstname, setFirstname] = useState<string | undefined>("")
@@ -13,22 +16,10 @@ const Authentication = (): JSX.Element => {
     const [btnSignInDisable, setBtnSignInDisable] = useState<boolean>(false)
     const [btnSignUpDisable, setBtnSignUpDisable] = useState<boolean>(true)
 
-    const [hasJwt, setHasJwt] = useState<boolean>(false)
-
-    const { jwt, display_name } = useContext(AppContext)
-
     useEffect(() => {
-        setBtnSignInDisable(username === "" || password === "")
-    }, [username, password])
-
-    useEffect(() => {
-        console.log(`JWT Changed!: ${app_ctx.jwt}`)
-        setHasJwt(jwt ? true : false)
-    }, [jwt])
-
-    // useEffect(() => {
-    //     setBtnSignUpDisable(username === "" || password === "" || firstname !== "" || lastname !== "")
-    // }, [username, password, firstname, lastname])
+        const credInvalid: boolean = username === "" || password === ""
+        setBtnSignInDisable(credInvalid || firstname !== "" || lastname !== "")
+    })
 
     const signIn = async () => {
         if (cookies.get('auth_jwt')) return
@@ -52,13 +43,18 @@ const Authentication = (): JSX.Element => {
             if (response.status === 200) {
                 const jwt: string = result.jwt as string
                 cookies.set('auth_jwt', jwt, { sameSite: 'strict', secure: true })
-                app_ctx.display_name = result.display_name
-                app_ctx.jwt = jwt
-
+                app_ctx.setState({
+                    ...app_ctx.state,
+                    display_name: result.display_name,
+                    jwt: jwt
+                })
             } else {
                 alert(result.error)
-                app_ctx.display_name = ""
-                app_ctx.jwt = undefined
+                app_ctx.setState({
+                    ...app_ctx.state,
+                    display_name: "",
+                    jwt: undefined
+                })
             }
         } catch (err) {
             console.error(err)
@@ -100,12 +96,18 @@ const Authentication = (): JSX.Element => {
         if (response.status === 201) {
             const jwt: string = result.jwt as string
             cookies.set('auth_jwt', jwt, { sameSite: 'strict', secure: true })
-            app_ctx.display_name = result.display_name
-            app_ctx.jwt = jwt
+            app_ctx.setState({
+                ...app_ctx.state,
+                display_name: result.display_name,
+                jwt: jwt
+            })
         } else {
             alert(result.error)
-            app_ctx.display_name = ""
-            delete app_ctx.jwt
+            app_ctx.setState({
+                ...app_ctx.state,
+                display_name: "",
+                jwt: undefined
+            })
         }
     }
 
@@ -116,16 +118,15 @@ const Authentication = (): JSX.Element => {
         setLastname("")
         setBtnSignUpDisable(true)
         cookies.remove('auth_jwt')
-        app_ctx.display_name = ""
-        delete app_ctx.jwt
+        app_ctx.setState({
+            ...app_ctx.state,
+            display_name: "",
+            jwt: undefined
+        })
     }
 
-    console.log("RENDER Auth")
-
     // Render
-    return (hasJwt ?
-        <button onClick={signOut}>Sign Out</button>
-        :
+    return (!app_ctx.state.jwt ?
         <div className={styles.container}>
             <div className={styles.signUp + (btnSignUpDisable ? "" : " " + styles.signUp__unhide)}>
                 <input
@@ -160,6 +161,13 @@ const Authentication = (): JSX.Element => {
                 <button onClick={signIn} disabled={btnSignInDisable}>Login</button>
             </div>
         </div>
+        :
+        <>
+            <button onClick={signOut}>Sign Out</button>
+            {/* <span style={{ fontSize: 10, color: app_ctx.state.jwt === 'Validating' ? 'yellow' : 'green' }}>
+                {app_ctx.state.jwt}
+            </span> */}
+        </>
     )
 }
 
