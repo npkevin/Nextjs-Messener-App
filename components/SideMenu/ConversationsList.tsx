@@ -1,7 +1,8 @@
 import { ObjectId } from "mongodb"
+import { getDisplayName } from "next/dist/shared/lib/utils"
 import { useContext, useEffect, useState } from "react"
 import { AppContext } from "../../pages"
-import { Conversation, ConvoObj } from '../../pages/api/conv'
+import { Conversation, participant } from '../../pages/api/conv'
 
 import styles from '../../styles/SideMenu.module.css'
 
@@ -9,6 +10,15 @@ type Person = {
     _id: ObjectId,
     firstname: string,
     lastname: string,
+}
+
+export const getDisplayname = (id: ObjectId, participants: participant[]): string => {
+    let display_name: string = ""
+    participants.forEach(p => {
+        if (id != p.user_oid)
+            display_name = p.display_name
+    })
+    return display_name
 }
 
 const ConversationList = (): JSX.Element => {
@@ -127,7 +137,12 @@ const ConversationList = (): JSX.Element => {
                                 />
                             </div>
                             <div className={styles.glance}>
-                                <span>{convo.oid.toString()}</span>
+                                {
+                                    app_ctx.state.user_oid ?
+                                        <span>{getDisplayname(app_ctx.state.user_oid, convo.participants)}</span>
+                                        :
+                                        <span>{""}</span>
+                                }
                                 <span>{convo.messages[convo.messages.length - 1].value}</span>
                             </div>
                         </li>

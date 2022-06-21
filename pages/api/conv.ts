@@ -8,7 +8,7 @@ import { verify } from "./authjwt"
 
 const client = new MongoClient(_URI_)
 
-type participant = {
+export type participant = {
     display_name: string,
     user_oid: ObjectId
 }
@@ -157,12 +157,20 @@ const searchConvos = async (search: string, token: string) => {
 }
 
 // Get specific convo by ConvoID -> returns a conversation
-const getConversation = async (convo_oid: ObjectId): Promise<WithId<Document> | null> => {
+const getConversation = async (convo_oid: ObjectId): Promise<Conversation | null> => {
 
     await client.connect()
     const convos: Collection<Document> = client.db("next-messenger").collection("conversations")
     const getResult: WithId<Document> | null = await convos.findOne({ _id: convo_oid })
-    return getResult
+
+    if (!getResult) return null
+
+    return {
+        oid: getResult._id,
+        messages: getResult.messages,
+        participants: getResult.participants
+    }
+
 }
 
 const insertConversation = async (user_oid: ObjectId, draft: string, token: string): Promise<ObjectId | null> => {
