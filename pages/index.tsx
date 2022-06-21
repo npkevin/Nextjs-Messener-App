@@ -77,8 +77,6 @@ const Home: NextPage = (): JSX.Element => {
         }
     }
 
-    console.log("RENDER INDEX")
-
     return (
         <div className={styles.container}>
             <AppContext.Provider value={{ state: appState, setState: setAppState }}>
