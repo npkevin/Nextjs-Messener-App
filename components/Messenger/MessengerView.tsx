@@ -27,7 +27,10 @@ const MessengerView = (): JSX.Element => {
 
                 if (fetch_response.status == 200) {
                     setMessages(value.messages)
-                    setDisplayName(getDisplayname(app_ctx.state.user_oid, value.participants))
+                    if (app_ctx.state.user_oid)
+                        setDisplayName(getDisplayname(app_ctx.state.user_oid, value.participants))
+                    else
+                        setDisplayName(app_ctx.state.convo.convo_oid.toString())
                 }
                 // No Conversation exists
                 if (fetch_response.status == 404) {
@@ -70,7 +73,7 @@ const MessengerView = (): JSX.Element => {
                 />
                 <div className={styles.recipient}>
                     <span className={styles.recipient__name}>{displayName}</span>
-                    <span className={styles.recipient__status}>{"online"}</span>
+                    {/* <span className={styles.recipient__status}>{"online"}</span> */}
                 </div>
             </div>
         )

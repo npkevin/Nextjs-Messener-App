@@ -97,7 +97,7 @@ const ConversationList = (): JSX.Element => {
                 </div>
                 <div className={styles.user_status_container}>
                     <span>{app_ctx.state.display_name}</span>
-                    <span>Online</span>
+                    {/* <span>Online</span> */}
                 </div>
             </div>
             <input
@@ -118,7 +118,7 @@ const ConversationList = (): JSX.Element => {
                             </div>
                             <div className={styles.glance}>
                                 <span>{`${person.firstname} ${person.lastname}`}</span>
-                                <span>Offline</span>
+                                <span></span>
                             </div>
                         </li>
                     )
