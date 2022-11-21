@@ -5,6 +5,7 @@ import cookies from 'js-cookie'
 import styles from '../../styles/Authentication.module.css'
 import { SignInResponse } from '../../pages/api/auth'
 
+
 const Authentication = (): JSX.Element => {
 
     const app_ctx = useContext(AppContext)
@@ -15,6 +16,7 @@ const Authentication = (): JSX.Element => {
     const [lastname, setLastname] = useState<string | undefined>("")
     const [btnSignInDisable, setBtnSignInDisable] = useState<boolean>(false)
     const [btnSignUpDisable, setBtnSignUpDisable] = useState<boolean>(true)
+    const [warning, setWarning] = useState<{ show: boolean, message: string }>({ show: false, message: "" })
 
     useEffect(() => {
         const credInvalid: boolean = username === "" || password === ""
@@ -69,9 +71,8 @@ const Authentication = (): JSX.Element => {
             return
         }
 
-        // TODO: Pretty invalid form instead of alert
         if (!firstname || !lastname || !username || !password) {
-            alert("Please complete the SignUp form before submission")
+            setWarning({ show: true, message: "Complete all fields and try again." })
             return
         }
 
@@ -160,13 +161,14 @@ const Authentication = (): JSX.Element => {
                 <button onClick={signUp}>Sign Up</button>
                 <button onClick={signIn} disabled={btnSignInDisable}>Login</button>
             </div>
+            <div className={styles.signWarning + (warning.show ? " " + styles.signWarning__unhide : "")}>
+                <button onClick={() => setWarning({ show: false, message: "" })}>x</button>
+                <span>{warning.message}</span>
+            </div>
         </div>
         :
         <>
             <button onClick={signOut}>Sign Out</button>
-            {/* <span style={{ fontSize: 10, color: app_ctx.state.jwt === 'Validating' ? 'yellow' : 'green' }}>
-                {app_ctx.state.jwt}
-            </span> */}
         </>
     )
 }
