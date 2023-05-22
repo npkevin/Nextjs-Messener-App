@@ -4,86 +4,53 @@ import SideMenu from '../components/SideMenu/SideMenu'
 import MessengerView from '../components/Messenger/MessengerView'
 
 import styles from '../styles/index.module.css'
-import { createContext, Dispatch, SetStateAction, useContext, useEffect, useState } from 'react'
-import { SignInResponse } from './api/auth'
-import { ConvoObj } from './api/conv'
-import { ObjectId } from 'mongodb'
+import { createContext, Dispatch, SetStateAction, useEffect, useState } from 'react'
 
-type AppStatetype = {
-    convo: ConvoObj,
-    user_oid: ObjectId | null,
-    display_name: string,
-    jwt?: string,
+interface IdefaultState {
+    validToken: boolean
+    user: {
+        name: {
+            first: string,
+            last: string,
+            middle: string,
+        }
+    } | undefined
 }
-
-const defaultAppState: AppStatetype = {
-    convo: null,
-    user_oid: null,
-    display_name: '',
+const defaultState: IdefaultState = {
+    validToken: false,
+    user: undefined
 }
-
-type AppContextType = {
-    state: AppStatetype,
-    setState: Dispatch<SetStateAction<AppStatetype>>,
-}
-
-export const AppContext = createContext<AppContextType>({ state: defaultAppState, setState: () => { } })
+interface IAppState { state: IdefaultState, setState: Dispatch<SetStateAction<IdefaultState>> }
+export const AppStateCtx = createContext<IAppState>({ state: defaultState, setState: () => undefined })
 
 const Home: NextPage = (): JSX.Element => {
+    const [state, _setState] = useState(defaultState)
+    const setState = (new_state: {}) => _setState(prev_state => ({ ...prev_state, ...new_state }))
 
-    const [appState, setAppState] = useState<AppStatetype>(defaultAppState)
 
     useEffect(() => {
-        if (cookies.get('auth_jwt'))
-            verifyJwtCookie()
+        const checkToken = async (token: string) => {
+            const response = await fetch("http://localhost:3000/api/auth", { method: "GET" })
+
+            if (!response.ok) cookies.remove("token")
+            else {
+                const response_json = await response.json()
+                setState({ validToken: true, user: { name: response_json.name } })
+            }
+        }
+        const token = cookies.get("token")
+        if (token && !state.validToken)
+            checkToken(token)
+        return // () =>{ clean-up code}
     }, [])
 
-    const verifyJwtCookie = async () => {
-        const response: Response = await fetch("http://localhost:3000/api/authjwt", {
-            method: "GET",
-            headers: {
-                "content-type": "application/json"
-            },
-        })
-        if (response.status === 200) {
-
-            const { user_oid, display_name, jwt }: SignInResponse = await response.json()
-            // Token was verified but expired... token refreshed
-            if (jwt) {
-                cookies.set('auth_jwt', jwt, { sameSite: 'strict', secure: true })
-                setAppState({
-                    convo: null,
-                    user_oid: user_oid,
-                    display_name: display_name,
-                    jwt: jwt,
-                })
-            }
-            // Token was verified, not expired
-            else {
-                setAppState({
-                    convo: null,
-                    user_oid: user_oid,
-                    display_name: display_name,
-                    jwt: cookies.get('auth_jwt'),
-                })
-            }
-        } else {
-            cookies.remove('auth_jwt')
-            setAppState({
-                convo: null,
-                user_oid: null,
-                display_name: "",
-            })
-        }
-    }
-
     return (
-        <div className={styles.container}>
-            <AppContext.Provider value={{ state: appState, setState: setAppState }}>
+        <AppStateCtx.Provider value={{ state, setState }}>
+            <div className={styles.container}>
                 <SideMenu />
                 <MessengerView />
-            </AppContext.Provider>
-        </div>
+            </div>
+        </AppStateCtx.Provider>
     )
 }
 

@@ -1,133 +1,101 @@
 import { useContext, useEffect, useState } from 'react'
-import { AppContext } from '../../pages'
 import cookies from 'js-cookie'
 
 import styles from '../../styles/Authentication.module.css'
-import { SignInResponse } from '../../pages/api/auth'
+import { AppStateCtx } from '../../pages'
+import { SafeParseError } from 'zod'
 
 
 const Authentication = (): JSX.Element => {
 
-    const app_ctx = useContext(AppContext)
+    const { state, setState } = useContext(AppStateCtx)
 
-    const [username, setUsername] = useState<string | undefined>("")
-    const [password, setPassword] = useState<string | undefined>("")
-    const [firstname, setFirstname] = useState<string | undefined>("")
-    const [lastname, setLastname] = useState<string | undefined>("")
+    const [email, setEmail] = useState<string>("")
+    const [password, setPassword] = useState<string>("")
+    const [passwordConfirmation, setPasswordConfirmation] = useState<string>("")
+
+    const [firstname, setFirstname] = useState<string>("")
+    const [middlename, setMiddlename] = useState<string>("")
+    const [lastname, setLastname] = useState<string>("")
+
     const [btnSignInDisable, setBtnSignInDisable] = useState<boolean>(false)
     const [btnSignUpDisable, setBtnSignUpDisable] = useState<boolean>(true)
+
     const [warning, setWarning] = useState<{ show: boolean, message: string }>({ show: false, message: "" })
 
     useEffect(() => {
-        const credInvalid: boolean = username === "" || password === ""
+        const credInvalid = (email === "") || (password === "")
         setBtnSignInDisable(credInvalid || firstname !== "" || lastname !== "")
     })
 
-    const signIn = async () => {
-        if (cookies.get('auth_jwt')) return
-
-        const params: URLSearchParams = new URLSearchParams()
-        params.append("signup", "false")
-        try {
-            const response: Response = await fetch("http://localhost:3000/api/auth?" + params, {
-                method: "POST",
-                headers: {
-                    "content-type": "application/json"
-                },
-                body: JSON.stringify({
-                    username: username,
-                    password: password,
-                })
-            })
-
-            const result: SignInResponse = await response.json()
-
-            if (response.status === 200) {
-                const jwt: string = result.jwt as string
-                cookies.set('auth_jwt', jwt, { sameSite: 'strict', secure: true })
-                app_ctx.setState({
-                    ...app_ctx.state,
-                    display_name: result.display_name,
-                    jwt: jwt
-                })
-            } else {
-                alert(result.error)
-                app_ctx.setState({
-                    ...app_ctx.state,
-                    display_name: "",
-                    jwt: undefined
-                })
-            }
-        } catch (err) {
-            console.error(err)
-            signOut()
-        }
-    }
-
-    const signUp = async () => {
-
+    const SignUp = async () => {
         if (btnSignUpDisable === true) {
             setBtnSignUpDisable(false)
             return
         }
-
-        if (!firstname || !lastname || !username || !password) {
-            setWarning({ show: true, message: "Complete all fields and try again." })
-            return
-        }
-
-        const params: URLSearchParams = new URLSearchParams()
-        params.append("signup", "true")
-
-        const response: Response = await fetch("http://localhost:3000/api/auth?" + params, {
+        const response: Response = await fetch("http://localhost:3000/api/auth", {
             method: "POST",
             headers: {
                 "content-type": "application/json"
             },
             body: JSON.stringify({
-                firstname: firstname,
-                lastname: lastname,
-                username: username,
+                email: email,
                 password: password,
+                passwordConfirmation: passwordConfirmation,
+                name: {
+                    first: firstname,
+                    middle: middlename,
+                    last: lastname,
+                }
             })
         })
-
-        const result: SignInResponse = await response.json()
-
-        if (response.status === 201) {
-            const jwt: string = result.jwt as string
-            cookies.set('auth_jwt', jwt, { sameSite: 'strict', secure: true })
-            app_ctx.setState({
-                ...app_ctx.state,
-                display_name: result.display_name,
-                jwt: jwt
-            })
+        const response_json = await response.json()
+        if (response.ok) {
+            cookies.set("token", response_json.session, { sameSite: "Strict" })
+            setState({ validToken: true, user: { name: response_json.name } })
         } else {
-            alert(result.error)
-            app_ctx.setState({
-                ...app_ctx.state,
-                display_name: "",
-                jwt: undefined
-            })
+            // assuming we only get zod parsing errors
+            let message_string = ""
+            response_json.forEach((err: any) => { message_string += "• " + err.message + "\n" });
+            setWarning({ show: true, message: message_string }) // SafeParseError.error.issues[]
         }
     }
 
-    const signOut = () => {
-        setUsername("")
-        setPassword("")
-        setFirstname("")
-        setLastname("")
-        setBtnSignUpDisable(true)
-        cookies.remove('auth_jwt')
-        app_ctx.setState({
-            ...app_ctx.state,
-            display_name: "",
-            jwt: undefined
+    const SignIn = async () => {
+        const response: Response = await fetch("http://localhost:3000/api/auth", {
+            method: "POST",
+            headers: {
+                "content-type": "application/json"
+            },
+            body: JSON.stringify({
+                signin: true,
+                email: email,
+                password: password
+            })
         })
+        if (response.ok) {
+            const response_json = await response.json()
+            cookies.set("token", response_json.session, { sameSite: "Strict" })
+            setState({ validToken: true, user: { name: response_json.name } })
+        }
     }
 
-    // Render
-    return (!app_ctx.state.jwt ?
+    const SignOut = async () => {
+        // clear fields
+        setEmail("")
+        setPassword("")
+        setPasswordConfirmation("")
+        setFirstname("")
+        setMiddlename("")
+        setLastname("")
+        setBtnSignUpDisable(true)
+
+        await fetch("http://localhost:3000/api/auth", { method: "DELETE" })
+        cookies.remove('token')
+        setState({ validToken: false, user: undefined })
+    }
+
+    return (!state.validToken ?
         <div className={styles.container}>
             <div className={styles.signUp + (btnSignUpDisable ? "" : " " + styles.signUp__unhide)}>
                 <input
@@ -138,6 +106,12 @@ const Authentication = (): JSX.Element => {
                 />
                 <input
                     type="text"
+                    placeholder='Middle name (optional)'
+                    value={middlename}
+                    onChange={event => setMiddlename(event.target.value)}
+                />
+                <input
+                    type="text"
                     placeholder='Last name'
                     value={lastname}
                     onChange={event => setLastname(event.target.value)}
@@ -145,10 +119,10 @@ const Authentication = (): JSX.Element => {
             </div>
             <div>
                 <input
-                    type="username"
-                    placeholder='Username'
-                    value={username}
-                    onChange={event => setUsername(event.target.value)}
+                    type="email"
+                    placeholder='Email'
+                    value={email}
+                    onChange={event => setEmail(event.target.value)}
                 />
                 <input
                     type="password"
@@ -157,19 +131,25 @@ const Authentication = (): JSX.Element => {
                     onChange={event => setPassword(event.target.value)}
                 />
             </div>
+            <div className={styles.signUp + (btnSignUpDisable ? "" : " " + styles.signUp__unhide)}>
+                <input
+                    type="password"
+                    placeholder='Confirm Password'
+                    value={passwordConfirmation}
+                    onChange={event => setPasswordConfirmation(event.target.value)}
+                />
+            </div>
             <div className={styles.signOptions}>
-                <button onClick={signUp}>Sign Up</button>
-                <button onClick={signIn} disabled={btnSignInDisable}>Login</button>
+                <button onClick={SignUp}>Sign Up</button>
+                <button onClick={SignIn} disabled={btnSignInDisable}>Login</button>
             </div>
             <div className={styles.signWarning + (warning.show ? " " + styles.signWarning__unhide : "")}>
                 <button onClick={() => setWarning({ show: false, message: "" })}>x</button>
-                <span>{warning.message}</span>
+                <span style={{ whiteSpace: "pre-line" }}>{warning.message}</span>
             </div>
         </div>
         :
-        <>
-            <button onClick={signOut}>Sign Out</button>
-        </>
+        <button onClick={SignOut}>Sign Out</button>
     )
 }
 

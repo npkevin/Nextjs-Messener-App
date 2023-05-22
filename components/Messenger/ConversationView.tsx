@@ -4,18 +4,23 @@ import { Message } from '../../pages/api/conv'
 
 import styles from '../../styles/Messenger.module.css'
 
-type ConvoProps = {
-    messages: Message[] | null
-}
+type Props = { messages: Message[] }
+
 
 // TODO: add keys as message id from mongodb
-const ConversationView = (props: ConvoProps): JSX.Element => {
+const ConversationView = ({ messages }: Props): JSX.Element => {
+
+    if (messages)
+        messages.sort((a: Message, b: Message) => {
+            console.log(a, b)
+            const date_a = a.posted.getTime()
+            const date_b = b.posted.getTime()
+            return date_a - date_b
+        })
+
     return (
         <div className={styles.messageHistory}>
-            {props.messages ? props.messages.map((message, index) => {
-                return <Message key={index} message={message} />
-            }) :
-                null}
+            {messages ? messages.map((message, index) => <Message key={index} message={message} />) : null}
         </div>
     )
 }
