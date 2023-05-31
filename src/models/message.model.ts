@@ -2,7 +2,7 @@ import mongoose, { Schema } from "mongoose"
 import { UserDocument } from "./user.model"
 
 export interface MessageDocument extends mongoose.Document {
-    content: String,
+    content: string,
     sender: mongoose.Types.ObjectId | UserDocument
     // Omited
     createdAt: Date,

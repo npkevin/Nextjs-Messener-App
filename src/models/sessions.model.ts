@@ -25,7 +25,7 @@ const sessionSchema = new Schema<SessionDocument>({
 })
 
 export interface IPayload {
-    id: Schema.Types.ObjectId,
+    id: mongoose.Types.ObjectId,
     name_first: string,
     name_middle: string,
     name_last: string,

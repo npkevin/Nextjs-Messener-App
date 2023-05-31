@@ -8,8 +8,10 @@ const connect = async () => {
     const { dbUri } = getConfig().serverRuntimeConfig
 
     try {
-        await mongoose.connect(dbUri)
-        logger.info('Connected to MongoDB')
+        if (mongoose.connection.readyState !== 1) {
+            await mongoose.connect(dbUri)
+            logger.info('Connected to MongoDB')
+        }
     } catch (err) {
         logger.error('Failed to connect to MongoDB')
         logger.error(err)

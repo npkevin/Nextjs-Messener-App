@@ -5,26 +5,39 @@ import ConversationView from './ConversationView'
 import Messenger from './Messenger'
 
 import styles from '../../styles/Messenger.module.css'
+import { Socket, io } from 'socket.io-client'
+import { MessageDocument } from '../../src/models/message.model'
 
-const MessengerView = (): JSX.Element => {
+const MessengerView = (props: { socket: Socket }): JSX.Element => {
 
     const { state, setState } = useContext(AppStateCtx)
-    // const [messages, setMessages] = useState<Message[]>([])
+    const [messages, setMessages] = useState<MessageDocument[]>([])
 
     // Get messages when a conversation is selected
-    // useEffect(() => {
-    // }, [])
-
-    // if (!state.convoSelected)
-    //     return <div className={styles.container} />
+    useEffect(() => {
+        if (props.socket && state.convo) {
+            console.log(`Joining Room ${state.convo.id}`)
+            props.socket.emit("joinRoom", state.convo.id)
+            props.socket.on("message", new_message => {
+                setMessages(prev_messages => [...prev_messages, new_message])
+            })
+            return () => {
+                props.socket.emit("leaveRoom", state.convo?.id)
+            }
+        }
+    }, [state.convo])
 
     return (
         <div className={styles.container}>
-            <StatusView display_name={"TEST"} />
-            <ConversationView messages={null} />
-            <Messenger />
+            {state.convo ? <>
+                <StatusView display_name={`${state.convo.user.name.first} ${state.convo.user.name.last}`} />
+                <ConversationView messages={messages} />
+                <Messenger convo_id={state.convo.id} socket={props.socket} />
+            </> : <></>
+            }
         </div>
     )
+
 }
 
 const StatusView = ({ display_name }: { display_name: string }): JSX.Element => {

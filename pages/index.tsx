@@ -5,28 +5,44 @@ import MessengerView from '../components/Messenger/MessengerView'
 
 import styles from '../styles/index.module.css'
 import { createContext, Dispatch, SetStateAction, useEffect, useState } from 'react'
+import { Types } from 'mongoose'
+import { io, Socket } from 'socket.io-client'
 
 interface IdefaultState {
     validToken: boolean
-    user: {
+    user?: {
         name: {
             first: string,
             last: string,
             middle: string,
         }
-    } | undefined
+    },
+    convo?: {
+        id: Types.ObjectId,
+        user: {
+            id: Types.ObjectId,
+            name: {
+                first: string,
+                last: string,
+                middle: string,
+            }
+        }
+    }
 }
 const defaultState: IdefaultState = {
     validToken: false,
-    user: undefined
+    user: undefined,
+    convo: undefined,
 }
-interface IAppState { state: IdefaultState, setState: Dispatch<SetStateAction<IdefaultState>> }
+
+interface IAppState { state: IdefaultState, setState: (new_state: {}) => void }
 export const AppStateCtx = createContext<IAppState>({ state: defaultState, setState: () => undefined })
 
 const Home: NextPage = (): JSX.Element => {
     const [state, _setState] = useState(defaultState)
     const setState = (new_state: {}) => _setState(prev_state => ({ ...prev_state, ...new_state }))
 
+    const [socket, setSocket] = useState<Socket>()
 
     useEffect(() => {
         const checkToken = async (token: string) => {
@@ -41,14 +57,22 @@ const Home: NextPage = (): JSX.Element => {
         const token = cookies.get("token")
         if (token && !state.validToken)
             checkToken(token)
-        return // () =>{ clean-up code}
+
+
+        const socket = io('http://localhost:3001')
+        socket.on("connect", () => {
+            setSocket(socket)
+        })
+        return () => {
+            socket.disconnect()
+        }
     }, [])
 
     return (
         <AppStateCtx.Provider value={{ state, setState }}>
             <div className={styles.container}>
                 <SideMenu />
-                <MessengerView />
+                {socket ? <MessengerView socket={socket} /> : null}
             </div>
         </AppStateCtx.Provider>
     )
