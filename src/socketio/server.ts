@@ -26,8 +26,8 @@ io.on('connection', (socket: Socket) => {
         logger.info(`${socket.id} has left room ${room}`)
     })
 
-    socket.on('message', (message, room) => {
-        io.to(room).emit(message)
+    socket.on('roomMessage', (room, message) => {
+        io.to(room).emit("roomMessage", message)
         logger.info(`${socket.id} sends message to room: ${room}\n"${message}"`)
     })
 

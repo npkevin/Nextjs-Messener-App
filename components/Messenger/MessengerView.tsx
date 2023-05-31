@@ -18,8 +18,9 @@ const MessengerView = (props: { socket: Socket }): JSX.Element => {
         if (props.socket && state.convo) {
             console.log(`Joining Room ${state.convo.id}`)
             props.socket.emit("joinRoom", state.convo.id)
-            props.socket.on("message", new_message => {
-                setMessages(prev_messages => [...prev_messages, new_message])
+            props.socket.on("roomMessage", new_message => {
+                console.log(new_message)
+                // setMessages(prev_messages => [...prev_messages, new_message])
             })
             return () => {
                 props.socket.emit("leaveRoom", state.convo?.id)

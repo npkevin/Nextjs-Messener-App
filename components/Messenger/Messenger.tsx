@@ -11,7 +11,7 @@ const Messenger = (props: { convo_id: Types.ObjectId, socket: Socket }): JSX.Ele
 
     const sendMessage = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault()
-        props.socket.emit("message", draft, props.convo_id.toString())
+        props.socket.emit("roomMessage", props.convo_id.toString(), draft)
         setDraft("")
     }
 
