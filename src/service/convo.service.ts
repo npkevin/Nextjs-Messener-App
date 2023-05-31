@@ -34,9 +34,11 @@ export async function getConvoByUser(token: string, id: mongoose.Types.ObjectId)
     const { serverRuntimeConfig: { jwt_secret } } = getConfig()
     const decoded_token = jwt.verify(token, jwt_secret) as IPayload
 
-    const convo_docs = await ConvoModel.find({ users: { $all: [decoded_token.id, id] } })
-    logger.info(convo_docs)
+    // should should not be able start a conversation with yourself
+    if (decoded_token.id.toString() === id.toString())
+        return []
 
+    const convo_docs = await ConvoModel.find({ users: { $all: [decoded_token.id, id] } })
     if (convo_docs.length === 0)
         return [await createConvo({ messages: [], users: [decoded_token.id.toString(), id.toString()] })]
 

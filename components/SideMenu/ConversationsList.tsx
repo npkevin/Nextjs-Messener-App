@@ -6,6 +6,7 @@ import io from 'socket.io-client'
 import styles from '../../styles/SideMenu.module.css'
 import { CreateUserInput } from "../../src/schema/user.schema"
 import { ConvoDocument } from "../../src/models/convo.model"
+import cookies from "js-cookie"
 
 type User = Omit<CreateUserInput, 'password'> & { _id: Types.ObjectId }
 type Convo = { id: Types.ObjectId }
@@ -42,15 +43,16 @@ const ConversationList = (): JSX.Element => {
             const response = await fetch(`http://localhost:3000/api/conv?${url_params}`)
 
             const body = await response.json() as ConvoDocument[]
-            setState({
-                convo: {
-                    id: new Types.ObjectId(body[0]._id),
-                    user: {
-                        id: user._id,
-                        name: user.name
+            if (body.length !== 0)
+                setState({
+                    convo: {
+                        id: new Types.ObjectId(body[0]._id),
+                        user: {
+                            id: user._id,
+                            name: user.name
+                        }
                     }
-                }
-            })
+                })
         }
     }
 

@@ -42,7 +42,7 @@ async function getConvoHandler(req: NextApiRequest, res: NextApiResponse) {
         logger.info(`GET Conv by USER_ID: ${user_id}`)
         const _id = new mongoose.Types.ObjectId(user_id)
         const convo_docs = await getConvoByUser(token, _id)
-        return res.status(200).send(convo_docs)
+        return res.status(200).json(convo_docs)
     }
     // Get convo from an existing conversation by ID
     if (convo_id) {
