@@ -56,7 +56,7 @@ const Authentication = (): JSX.Element => {
         } else {
             // assuming we only get zod parsing errors
             let message_string = ""
-            response_json.forEach((err: any) => { message_string += "• " + err.message + "\n" });
+            response_json.forEach((error: any) => { message_string += "• " + error.message + "\n" });
             setWarning({ show: true, message: message_string }) // SafeParseError.error.issues[]
         }
     }
@@ -80,7 +80,7 @@ const Authentication = (): JSX.Element => {
         } else {
             // assuming we only get zod parsing errors
             let message_string = ""
-            response_json.forEach((err: any) => { message_string += "• " + err.message + "\n" });
+            response_json.forEach((error: any) => { message_string += "• " + error.message + "\n" });
             setWarning({ show: true, message: message_string }) // SafeParseError.error.issues[]
         }
     }

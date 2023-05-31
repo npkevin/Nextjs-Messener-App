@@ -41,7 +41,7 @@ async function createUserHandler(req: NextApiRequest, res: NextApiResponse) {
 
     } catch (error: any) {
         logger.error(error)
-        return res.status(409).json({ message: error.message })
+        return res.status(409).json([{ message: error.message }]) // to "match" zoderrors[]
     }
 }
 
@@ -56,7 +56,7 @@ async function createSessionHandler(req: NextApiRequest, res: NextApiResponse) {
 
     } catch (error: any) {
         logger.error(error)
-        return res.status(409).json({ message: error.message })
+        return res.status(409).json([{ message: error.message }]) // to "match" zoderrors[]
     }
 }
 
