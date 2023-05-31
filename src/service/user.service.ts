@@ -17,10 +17,10 @@ export const createUser = async (input: CreateUserInput): Promise<UserDocument> 
 export const validatePassword = async ({ email, password }: { email: string, password: string }): Promise<UserDocument> => {
     const user: UserDocument | null = await UserModel.findOne({ email: email })
     if (user == null)
-        throw new Error("validatePassword: Invalid User")
+        throw new Error("Invalid User")
 
     if (!await user.comparePassword(password))
-        throw new Error("validatePassword: Invalid Password")
+        throw new Error("Invalid Password")
     // return omit(user.toJSON(), 'password')
 
     return user

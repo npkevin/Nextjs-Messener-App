@@ -73,10 +73,15 @@ const Authentication = (): JSX.Element => {
                 password: password
             })
         })
+        const response_json = await response.json()
         if (response.ok) {
-            const response_json = await response.json()
             cookies.set("token", response_json.session, { sameSite: "Strict" })
             setState({ validToken: true, user: { name: response_json.name } })
+        } else {
+            // assuming we only get zod parsing errors
+            let message_string = ""
+            response_json.forEach((err: any) => { message_string += "• " + err.message + "\n" });
+            setWarning({ show: true, message: message_string }) // SafeParseError.error.issues[]
         }
     }
 

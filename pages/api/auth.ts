@@ -8,9 +8,10 @@ import { createUserSchema } from "../../src/schema/user.schema"
 
 
 export default async (req: NextApiRequest, res: NextApiResponse) => {
+    await connect()
+
     // Sign-In / Sign-Up
     if (req.method == "POST") {
-        await connect()
         if (req.body.signin)
             return createSessionHandler(req, res)
 
@@ -33,12 +34,14 @@ async function createUserHandler(req: NextApiRequest, res: NextApiResponse) {
         const parseResult = createUserSchema.safeParse({ body: req.body, query: req.query, })
         if (!parseResult.success)
             return res.status(403).send(parseResult.error.issues)
+
         const user = await createUser(req.body)
         const session = await createSession(user)
         return res.status(200).json({ name: user.name, session })
+
     } catch (error: any) {
         logger.error(error)
-        return res.status(409).send(error.message)
+        return res.status(409).json({ message: error.message })
     }
 }
 
@@ -47,11 +50,13 @@ async function createSessionHandler(req: NextApiRequest, res: NextApiResponse) {
         const user = await validatePassword(req.body)
         if (!user)
             return res.status(401).send("Invalid Email/Password")
+
         const session = await createSession(user)
         return res.status(200).json({ name: user.name, session })
+
     } catch (error: any) {
         logger.error(error)
-        return res.status(409).send(error.message)
+        return res.status(409).json({ message: error.message })
     }
 }
 
