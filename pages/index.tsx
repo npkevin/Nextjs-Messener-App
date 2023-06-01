@@ -7,6 +7,7 @@ import styles from '../styles/index.module.css'
 import { createContext, Dispatch, SetStateAction, useEffect, useState } from 'react'
 import { Types } from 'mongoose'
 import { io, Socket } from 'socket.io-client'
+import { MessageDocument } from '../src/models/message.model'
 
 interface IdefaultState {
     validToken: boolean
@@ -26,7 +27,8 @@ interface IdefaultState {
                 last: string,
                 middle: string,
             }
-        }
+        },
+        messages_history: MessageDocument[]
     }
 }
 const defaultState: IdefaultState = {

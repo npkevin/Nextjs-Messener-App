@@ -24,10 +24,16 @@ export async function getUserConvos(user_id: mongoose.Types.ObjectId): Promise<C
 }
 
 export async function getConvoByUser(user_id: mongoose.Types.ObjectId, other_user_id: mongoose.Types.ObjectId): Promise<ConvoDocument> {
-    const convo_doc = await ConvoModel.findOne<ConvoDocument>({
+    let convo_doc = await ConvoModel.findOne<ConvoDocument>({
         users: { $all: [user_id, other_user_id] }
     })
-    if (!convo_doc) return await createConvo({ users: [user_id.toString(), other_user_id.toString()] })
+    if (!convo_doc)
+        convo_doc = await createConvo({ users: [user_id.toString(), other_user_id.toString()] })
+
+    await convo_doc.populate({
+        path: "messages",
+        options: { sort: { createdAt: -1 } }
+    })
     return convo_doc
 }
 

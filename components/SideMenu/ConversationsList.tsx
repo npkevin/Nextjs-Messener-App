@@ -7,6 +7,7 @@ import styles from '../../styles/SideMenu.module.css'
 import { CreateUserInput } from "../../src/schema/user.schema"
 import { ConvoDocument } from "../../src/models/convo.model"
 import cookies from "js-cookie"
+import { MessageDocument } from "../../src/models/message.model"
 
 type User = Omit<CreateUserInput, 'password'> & { _id: Types.ObjectId }
 type Convo = { id: Types.ObjectId }
@@ -44,13 +45,16 @@ const ConversationList = (): JSX.Element => {
 
             if (response.ok) {
                 const convo_doc = await response.json() as ConvoDocument
+                const messages_history = convo_doc.messages as MessageDocument[]
+                // console.log(convo_doc)
                 setState({
                     convo: {
                         id: new Types.ObjectId(convo_doc._id),
                         user: {
                             id: user._id,
                             name: user.name
-                        }
+                        },
+                        messages_history: messages_history
                     }
                 })
             }
