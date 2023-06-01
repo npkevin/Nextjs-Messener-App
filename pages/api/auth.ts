@@ -64,8 +64,7 @@ async function validateSessionHandler(req: NextApiRequest, res: NextApiResponse)
     const cookies = cookie.parse(req.headers.cookie || '')
     const token = cookies.token
     const user = await validateToken(token)
-    if (!user)
-        return res.status(409).send("Invalid Token")
+    if (!user) return res.status(409).send("Invalid Token")
     return res.status(200).json({ name: user.name })
 }
 

@@ -1,11 +1,11 @@
 import getConfig from "next/config"
 import mongoose from "mongoose"
 import jwt from 'jsonwebtoken'
-import logger from "../utils/logger"
 
 import { IPayload } from "../models/sessions.model"
 import ConvoModel, { ConvoDocument } from "../models/convo.model"
 import { CreateConvoInput } from "../schema/convo.schema"
+import { createMessage } from "./message.service"
 
 
 export async function createConvo(input: CreateConvoInput): Promise<ConvoDocument> {
@@ -16,32 +16,34 @@ export async function createConvo(input: CreateConvoInput): Promise<ConvoDocumen
     }
 }
 
-export async function getUserConvos(token: string): Promise<ConvoDocument[] | null> {
-    const { serverRuntimeConfig: { jwt_secret } } = getConfig()
-    const decoded_token = jwt.verify(token, jwt_secret) as IPayload
-
-    const convos: ConvoDocument[] | null = await ConvoModel.find({
-        users: { $in: [decoded_token.id] }
+export async function getUserConvos(user_id: mongoose.Types.ObjectId): Promise<ConvoDocument[]> {
+    const convos = await ConvoModel.find<ConvoDocument>({
+        users: { $in: [user_id] }
     })
-
-    if (!convos || convos.length === 0)
-        return null
     return convos
 }
 
-// Get convo where both user_id and client are participants, create a new doc if none
-export async function getConvoByUser(token: string, id: mongoose.Types.ObjectId): Promise<ConvoDocument[]> {
+export async function getConvoByUser(user_id: mongoose.Types.ObjectId, other_user_id: mongoose.Types.ObjectId): Promise<ConvoDocument[]> {
+    // should should not be able start a conversation with yourself
+    if (user_id.toString() === other_user_id.toString())
+        return []
+
+    const convo_docs = await ConvoModel.find<ConvoDocument>({
+        users: { $all: [user_id, other_user_id] }
+    })
+    if (convo_docs.length === 0)
+        return [await createConvo({ users: [user_id.toString(), other_user_id.toString()] })]
+
+    return convo_docs
+}
+
+export async function getConvoById(token: string, convo_id: mongoose.Types.ObjectId): Promise<ConvoDocument | null> {
     const { serverRuntimeConfig: { jwt_secret } } = getConfig()
     const decoded_token = jwt.verify(token, jwt_secret) as IPayload
 
-    // should should not be able start a conversation with yourself
-    if (decoded_token.id.toString() === id.toString())
-        return []
-
-    const convo_docs = await ConvoModel.find({ users: { $all: [decoded_token.id, id] } })
-    if (convo_docs.length === 0)
-        return [await createConvo({ messages: [], users: [decoded_token.id.toString(), id.toString()] })]
-
-    return convo_docs
-
+    return await ConvoModel.findById<ConvoDocument>(convo_id)
 }
+
+// export async function (convo_id: mongoose.Types.ObjectId) {
+
+// }

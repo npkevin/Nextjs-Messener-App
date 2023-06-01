@@ -5,28 +5,30 @@ import ConversationView from './ConversationView'
 import Messenger from './Messenger'
 
 import styles from '../../styles/Messenger.module.css'
-import { Socket, io } from 'socket.io-client'
+import { Socket } from 'socket.io-client'
 import { MessageDocument } from '../../src/models/message.model'
 
 const MessengerView = (props: { socket: Socket }): JSX.Element => {
 
-    const { state, setState } = useContext(AppStateCtx)
+    const { state } = useContext(AppStateCtx)
     const [messages, setMessages] = useState<MessageDocument[]>([])
 
     // Get messages when a conversation is selected
     useEffect(() => {
         if (props.socket && state.convo) {
-            console.log(`Joining Room ${state.convo.id}`)
             props.socket.emit("joinRoom", state.convo.id)
-            props.socket.on("roomMessage", new_message => {
-                console.log(new_message)
-                // setMessages(prev_messages => [...prev_messages, new_message])
-            })
+            props.socket.on("roomMessage", newMessageHandler)
             return () => {
+                props.socket.off("roomMessage", newMessageHandler)
                 props.socket.emit("leaveRoom", state.convo?.id)
             }
         }
     }, [state.convo])
+
+    const newMessageHandler = (new_message_string: string) => {
+        const message_doc = JSON.parse(new_message_string) as MessageDocument
+        setMessages(prev_message_docs => [...prev_message_docs, message_doc])
+    }
 
     return (
         <div className={styles.container}>

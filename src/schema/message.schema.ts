@@ -1,22 +1,16 @@
+import mongoose from 'mongoose';
 import { object, string, TypeOf } from 'zod'
 
+const objectId = string().refine(value => mongoose.Types.ObjectId.isValid(value), {
+    message: "Invalid ObjectId",
+});
+
 export const createMessageSchema = object({
-    // body: object({
-    //     email: string({ required_error: "Email is required" }).email("Invalid email"),
-    //     name: object({
-    //         first: string({ required_error: 'First-name is required' }),
-    //         middle: string(),
-    //         last: string({ required_error: 'Last-name is required' })
-    //     }),
-    //     password: string({ required_error: "Password is required" }).min(6, "Password must be at least 6 characters"),
-    //     passwordConfirmation: string({ required_error: "Please confirm your password" })
-    // }).refine(
-    //     data => data.password === data.passwordConfirmation,
-    //     {
-    //         message: "Password Confirmation does not match",
-    //         path: ["passwordConfirmation"]
-    //     }
-    // )
+    content: string({ required_error: "Message contents not provided" })
+        .min(1, "Message too short")
+        .max(500, "Message too long (500 Characters)"),
+    sender_id: objectId,
+    convo_id: objectId
 })
 
-export type CreateMessageInput = Omit<TypeOf<typeof createMessageSchema>, 'body.passwordConfirmation'>;
+export type CreateMessageInput = TypeOf<typeof createMessageSchema>;

@@ -1,6 +1,8 @@
 import { createServer } from 'http'
 import { Server, Socket } from 'socket.io'
 import logger from '../utils/logger'
+import { Types } from 'mongoose';
+import cookie from 'cookie'
 
 
 const httpServer = createServer();
@@ -26,9 +28,9 @@ io.on('connection', (socket: Socket) => {
         logger.info(`${socket.id} has left room ${room}`)
     })
 
-    socket.on('roomMessage', (room, message) => {
-        io.to(room).emit("roomMessage", message)
-        logger.info(`${socket.id} sends message to room: ${room}\n"${message}"`)
+    socket.on('roomMessage', ({ convo_id, content }) => {
+        io.to(convo_id.toString()).emit("roomMessage", content)
+        logger.info(`${socket.id} sends message to room: ${convo_id.toString()}\n"${content}"`)
     })
 
     socket.on('disconnect', () => {

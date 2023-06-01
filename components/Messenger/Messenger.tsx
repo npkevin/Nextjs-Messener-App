@@ -11,7 +11,14 @@ const Messenger = (props: { convo_id: Types.ObjectId, socket: Socket }): JSX.Ele
 
     const sendMessage = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault()
-        props.socket.emit("roomMessage", props.convo_id.toString(), draft)
+        const response = await fetch(`http://localhost:3000/api/conv`, {
+            method: "POST",
+            headers: { "content-type": "application/json" },
+            body: JSON.stringify({
+                convo_id: props.convo_id.toString(),
+                content: draft
+            })
+        })
         setDraft("")
     }
 

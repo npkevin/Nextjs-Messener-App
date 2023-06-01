@@ -46,7 +46,7 @@ const Home: NextPage = (): JSX.Element => {
 
     useEffect(() => {
         const checkToken = async (token: string) => {
-            const response = await fetch("http://localhost:3000/api/auth", { method: "GET" })
+            const response = await fetch("http://localhost:3000/api/auth")
 
             if (!response.ok) cookies.remove("token")
             else {

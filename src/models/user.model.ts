@@ -1,12 +1,10 @@
-import mongoose, { Schema, Document } from "mongoose"
+import mongoose, { Schema } from "mongoose"
 import getConfig from "next/config"
 import bcrypt from 'bcrypt'
 
 import { CreateUserInput } from "../schema/user.schema"
 
-export interface UserDocument extends CreateUserInput, Document {
-    createdAt: Date,
-    updatedAt: Date,
+export interface UserDocument extends CreateUserInput, mongoose.Document {
     comparePassword(candidatePassword: string): Promise<Boolean>
 }
 

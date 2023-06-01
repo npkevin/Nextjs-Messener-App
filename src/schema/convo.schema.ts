@@ -7,7 +7,7 @@ const objectId = string().refine(value => mongoose.Types.ObjectId.isValid(value)
 });
 
 const bodySchema = object({
-    messages: array(objectId),
+    messages: array(objectId).optional(),
     users: array(objectId).min(2, "Conversations requires at least 2 participants"),
 });
 

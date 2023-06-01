@@ -30,8 +30,10 @@ export const createSession = async (user: UserDocument): Promise<string> => {
     try {
         // find/create session document
         const session: SessionDocument | null = await SessionModel.findOneAndUpdate(
-            { user: user._id }, {},
-            { upsert: true, new: true, setDefaultsOnInsert: true })
+            { user: user._id },
+            {},
+            { upsert: true, new: true, setDefaultsOnInsert: true }
+        )
 
         if (session == null)
             throw new Error("createSession: Unexpected null")
@@ -50,7 +52,7 @@ export const validateToken = async (token: string): Promise<UserDocument | null>
         const { serverRuntimeConfig: { jwt_secret } } = getConfig()
         const decoded_token = jwt.verify(token, jwt_secret) as IPayload
         const session: SessionDocument | null = await SessionModel.findOne({
-            user: decoded_token.id,
+            user: decoded_token.user_id,
             sessions: { $in: [token] }
         })
         if (!session)
@@ -70,7 +72,7 @@ export const deleteToken = async (token: string): Promise<boolean> => {
         const { serverRuntimeConfig: { jwt_secret } } = getConfig()
         const decoded_token = jwt.verify(token, jwt_secret) as IPayload
         const session: SessionDocument | null = await SessionModel.findOne({
-            user: decoded_token.id,
+            user: decoded_token.user_id,
             sessions: { $in: [token] }
         })
         if (!session)

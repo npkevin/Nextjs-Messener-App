@@ -25,7 +25,7 @@ const sessionSchema = new Schema<SessionDocument>({
 })
 
 export interface IPayload {
-    id: mongoose.Types.ObjectId,
+    user_id: mongoose.Types.ObjectId,
     name_first: string,
     name_middle: string,
     name_last: string,
@@ -46,7 +46,7 @@ sessionSchema.methods.addSession = async function (): Promise<string> {
     const session_user = session.user as unknown as UserDocument
 
     const payload: IPayload = {
-        id: session_user._id,
+        user_id: session_user._id,
         name_first: session_user.name.first,
         name_middle: session_user.name.middle,
         name_last: session_user.name.last,
