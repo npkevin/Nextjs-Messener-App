@@ -28,7 +28,7 @@
 
 .messageHistory {
     display: flex;
-    flex-direction: column;
+    flex-direction: column-reverse;
     flex-grow: 1;
     background: #ffffff;
     overflow-y: auto;

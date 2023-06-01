@@ -28,7 +28,7 @@ const MessengerView = (props: { socket: Socket }): JSX.Element => {
 
     const newMessageHandler = (new_message_string: string) => {
         const message_doc = JSON.parse(new_message_string) as MessageDocument
-        setMessages(prev_message_docs => [...prev_message_docs, message_doc])
+        setMessages(prev_message_docs => [message_doc, ...prev_message_docs])
     }
 
     return (

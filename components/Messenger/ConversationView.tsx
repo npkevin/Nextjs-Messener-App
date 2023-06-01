@@ -10,18 +10,18 @@ import mongoose from 'mongoose';
 const ConversationView = (props: { history: MessageDocument[], messages: MessageDocument[], sender_id: mongoose.Types.ObjectId }): JSX.Element => {
     return (
         <div className={styles.messageHistory}>
-            {props.history.map(message => {
-                return (
-                    <Message key={message._id} date={message.createdAt} sender={props.sender_id !== message.sender_id}>
-                        {message.content}
-                    </Message>)
-            })}
             {props.messages.map(message => {
                 return (
                     <Message key={message._id} date={message.createdAt} sender={props.sender_id !== message.sender_id}>
                         {message.content}
                     </Message>
                 )
+            })}
+            {props.history.map(message => {
+                return (
+                    <Message key={message._id} date={message.createdAt} sender={props.sender_id !== message.sender_id}>
+                        {message.content}
+                    </Message>)
             })}
         </div>
     );
