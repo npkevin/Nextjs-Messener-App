@@ -21,6 +21,7 @@ const MessengerView = (props: { socket: Socket }): JSX.Element => {
             return () => {
                 props.socket.off("roomMessage", newMessageHandler)
                 props.socket.emit("leaveRoom", state.convo?.id)
+                setMessages([])
             }
         }
     }, [state.convo])
