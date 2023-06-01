@@ -34,8 +34,8 @@ const MessengerView = (props: { socket: Socket }): JSX.Element => {
     return (
         <div className={styles.container}>
             {state.convo ? <>
-                <StatusView display_name={`${state.convo.user.name.first} ${state.convo.user.name.last}`} />
-                <ConversationView history={state.convo.messages_history} messages={messages} />
+                <StatusView display_name={`${state.convo.user.name.first} ${state.convo.user.name.last}`.toUpperCase()} />
+                <ConversationView sender_id={state.convo.user.id} history={state.convo.messages_history} messages={messages} />
                 <Messenger convo_id={state.convo.id} socket={props.socket} />
             </> : <></>
             }
