@@ -32,7 +32,7 @@ export async function getConvoByUser(user_id: mongoose.Types.ObjectId, other_use
 
     await convo_doc.populate({
         path: "messages",
-        options: { sort: { createdAt: -1 } }
+        options: { sort: { createdAt: 1 } }
     })
     return convo_doc
 }
