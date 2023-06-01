@@ -42,17 +42,18 @@ const ConversationList = (): JSX.Element => {
             url_params.set('user_id', user._id.toString())
             const response = await fetch(`http://localhost:3000/api/conv?${url_params}`)
 
-            const body = await response.json() as ConvoDocument[]
-            if (body.length !== 0)
+            if (response.ok) {
+                const convo_doc = await response.json() as ConvoDocument
                 setState({
                     convo: {
-                        id: new Types.ObjectId(body[0]._id),
+                        id: new Types.ObjectId(convo_doc._id),
                         user: {
                             id: user._id,
                             name: user.name
                         }
                     }
                 })
+            }
         }
     }
 

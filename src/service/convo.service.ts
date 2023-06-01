@@ -23,18 +23,12 @@ export async function getUserConvos(user_id: mongoose.Types.ObjectId): Promise<C
     return convos
 }
 
-export async function getConvoByUser(user_id: mongoose.Types.ObjectId, other_user_id: mongoose.Types.ObjectId): Promise<ConvoDocument[]> {
-    // should should not be able start a conversation with yourself
-    if (user_id.toString() === other_user_id.toString())
-        return []
-
-    const convo_docs = await ConvoModel.find<ConvoDocument>({
+export async function getConvoByUser(user_id: mongoose.Types.ObjectId, other_user_id: mongoose.Types.ObjectId): Promise<ConvoDocument> {
+    const convo_doc = await ConvoModel.findOne<ConvoDocument>({
         users: { $all: [user_id, other_user_id] }
     })
-    if (convo_docs.length === 0)
-        return [await createConvo({ users: [user_id.toString(), other_user_id.toString()] })]
-
-    return convo_docs
+    if (!convo_doc) return await createConvo({ users: [user_id.toString(), other_user_id.toString()] })
+    return convo_doc
 }
 
 export async function getConvoById(token: string, convo_id: mongoose.Types.ObjectId): Promise<ConvoDocument | null> {

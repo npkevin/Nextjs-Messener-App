@@ -44,10 +44,13 @@ async function deleteConvoHandler(req: NextApiRequest, res: NextApiResponse) {
 
 async function getConvoByUserIdHandler(req: NextApiRequest, res: NextApiResponse, token: string, other_user_id: string) {
     const user = await validateToken(token)
-    if (!user) return res.status(400).send("Invalid Request: Invalid Session Token")
+    if (!user)
+        return res.status(400).send("Invalid Request: Invalid Session Token")
+    if (user._id.toString() === other_user_id)
+        return res.status(400).send("Invalid Request: Cannot have a Conversation with self")
 
-    const convo_docs = await getConvoByUser(user._id, new mongoose.Types.ObjectId(other_user_id))
-    return res.status(200).json(convo_docs)
+    const convo_doc = await getConvoByUser(user._id, new mongoose.Types.ObjectId(other_user_id))
+    return res.status(200).json(convo_doc)
 }
 
 async function getConvoByIdHandler(req: NextApiRequest, res: NextApiResponse, token: string, convo_id: string) {
