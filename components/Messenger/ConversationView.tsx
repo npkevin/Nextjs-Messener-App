@@ -12,14 +12,13 @@ const ConversationView = (props: { history: MessageDocument[], messages: Message
         <div className={styles.messageHistory}>
             {props.history.map(message => {
                 return (
-                    <Message key={message._id} date={message.createdAt} sender={props.sender_id === message.sender_id}>
+                    <Message key={message._id} date={message.createdAt} sender={props.sender_id !== message.sender_id}>
                         {message.content}
                     </Message>)
             })}
             {props.messages.map(message => {
-                const sender = props.sender_id.toString() === message.sender_id.toString()
                 return (
-                    <Message key={message._id} date={message.createdAt} sender={sender}>
+                    <Message key={message._id} date={message.createdAt} sender={props.sender_id !== message.sender_id}>
                         {message.content}
                     </Message>
                 )
