@@ -76,8 +76,8 @@ const ConversationList = (): JSX.Element => {
                             <img src="profile.png" alt="" />
                         </div>
                         <div className={styles.glance}>
-                            <span>{user.name.first} {user.name.last}</span>
-                            <span>Status?</span>
+                            <span>{`${user.name.first} ${user.name.last}`.toUpperCase()}</span>
+                            <span>Offline</span>
                         </div>
                     </li>
                 )}
