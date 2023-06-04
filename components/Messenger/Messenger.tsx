@@ -23,14 +23,14 @@ const Messenger = (props: { convo_id: Types.ObjectId, socket: Socket }): JSX.Ele
     }
 
     return (
-        <form className={styles.messageSender} onSubmit={sendMessage}>
+        <form className={styles["Messenger"]} onSubmit={sendMessage}>
             <TextareaAutosize
                 onChange={(event) => setDraft(event.target.value)}
                 value={draft}
                 minRows={1}
                 maxRows={3}
             />
-            <button type='submit' disabled={draft === ""}>Send</button>
+            <button className={styles["Messenger__submitButton"]} type='submit' disabled={draft === ""}>Send</button>
         </form>
     )
 }

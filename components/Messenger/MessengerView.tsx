@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react'
 import { AppStateCtx } from '../../pages'
 
-import ConversationView from './ConversationView'
+import MessageHistory from './MessageHistory'
 import Messenger from './Messenger'
 
 import styles from '../../styles/Messenger.module.css'
@@ -34,8 +34,8 @@ const MessengerView = (props: { socket: Socket }): JSX.Element => {
     return (
         <div className={styles.container}>
             {state.convo ? <>
-                <StatusView display_name={`${state.convo.user.name.first} ${state.convo.user.name.last}`.toUpperCase()} />
-                <ConversationView sender_id={state.convo.user.id} history={state.convo.messages_history} messages={messages} />
+                <RecipientGlance display_name={`${state.convo.user.name.first} ${state.convo.user.name.last}`.toUpperCase()} />
+                <MessageHistory sender_id={state.convo.user.id} history={state.convo.messages_history} messages={messages} />
                 <Messenger convo_id={state.convo.id} socket={props.socket} />
             </> : <></>
             }
@@ -44,17 +44,18 @@ const MessengerView = (props: { socket: Socket }): JSX.Element => {
 
 }
 
-const StatusView = ({ display_name }: { display_name: string }): JSX.Element => {
+const RecipientGlance = ({ display_name }: { display_name: string }): JSX.Element => {
     return (
-        <div className={styles.recipient_container}>
+        <div className={styles["RecipientGlance"]}>
             <img
+                className={styles["RecipientGlance__profilepic"]}
                 src="profile.png" alt=""
                 draggable={false}
                 onDragStart={e => e.preventDefault()} // Firefox support
             />
-            <div className={styles.recipient}>
-                <span className={styles.recipient__name}>{display_name}</span>
-                {/* <span className={styles.recipient__status}>{"online"}</span> */}
+            <div className={styles["RecipientGlance__about"]}>
+                <span className={styles["RecipientGlance__displayName"]}>{display_name}</span>
+                <span className={styles["RecipientGlance__status"]}>{"online"}</span>
             </div>
         </div>
     )

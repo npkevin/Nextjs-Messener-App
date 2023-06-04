@@ -19,14 +19,14 @@
     white-space: pre-wrap;
 }
 
-.message_sent {
+.message--sent {
     background: #e4e4e4;
     align-self: flex-end;
     border-radius: 1em;
     border-top-right-radius: 0;
 }
 
-.messageHistory {
+.message_history {
     display: flex;
     flex-direction: column-reverse;
     flex-grow: 1;
@@ -34,7 +34,9 @@
     overflow-y: auto;
 }
 
-.messageSender {
+
+/* <Messenger /> */
+.Messenger {
     display: flex;
     align-items: center;
     background: #262626;
@@ -43,7 +45,7 @@
     padding: 1em;
 }
 
-.messageSender textarea {
+.Messenger textarea {
     background: #ffffff;
     flex-grow: 1;
     min-height: 2.5em;
@@ -56,7 +58,7 @@
 }
 
 
-.messageSender button[type="submit"] {
+.Messenger__submitButton {
     width: 8em;
     height: 3em;
     border: none;
@@ -66,16 +68,18 @@
     transition: 0.2s linear;
 }
 
-.messageSender button:enabled {
+.Messenger__submitButton:enabled {
     background-color: #0060ce;
     cursor: pointer;
 }
 
-.messageSender button:enabled:hover {
+.Messenger__submitButton:enabled:hover {
     background-color: #0051ad;
 }
 
-.recipient_container {
+
+/* <RecipientGlance /> */
+.RecipientGlance {
     display: flex;
     align-items: center;
     background-color: #262626;
@@ -84,7 +88,7 @@
     white-space: pre-line;
 }
 
-.recipient_container img {
+.RecipientGlance__profilepic {
     background-color: #e4e4e4;
     width: 3em;
     height: 3em;
@@ -92,17 +96,17 @@
     border-radius: 50%;
 }
 
-.recipient__status {
+.RecipientGlance__status {
     /* align-self: flex-end; */
     user-select: none;
     color: #16bd48
 }
 
-.recipient__name {
+.RecipientGlance__displayName {
     color: #ffffff;
 }
 
-.recipient {
+.RecipientGlance__about {
     display: flex;
     flex-direction: column;
 }
