@@ -39,7 +39,7 @@ const Message = (props: { date: Date, sender: boolean, children: string }): JSX.
     return (
         <div className={styles["message"] + (props.sender ? ` ${styles["message--sent"]}` : "")}>
             <span className={styles["message__content"]}>{props.children}</span>
-            <span className={styles["message__date"]}>{props.date.toDateString()}</span>
+            <span className={styles["message__timestamp"]}>{props.date.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' })}</span>
         </div>
     )
 }

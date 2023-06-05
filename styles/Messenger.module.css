@@ -9,28 +9,43 @@
 }
 
 .message {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
     background: #a5f0af;
     max-width: 48%;
-    padding: 0.8em;
-    margin: 1em 1em 0 1em;
-    border-radius: 1em;
+    padding: 0.6em;
+    margin-top: 1em;
+    border-radius: 0.6em;
     border-top-left-radius: 0;
     align-self: flex-start;
     white-space: pre-wrap;
 }
 
 .message--sent {
+    align-items: flex-end;
     background: #e4e4e4;
     align-self: flex-end;
-    border-radius: 1em;
+    border-radius: 0.6em;
     border-top-right-radius: 0;
 }
 
+.message__content {
+    font-size: 1em;
+
+}
+
+.message__timestamp {
+    font-size: 0.6em;
+    user-select: none;
+}
+
 .message_history {
+    background: #ffffff;
     display: flex;
     flex-direction: column-reverse;
     flex-grow: 1;
-    background: #ffffff;
+    padding: 1em;
     overflow-y: auto;
 }
 
