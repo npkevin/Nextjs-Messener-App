@@ -1,7 +1,6 @@
 import { useContext, useEffect, useState } from "react"
 import { AppStateCtx } from "../../pages"
 import { Types } from "mongoose"
-import io from 'socket.io-client'
 
 import styles from '../../styles/SideMenu.module.css'
 import { CreateUserInput } from "../../src/schema/user.schema"
@@ -46,15 +45,22 @@ const ConversationList = (): JSX.Element => {
             if (response.ok) {
                 const convo_doc = await response.json() as ConvoDocument
                 const messages_history = convo_doc.messages as MessageDocument[]
+                const messages_history_casted = messages_history.map(message => {
+                    message.sender_id = new Types.ObjectId(message.sender_id)
+                    message.convo_id = new Types.ObjectId(message.convo_id)
+                    message.createdAt = new Date(message.createdAt)
+                    message.updatedAt = new Date(message.updatedAt)
+                    return message
+                })
                 // console.log(convo_doc)
                 setState({
                     convo: {
                         id: new Types.ObjectId(convo_doc._id),
                         user: {
-                            id: user._id,
+                            id: new Types.ObjectId(user._id),
                             name: user.name
                         },
-                        messages_history: messages_history
+                        messages_history: messages_history_casted
                     }
                 })
             }

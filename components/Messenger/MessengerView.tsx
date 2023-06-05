@@ -1,12 +1,13 @@
 import React, { useContext, useEffect, useState } from 'react'
 import { AppStateCtx } from '../../pages'
+import { Socket } from 'socket.io-client'
+import mongoose from 'mongoose'
 
 import MessageHistory from './MessageHistory'
 import Messenger from './Messenger'
 
-import styles from '../../styles/Messenger.module.css'
-import { Socket } from 'socket.io-client'
 import { MessageDocument } from '../../src/models/message.model'
+import styles from '../../styles/Messenger.module.css'
 
 const MessengerView = (props: { socket: Socket }): JSX.Element => {
 
@@ -27,7 +28,11 @@ const MessengerView = (props: { socket: Socket }): JSX.Element => {
     }, [state.convo])
 
     const newMessageHandler = (new_message_string: string) => {
-        const message_doc = JSON.parse(new_message_string) as MessageDocument
+        let message_doc = JSON.parse(new_message_string) as MessageDocument
+        message_doc.convo_id = new mongoose.Types.ObjectId(message_doc.convo_id)
+        message_doc.sender_id = new mongoose.Types.ObjectId(message_doc.sender_id)
+        message_doc.createdAt = new Date(message_doc.createdAt)
+        message_doc.updatedAt = new Date(message_doc.updatedAt)
         setMessages(prev_message_docs => [message_doc, ...prev_message_docs])
     }
 

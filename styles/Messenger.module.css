@@ -9,17 +9,17 @@
 }
 
 .message {
+    transition: 1s;
     display: flex;
     flex-direction: column;
     align-items: flex-start;
+    align-self: flex-start;
+    white-space: pre-wrap;
     background: #a5f0af;
-    max-width: 48%;
     padding: 0.6em;
     margin-top: 1em;
     border-radius: 0.6em;
     border-top-left-radius: 0;
-    align-self: flex-start;
-    white-space: pre-wrap;
 }
 
 .message--sent {
@@ -33,6 +33,11 @@
 .message__content {
     font-size: 1em;
 
+}
+
+.message__date {
+    font-size: 0.6em;
+    user-select: none;
 }
 
 .message__timestamp {

@@ -13,8 +13,8 @@ const MessageHistory = (props: { history: MessageDocument[], messages: MessageDo
             {props.messages.map(message => {
                 return (
                     <Message key={message._id}
-                        date={new Date(message.createdAt)}
-                        sender={props.sender_id !== message.sender_id}>
+                        date={message.createdAt}
+                        sender={!props.sender_id.equals(message.sender_id)}>
                         {message.content}
                     </Message>
                 )
@@ -22,8 +22,8 @@ const MessageHistory = (props: { history: MessageDocument[], messages: MessageDo
             {props.history.map(message => {
                 return (
                     <Message key={message._id}
-                        date={new Date(message.createdAt)}
-                        sender={props.sender_id !== message.sender_id}>
+                        date={message.createdAt}
+                        sender={!props.sender_id.equals(message.sender_id)}>
                         {message.content}
                     </Message>)
             })}
@@ -32,13 +32,10 @@ const MessageHistory = (props: { history: MessageDocument[], messages: MessageDo
 }
 
 const Message = (props: { date: Date, sender: boolean, children: string }): JSX.Element => {
-    // TODO:
-    // - Add Dates (posted/updated)
-    // - Read Status
-
     return (
         <div className={styles["message"] + (props.sender ? ` ${styles["message--sent"]}` : "")}>
             <span className={styles["message__content"]}>{props.children}</span>
+            {/* <span className={styles["message__date"]}>{props.date.toDateString()}</span> */}
             <span className={styles["message__timestamp"]}>{props.date.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' })}</span>
         </div>
     )
