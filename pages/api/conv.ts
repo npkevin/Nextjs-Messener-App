@@ -12,8 +12,10 @@ import { createMessage } from "../../src/service/message.service"
 import { getConvoByUser, getUserConvos } from "../../src/service/convo.service"
 
 export default async (req: NextApiRequest, res: NextApiResponse) => {
-    await connect()
     const { token } = cookie.parse(req.headers.cookie || '')
+    if (!token) res.status(400).send("Invalid Request: Token Required")
+
+    await connect()
 
     if (req.method == "GET") {
         const { user_id, convo_id } = req.query
