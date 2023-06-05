@@ -21,7 +21,7 @@ const Profile = (): JSX.Element => {
             </div>
             <div className={styles.user_status_container}>
                 <span>{state.user?.name.first.toUpperCase()} {state.user?.name.last.toLocaleUpperCase()}</span>
-                <span>Online</span>
+                {/* <span>Online</span> */}
             </div>
         </div>
     )

@@ -83,7 +83,7 @@ const ConversationList = (): JSX.Element => {
                         </div>
                         <div className={styles.glance}>
                             <span>{`${user.name.first} ${user.name.last}`.toUpperCase()}</span>
-                            <span>Offline</span>
+                            {/* <span>Offline</span> */}
                         </div>
                     </li>
                 )}

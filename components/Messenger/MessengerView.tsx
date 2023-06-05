@@ -60,7 +60,7 @@ const RecipientGlance = ({ display_name }: { display_name: string }): JSX.Elemen
             />
             <div className={styles["RecipientGlance__about"]}>
                 <span className={styles["RecipientGlance__displayName"]}>{display_name}</span>
-                <span className={styles["RecipientGlance__status"]}>{"online"}</span>
+                {/* <span className={styles["RecipientGlance__status"]}>{"online"}</span> */}
             </div>
         </div>
     )
