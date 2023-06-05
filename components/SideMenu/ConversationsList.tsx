@@ -5,7 +5,6 @@ import { Types } from "mongoose"
 import styles from '../../styles/SideMenu.module.css'
 import { CreateUserInput } from "../../src/schema/user.schema"
 import { ConvoDocument } from "../../src/models/convo.model"
-import cookies from "js-cookie"
 import { MessageDocument } from "../../src/models/message.model"
 
 type User = Omit<CreateUserInput, 'password'> & { _id: Types.ObjectId }
@@ -74,7 +73,9 @@ const ConversationList = (): JSX.Element => {
                 placeholder="Search"
                 value={search}
                 onChange={e => setSearch(e.target.value)}
+                disabled={true}
             />
+            <span style={{ color: "white" }}>Recent/New Users</span>
             <ul className={styles.convo_list}>
                 {users.map(user =>
                     <li className={styles.convo} key={user._id.toString()} onClick={() => selectUserHandler(user)}>

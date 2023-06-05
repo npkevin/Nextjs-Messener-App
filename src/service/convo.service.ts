@@ -5,7 +5,6 @@ import jwt from 'jsonwebtoken'
 import { IPayload } from "../models/sessions.model"
 import ConvoModel, { ConvoDocument } from "../models/convo.model"
 import { CreateConvoInput } from "../schema/convo.schema"
-import { createMessage } from "./message.service"
 
 
 export async function createConvo(input: CreateConvoInput): Promise<ConvoDocument> {

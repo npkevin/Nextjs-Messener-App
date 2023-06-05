@@ -3,7 +3,6 @@ import cookies from 'js-cookie'
 
 import styles from '../../styles/Authentication.module.css'
 import { AppStateCtx } from '../../pages'
-import { SafeParseError } from 'zod'
 
 
 const Authentication = (): JSX.Element => {

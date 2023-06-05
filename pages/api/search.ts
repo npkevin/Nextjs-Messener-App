@@ -1,5 +1,4 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import logger from "../../src/utils/logger";
 import UserModel, { UserDocument } from "../../src/models/user.model";
 
 // TODO: Properly implement searching, just returns all users at the moment

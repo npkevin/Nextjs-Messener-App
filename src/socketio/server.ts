@@ -1,8 +1,6 @@
 import { createServer } from 'http'
 import { Server, Socket } from 'socket.io'
 import logger from '../utils/logger'
-import { Types } from 'mongoose';
-import cookie from 'cookie'
 
 
 const httpServer = createServer();
