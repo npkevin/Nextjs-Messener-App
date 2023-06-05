@@ -75,7 +75,7 @@ const ConversationList = (): JSX.Element => {
                 onChange={e => setSearch(e.target.value)}
                 disabled={true}
             />
-            <span style={{ color: "white" }}>Recent/New Users</span>
+            <span style={{ color: "white", fontSize: "0.8em" }}>Recent/New Users</span>
             <ul className={styles.convo_list}>
                 {users.map(user =>
                     <li className={styles.convo} key={user._id.toString()} onClick={() => selectUserHandler(user)}>
