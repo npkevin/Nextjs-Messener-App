@@ -109,11 +109,18 @@
 }
 
 .RecipientGlance__profilepic {
+    display: flex;
     background-color: #e4e4e4;
     width: 3em;
     height: 3em;
     margin-right: 0.8em;
     border-radius: 50%;
+}
+
+.RecipientGlance__profilepic img {
+    margin: auto;
+    width: 80%;
+    height: 80%;
 }
 
 .RecipientGlance__status {

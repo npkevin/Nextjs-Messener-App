@@ -45,16 +45,18 @@
 }
 
 .user_pic_container {
+    display: flex;
+    background: white;
+    border-radius: 50%;
     width: 3em;
     height: 3em;
 }
 
 .user_pic_container img {
-    background: white;
+    margin: auto;
     user-select: none;
-    width: inherit;
-    height: inherit;
-    border-radius: 50%;
+    width: 80%;
+    height: 80%;
 }
 
 .user_status_container {
@@ -104,6 +106,7 @@
 }
 
 .profile_pic {
+    display: flex;
     background: white;
     margin-right: 1em;
     width: 3em;
@@ -112,6 +115,7 @@
 }
 
 .profile_pic img {
-    width: inherit;
-    height: inherit;
+    margin: auto;
+    width: 80%;
+    height: 80%;
 }

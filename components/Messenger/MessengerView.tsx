@@ -52,12 +52,14 @@ const MessengerView = (props: { socket: Socket }): JSX.Element => {
 const RecipientGlance = ({ display_name }: { display_name: string }): JSX.Element => {
     return (
         <div className={styles["RecipientGlance"]}>
-            <img
-                className={styles["RecipientGlance__profilepic"]}
-                src="profile.png" alt=""
-                draggable={false}
-                onDragStart={e => e.preventDefault()} // Firefox support
-            />
+            <div className={styles["RecipientGlance__profilepic"]}>
+                <img
+
+                    src="profile.png" alt=""
+                    draggable={false}
+                    onDragStart={e => e.preventDefault()} // Firefox support
+                />
+            </div>
             <div className={styles["RecipientGlance__about"]}>
                 <span className={styles["RecipientGlance__displayName"]}>{display_name}</span>
                 {/* <span className={styles["RecipientGlance__status"]}>{"online"}</span> */}
