@@ -13,7 +13,7 @@ const Messenger = (props: { convo_id: Types.ObjectId, socket: Socket }): JSX.Ele
 
     const sendMessage = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault()
-        const response = await fetch(`http://${getConfig().serverRuntimeConfig.origin}:3000/api/conv`, {
+        const response = await fetch(`/api/conv`, {
             method: "POST",
             headers: { "content-type": "application/json" },
             body: JSON.stringify({

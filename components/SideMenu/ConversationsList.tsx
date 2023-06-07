@@ -22,7 +22,7 @@ const ConversationList = (): JSX.Element => {
         // TODO: remove this, only for dev
         let url_params = new URLSearchParams()
         url_params.set('search_all', "true")
-        fetch(`http://${getConfig().serverRuntimeConfig.origin}:3000/api/search?${url_params}`)
+        fetch(`/api/search?${url_params}`)
             .then(async response => {
                 if (response.ok) {
                     const users_trimmed = await response.json() as User[]
@@ -40,7 +40,7 @@ const ConversationList = (): JSX.Element => {
         if (!state.convo || state.convo.user.id !== user._id) {
             let url_params = new URLSearchParams()
             url_params.set('user_id', user._id.toString())
-            const response = await fetch(`http://0.0.0.0:3000/api/conv?${url_params}`)
+            const response = await fetch(`/api/conv?${url_params}`)
 
             if (response.ok) {
                 const convo_doc = await response.json() as ConvoDocument

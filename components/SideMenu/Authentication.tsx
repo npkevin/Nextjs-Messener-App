@@ -33,7 +33,7 @@ const Authentication = (): JSX.Element => {
             setBtnSignUpDisable(false)
             return
         }
-        const response: Response = await fetch(`http://${getConfig().serverRuntimeConfig.origin}:3000/api/auth`, {
+        const response: Response = await fetch(`/api/auth`, {
             method: "POST",
             headers: {
                 "content-type": "application/json"
@@ -62,7 +62,7 @@ const Authentication = (): JSX.Element => {
     }
 
     const SignIn = async () => {
-        const response: Response = await fetch(`http://${getConfig().serverRuntimeConfig.origin}:3000/api/auth`, {
+        const response: Response = await fetch(`/api/auth`, {
             method: "POST",
             headers: {
                 "content-type": "application/json"
@@ -95,7 +95,7 @@ const Authentication = (): JSX.Element => {
         setLastname("")
         setBtnSignUpDisable(true)
 
-        await fetch(`http://${getConfig().serverRuntimeConfig.origin}:3000/api/auth`, { method: "DELETE" })
+        await fetch(`/api/auth`, { method: "DELETE" })
         cookies.remove('token')
         setState({ validToken: false, user: undefined })
     }
