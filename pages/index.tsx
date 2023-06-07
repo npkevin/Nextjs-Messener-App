@@ -62,7 +62,7 @@ const Home: NextPage = (): JSX.Element => {
             checkToken(token)
 
 
-        const socket = io(`http://${getConfig().serverRuntimeConfig.origin}:3001`)
+        const socket = io(`http://${getConfig().serverRuntimeConfig.socketio}:3001`)
         socket.on("connect", () => {
             setSocket(socket)
         })
