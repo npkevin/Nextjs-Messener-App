@@ -3,8 +3,7 @@ const nextConfig = {
   reactStrictMode: true,
 
   serverRuntimeConfig: {
-    origin: "",
-    socketio: "",
+    socketio: "54.197.13.132",
     saltWorkFactor: 10,
     jwt_secret: "shhh...dOn'tTellAnyone!",
   },
