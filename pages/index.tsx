@@ -8,6 +8,7 @@ import { createContext, Dispatch, SetStateAction, useEffect, useState } from 're
 import { Types } from 'mongoose'
 import { io, Socket } from 'socket.io-client'
 import { MessageDocument } from '../src/models/message.model'
+import getConfig from 'next/config'
 
 interface IdefaultState {
     validToken: boolean
@@ -48,7 +49,7 @@ const Home: NextPage = (): JSX.Element => {
 
     useEffect(() => {
         const checkToken = async (token: string) => {
-            const response = await fetch("http://localhost:3000/api/auth")
+            const response = await fetch(`http://${getConfig().serverRuntimeConfig.origin}:3000/api/auth`)
 
             if (!response.ok) cookies.remove("token")
             else {
@@ -61,7 +62,7 @@ const Home: NextPage = (): JSX.Element => {
             checkToken(token)
 
 
-        const socket = io('http://localhost:3001')
+        const socket = io(`http://${getConfig().serverRuntimeConfig.origin}:3001`)
         socket.on("connect", () => {
             setSocket(socket)
         })

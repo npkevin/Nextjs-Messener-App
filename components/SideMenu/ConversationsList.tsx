@@ -6,6 +6,7 @@ import styles from '../../styles/SideMenu.module.css'
 import { CreateUserInput } from "../../src/schema/user.schema"
 import { ConvoDocument } from "../../src/models/convo.model"
 import { MessageDocument } from "../../src/models/message.model"
+import getConfig from "next/config"
 
 type User = Omit<CreateUserInput, 'password'> & { _id: Types.ObjectId }
 type Convo = { id: Types.ObjectId }
@@ -21,7 +22,7 @@ const ConversationList = (): JSX.Element => {
         // TODO: remove this, only for dev
         let url_params = new URLSearchParams()
         url_params.set('search_all', "true")
-        fetch(`http://localhost:3000/api/search?${url_params}`)
+        fetch(`http://${getConfig().serverRuntimeConfig.origin}:3000/api/search?${url_params}`)
             .then(async response => {
                 if (response.ok) {
                     const users_trimmed = await response.json() as User[]
@@ -39,7 +40,7 @@ const ConversationList = (): JSX.Element => {
         if (!state.convo || state.convo.user.id !== user._id) {
             let url_params = new URLSearchParams()
             url_params.set('user_id', user._id.toString())
-            const response = await fetch(`http://localhost:3000/api/conv?${url_params}`)
+            const response = await fetch(`http://${getConfig().serverRuntimeConfig.origin}:3000/api/conv?${url_params}`)
 
             if (response.ok) {
                 const convo_doc = await response.json() as ConvoDocument

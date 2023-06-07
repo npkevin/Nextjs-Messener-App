@@ -5,13 +5,15 @@ import styles from '../../styles/Messenger.module.css'
 import { Types } from 'mongoose'
 import { Socket } from 'socket.io-client'
 
+import getConfig from "next/config"
+
 const Messenger = (props: { convo_id: Types.ObjectId, socket: Socket }): JSX.Element => {
 
     const [draft, setDraft] = useState("")
 
     const sendMessage = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault()
-        const response = await fetch(`http://localhost:3000/api/conv`, {
+        const response = await fetch(`http://${getConfig().serverRuntimeConfig.origin}:3000/api/conv`, {
             method: "POST",
             headers: { "content-type": "application/json" },
             body: JSON.stringify({

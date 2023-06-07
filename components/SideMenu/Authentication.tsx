@@ -3,6 +3,7 @@ import cookies from 'js-cookie'
 
 import styles from '../../styles/Authentication.module.css'
 import { AppStateCtx } from '../../pages'
+import getConfig from 'next/config'
 
 
 const Authentication = (): JSX.Element => {
@@ -32,7 +33,7 @@ const Authentication = (): JSX.Element => {
             setBtnSignUpDisable(false)
             return
         }
-        const response: Response = await fetch("http://localhost:3000/api/auth", {
+        const response: Response = await fetch(`http://${getConfig().serverRuntimeConfig.origin}:3000/api/auth`, {
             method: "POST",
             headers: {
                 "content-type": "application/json"
@@ -61,7 +62,7 @@ const Authentication = (): JSX.Element => {
     }
 
     const SignIn = async () => {
-        const response: Response = await fetch("http://localhost:3000/api/auth", {
+        const response: Response = await fetch(`http://${getConfig().serverRuntimeConfig.origin}:3000/api/auth`, {
             method: "POST",
             headers: {
                 "content-type": "application/json"
@@ -94,7 +95,7 @@ const Authentication = (): JSX.Element => {
         setLastname("")
         setBtnSignUpDisable(true)
 
-        await fetch("http://localhost:3000/api/auth", { method: "DELETE" })
+        await fetch(`http://${getConfig().serverRuntimeConfig.origin}:3000/api/auth`, { method: "DELETE" })
         cookies.remove('token')
         setState({ validToken: false, user: undefined })
     }
