@@ -1,12 +1,19 @@
-import { createServer } from 'http'
+import { readFileSync } from 'fs';
+import { createServer } from 'https'
 import { Server, Socket } from 'socket.io'
 // import logger from '../utils/logger'
 
-
-const httpServer = createServer();
 const port = 3001
 
-const io = new Server(httpServer, {
+const privateKey = readFileSync('key.pem', 'utf8')
+const certificate = readFileSync('cert.pem', 'utf8')
+
+const httpsServer = createServer({
+    key: privateKey,
+    cert: certificate
+});
+
+const io = new Server(httpsServer, {
     cors: {
         origin: '*', // TODO: replace with actual origin
         methods: ["GET", "POST"]
@@ -37,6 +44,6 @@ io.on('connection', (socket: Socket) => {
     })
 })
 
-httpServer.listen(port, () => {
+httpsServer.listen(port, () => {
     console.log(`Socket.io Server running on port ${port}`)
 })
