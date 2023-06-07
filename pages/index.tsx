@@ -62,7 +62,7 @@ const Home: NextPage = (): JSX.Element => {
             checkToken(token)
 
 
-        const socket = io(`https://52.87.192.66:3001`)
+        const socket = io(`http://52.87.192.66:3001`)
         socket.on("connect", () => {
             setSocket(socket)
         })
