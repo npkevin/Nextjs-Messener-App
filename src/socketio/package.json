@@ -4,7 +4,9 @@
   "description": "",
   "main": "build/server.js",
   "scripts": {
-    "dev": "tsc && npx ts-node build/socketio/server.js"
+    "start": "npx ts-node build/socketio/server.js",
+    "dev": "tsc && npx ts-node build/socketio/server.js",
+    "build": "tsc"
   },
   "author": "",
   "license": "ISC",
