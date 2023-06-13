@@ -1,12 +1,11 @@
-import { readFileSync } from 'fs';
-import { createServer } from 'https'
 import { Server, Socket } from 'socket.io'
-// import logger from '../utils/logger'
+import { createServer } from 'https'
+import { readFileSync } from 'fs';
 
-const port = 3001
+const PORT = process.env.PORT || 3101
 
-const privateKey = readFileSync('key.pem', 'utf8')
-const certificate = readFileSync('cert.pem', 'utf8')
+const privateKey = readFileSync('/app/ssl/privkey.pem')
+const certificate = readFileSync('/app/ssl/fullchain.pem')
 
 const httpsServer = createServer({
     key: privateKey,
@@ -15,7 +14,7 @@ const httpsServer = createServer({
 
 const io = new Server(httpsServer, {
     cors: {
-        origin: '*', // TODO: replace with actual origin
+        origin: 'https://web.kevnp.com',
         methods: ["GET", "POST"]
     }
 })
@@ -44,6 +43,6 @@ io.on('connection', (socket: Socket) => {
     })
 })
 
-httpsServer.listen(port, () => {
-    console.log(`Socket.io Server running on port ${port}`)
+httpsServer.listen(PORT, () => {
+    console.log(`Socket.io Server running on port ${PORT}`)
 })

@@ -1,0 +1,8 @@
+version: '3'
+services:
+  socketio:
+    image: nm-socketop:latest
+    volume:
+      - ./certbot/conf/live/kevnp.com-0001/:/app/ssl/
+    ports:
+      - 3101:3101
