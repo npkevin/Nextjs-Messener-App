@@ -4,9 +4,6 @@ import styles from '../../styles/Messenger.module.css'
 import { MessageDocument } from '../../src/models/message.model'
 import mongoose from 'mongoose';
 
-
-
-// TODO: add keys as message id from mongodb
 const MessageHistory = (props: { history: MessageDocument[], messages: MessageDocument[], sender_id: mongoose.Types.ObjectId }): JSX.Element => {
     return (
         <div className={styles["message_history"]}>

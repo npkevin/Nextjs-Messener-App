@@ -10,6 +10,7 @@ import { CreateMessageInput, createMessageSchema } from "../../src/schema/messag
 import { validateToken } from "../../src/service/user.service"
 import { createMessage } from "../../src/service/message.service"
 import { getConvoByUser, getUserConvos } from "../../src/service/convo.service"
+import getConfig from "next/config"
 
 export default async (req: NextApiRequest, res: NextApiResponse) => {
     const { token } = cookie.parse(req.headers.cookie || '')
@@ -91,7 +92,8 @@ async function appendMessageToConvo(req: NextApiRequest, res: NextApiResponse, t
     convo.save()
 
     // broadcast message to clients in room
-    const socket = io('http://localhost:3001')
+    const { SOCKETIO_URI } = getConfig().publicRuntimeConfig
+    const socket = io(SOCKETIO_URI)
     socket.emit("joinRoom", req.body.convo_id)
     socket.emit("roomMessage", { convo_id: req.body.convo_id, content: JSON.stringify(message) })
     socket.emit("leaveRoom", req.body.convo_id)

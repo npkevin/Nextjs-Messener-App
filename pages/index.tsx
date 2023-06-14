@@ -61,8 +61,8 @@ const Home: NextPage = (): JSX.Element => {
         if (token && !state.validToken)
             checkToken(token)
 
-
-        const socket = io(`https://webdev.kevnp.com/socketio`)
+        const { SOCKETIO_URI } = getConfig().publicRuntimeConfig
+        const socket = io(SOCKETIO_URI)
         socket.on("connect", () => {
             setSocket(socket)
         })

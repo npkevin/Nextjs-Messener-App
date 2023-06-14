@@ -3,7 +3,6 @@ import cookies from 'js-cookie'
 
 import styles from '../../styles/Authentication.module.css'
 import { AppStateCtx } from '../../pages'
-import getConfig from 'next/config'
 
 
 const Authentication = (): JSX.Element => {
@@ -97,7 +96,7 @@ const Authentication = (): JSX.Element => {
 
         await fetch(`/api/auth`, { method: "DELETE" })
         cookies.remove('token')
-        setState({ validToken: false, user: undefined })
+        setState({ validToken: false, user: undefined, convo: undefined })
     }
 
     return (!state.validToken ?

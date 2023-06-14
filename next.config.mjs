@@ -1,14 +1,14 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
-
   serverRuntimeConfig: {
-    socketio: "52.87.192.66",
     saltWorkFactor: 10,
     jwt_secret: "shhh...dOn'tTellAnyone!",
+    MONGODB_URI: "mongodb://127.0.0.1:27017/", // process.env.MONGODB_URI || 
   },
-  publicRuntimeConfig: {},
-
+  publicRuntimeConfig: {
+    SOCKETIO_URI: "http://127.0.0.1:3101", // process.env.SOCKETIO_URI || 
+  },
 }
 
 export default nextConfig

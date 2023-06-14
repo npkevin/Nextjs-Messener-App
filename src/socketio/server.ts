@@ -1,20 +1,15 @@
 import { Server, Socket } from 'socket.io'
-import { createServer } from 'https'
+import { createServer } from 'http'
 import { readFileSync } from 'fs';
+import getConfig from 'next/config';
 
 const PORT = process.env.PORT || 3101
 
-const privateKey = readFileSync('/app/ssl/privkey.pem')
-const certificate = readFileSync('/app/ssl/fullchain.pem')
+const httpServer = createServer({});
 
-const httpsServer = createServer({
-    key: privateKey,
-    cert: certificate
-});
-
-const io = new Server(httpsServer, {
+const io = new Server(httpServer, {
     cors: {
-        origin: 'https://web.kevnp.com',
+        origin: '*',
         methods: ["GET", "POST"]
     }
 })
@@ -43,6 +38,6 @@ io.on('connection', (socket: Socket) => {
     })
 })
 
-httpsServer.listen(PORT, () => {
+httpServer.listen(PORT, () => {
     console.log(`Socket.io Server running on port ${PORT}`)
 })
