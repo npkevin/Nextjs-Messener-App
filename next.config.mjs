@@ -7,7 +7,7 @@ const nextConfig = {
     MONGODB_URI: "mongodb://127.0.0.1:27017/", // process.env.MONGODB_URI || 
   },
   publicRuntimeConfig: {
-    SOCKETIO_URI: "http://127.0.0.1:3101", // process.env.SOCKETIO_URI || 
+    SOCKETIO_URI: "https://wedev.kevnp.com:3101", // process.env.SOCKETIO_URI || 
   },
 }
 
