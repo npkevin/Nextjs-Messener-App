@@ -7,12 +7,13 @@ const PORT = process.env.PORT || 3101
 const privateKey = readFileSync('/app/ssl/privkey1.pem')
 const certificate = readFileSync('/app/ssl/fullchain1.pem')
 
-const httpServer = createServer({
+const httpsServer = createServer({
     key: privateKey,
     cert: certificate
 });
 
-const io = new Server(httpServer, {
+const io = new Server(httpsServer, {
+    path: '/socketio/socket.io',
     cors: {
         origin: '*',
         methods: ["GET", "POST"]
@@ -43,6 +44,6 @@ io.on('connection', (socket: Socket) => {
     })
 })
 
-httpServer.listen(PORT, () => {
+httpsServer.listen(PORT, () => {
     console.log(`Socket.io Server running on port ${PORT}`)
 })
