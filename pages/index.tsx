@@ -61,13 +61,15 @@ const Home: NextPage = (): JSX.Element => {
         if (token && !state.validToken)
             checkToken(token)
 
-        const { SOCKETIO_URI } = getConfig().publicRuntimeConfig
-        const socket = io(SOCKETIO_URI, { path: "/socketio/socket.io" })
-        socket.on("connect", () => {
-            setSocket(socket)
-        })
+        if (!socket) {
+            const { SOCKETIO_URI } = getConfig().publicRuntimeConfig
+            const socket = io(SOCKETIO_URI, { path: "/socketio/socket.io" })
+            socket.on("connect", () => {
+                setSocket(socket)
+            })
+        }
         return () => {
-            socket.disconnect()
+            if (socket) socket.disconnect()
         }
     }, [])
 
