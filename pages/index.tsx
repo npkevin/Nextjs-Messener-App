@@ -62,7 +62,7 @@ const Home: NextPage = (): JSX.Element => {
             checkToken(token)
 
         const { SOCKETIO_URI } = getConfig().publicRuntimeConfig
-        const socket = io(SOCKETIO_URI)
+        const socket = io(SOCKETIO_URI, { path: "/socketio/socket.io" })
         socket.on("connect", () => {
             setSocket(socket)
         })
