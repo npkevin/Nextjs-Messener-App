@@ -1,8 +1,14 @@
 version: '3'
 services:
   socketio:
-    image: nm-socketop:latest
-    volume:
-      - ./certbot/conf/live/kevnp.com-0001/:/app/ssl/
+    build: .
     ports:
       - 3101:3101
+  mongodb:
+    image: mongo
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: mongo
+      MONGO_INITDB_ROOT_PASSWORD: knguyen
+    ports:
+      - 27017:27017
