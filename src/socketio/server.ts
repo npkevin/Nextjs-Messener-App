@@ -1,10 +1,16 @@
 import { Server, Socket } from 'socket.io'
-import { createServer } from 'http'
+import { createServer } from 'https'
 import { readFileSync } from 'fs';
 
 const PORT = process.env.PORT || 3101
 
-const httpServer = createServer({});
+const privateKey = readFileSync('/app/ssl/privkey1.pem')
+const certificate = readFileSync('/app/ssl/fullchain1.pem')
+
+const httpServer = createServer({
+    key: privateKey,
+    cert: certificate
+});
 
 const io = new Server(httpServer, {
     cors: {

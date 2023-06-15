@@ -3,10 +3,13 @@ version: '3'
 services:
   socketio:
     build: .
+    volumes:
+      - ./certbot/conf/archive/kevnp.com-0001/:/app/ssl/
     networks:
       - nginx_network
     ports:
       - 3101:3101
+
   mongodb:
     image: mongo
     restart: always
