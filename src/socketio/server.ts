@@ -1,7 +1,6 @@
 import { Server, Socket } from 'socket.io'
 import { createServer } from 'http'
 import { readFileSync } from 'fs';
-import getConfig from 'next/config';
 
 const PORT = process.env.PORT || 3101
 
