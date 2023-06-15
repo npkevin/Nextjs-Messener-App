@@ -2,6 +2,8 @@ version: '3'
 services:
   socketio:
     build: .
+    networks:
+      - nginx_network
     ports:
       - 3101:3101
   mongodb:
@@ -10,5 +12,7 @@ services:
     environment:
       MONGO_INITDB_ROOT_USERNAME: mongo
       MONGO_INITDB_ROOT_PASSWORD: knguyen
+    networks:
+      - nginx_network
     ports:
       - 27017:27017
