@@ -4,7 +4,7 @@ services:
   socketio:
     build: .
     volumes:
-      - ./certbot/conf/archive/kevnp.com-0001/:/app/ssl/
+      - ./certbot/conf/archive/kevnp.com-0001/:/app/ssl/:ro
     networks:
       - nginx_network
     ports:
