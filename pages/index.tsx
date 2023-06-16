@@ -41,11 +41,6 @@ const defaultState: IdefaultState = {
 interface IAppState { state: IdefaultState, setState: (new_state: {}) => void }
 export const AppStateCtx = createContext<IAppState>({ state: defaultState, setState: () => undefined })
 
-let socket;
-const { SOCKETIO_URI } = getConfig().publicRuntimeConfig;
-if (!socket) {
-    socket = io(SOCKETIO_URI, { path: "/socketio/socket.io" });
-}
 
 const Home: NextPage = (): JSX.Element => {
     const [state, _setState] = useState(defaultState)
@@ -64,14 +59,15 @@ const Home: NextPage = (): JSX.Element => {
             }
         }
         const token = cookies.get("token")
-        if (token && !state.validToken)
+        if (token && !state.validToken) {
             checkToken(token)
-
-        if (socket) {
-            socket.on("connect", () => {
-                setSocket(socket)
-            })
         }
+
+        if (!socket) {
+            const { SOCKETIO_URI } = getConfig().publicRuntimeConfig;
+            setSocket(io(SOCKETIO_URI, { path: "/socketio/socket.io" }));
+        }
+
         return () => {
             if (socket) socket.disconnect()
         }
