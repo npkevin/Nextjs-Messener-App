@@ -101,6 +101,10 @@ async function appendMessageToConvo(req: NextApiRequest, res: NextApiResponse, t
         logger.info(`2 ${SOCKETIO_URI}: status: ${socket.connected}`)
     })
 
+    socket.on("connect_error", error => {
+        logger.error(error)
+    })
+
     socket.emit("joinRoom", req.body.convo_id)
     socket.emit("roomMessage", { convo_id: req.body.convo_id, content: JSON.stringify(message) })
     socket.emit("leaveRoom", req.body.convo_id)
