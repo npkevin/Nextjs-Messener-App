@@ -93,22 +93,19 @@ async function appendMessageToConvo(req: NextApiRequest, res: NextApiResponse, t
 
     // broadcast message to clients in room
     const { SOCKETIO_URI } = getConfig().publicRuntimeConfig
-    const client = io(SOCKETIO_URI, { path: "/socketio/socket.io" })
+    const socket = io(SOCKETIO_URI, { path: "/socketio/socket.io" })
 
-    client.on("connection", socket => {
-        socket.emit("joinRoom", req.body.convo_id, (resp: any) => {
-
-            logger.info(resp)
-
-            // if (resp.ok) socket.emit("roomMessage", { convo_id: req.body.convo_id, content: JSON.stringify(message) }, (res: any) => {
-            //     if (res.ok) socket.emit("leaveRoom", req.body.convo_id, (re: any) => {
-            //         if (re.ok) return res.status(200).json(message)
-            //     })
-            // })
+    socket.on("connect", () => {
+        socket.emit("joinRoom", req.body.convo_id, (_: any) => {
+            socket.emit("roomMessage", { convo_id: req.body.convo_id, content: JSON.stringify(message) }, (_: any) => {
+                socket.emit("leaveRoom", req.body.convo_id, (_: any) => {
+                    return res.status(200).json(message)
+                })
+            })
         })
     })
 
-    client.on("connect_error", error => {
+    socket.on("connect_error", error => {
         logger.error(error)
         return res.status(500).json(message)
     })
