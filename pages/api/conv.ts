@@ -96,19 +96,11 @@ async function appendMessageToConvo(req: NextApiRequest, res: NextApiResponse, t
     const socket = io(SOCKETIO_URI, { path: "/socketio/socket.io" })
 
     socket.emit("joinRoom", req.body.convo_id, (ok: boolean) => {
-
-        logger.info(ok)
-
-
-        // socket.emit("roomMessage", { convo_id: req.body.convo_id, content: JSON.stringify(message) }, (_: any) => {
-        //     socket.emit("leaveRoom", req.body.convo_id, (_: any) => {
-        //         return res.status(200).json(message)
-        //     })
-        // })
+        socket.emit("roomMessage", { convo_id: req.body.convo_id, content: JSON.stringify(message) }, (ok: boolean) => {
+            socket.emit("leaveRoom", req.body.convo_id, (ok: boolean) => {
+            })
+        })
     })
 
-    socket.on("connect_error", error => {
-        logger.error(error)
-        return res.status(500).json(message)
-    })
+    return res.status(200).json(message)
 }
