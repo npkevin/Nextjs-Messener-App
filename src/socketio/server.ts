@@ -23,19 +23,22 @@ const io = new Server(httpsServer, {
 io.on('connection', (socket: Socket) => {
     console.log(`New socket connection: ${socket.id}`);
 
-    socket.on("joinRoom", room => {
+    socket.on("joinRoom", (room, callback) => {
         socket.join(room)
         console.log(`${socket.id} has joined room ${room}`)
+        callback({ ok: true })
     })
 
-    socket.on("leaveRoom", room => {
+    socket.on("leaveRoom", (room, callback) => {
         socket.leave(room)
         console.log(`${socket.id} has left room ${room}`)
+        callback({ ok: true })
     })
 
-    socket.on('roomMessage', ({ convo_id, content }) => {
+    socket.on('roomMessage', ({ convo_id, content }, callback) => {
         io.to(convo_id.toString()).emit("roomMessage", content)
         console.log(`${socket.id} sends message to room: ${convo_id.toString()}\n"${content}"`)
+        callback({ ok: true })
     })
 
     socket.on('disconnect', () => {
