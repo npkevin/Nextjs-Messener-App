@@ -98,9 +98,9 @@ async function appendMessageToConvo(req: NextApiRequest, res: NextApiResponse, t
     socket.emit("joinRoom", req.body.convo_id, (ok: boolean) => {
         socket.emit("roomMessage", { convo_id: req.body.convo_id, content: JSON.stringify(message) }, (ok: boolean) => {
             socket.emit("leaveRoom", req.body.convo_id, (ok: boolean) => {
+                return res.status(200).json(message)
             })
         })
     })
 
-    return res.status(200).json(message)
 }
