@@ -1,14 +1,15 @@
 import type { NextPage } from 'next'
+import { createContext, useEffect, useState } from 'react'
 import cookies from 'js-cookie'
+import getSocket from '../src/utils/socket'
+import { Socket } from 'socket.io-client'
+
 import SideMenu from '../components/SideMenu/SideMenu'
 import MessengerView from '../components/Messenger/MessengerView'
-
 import styles from '../styles/index.module.css'
-import { createContext, Dispatch, SetStateAction, useEffect, useState } from 'react'
+
 import { Types } from 'mongoose'
-import { io, Socket } from 'socket.io-client'
 import { MessageDocument } from '../src/models/message.model'
-import getConfig from 'next/config'
 
 interface IdefaultState {
     validToken: boolean
@@ -46,7 +47,7 @@ const Home: NextPage = (): JSX.Element => {
     const [state, _setState] = useState(defaultState)
     const setState = (new_state: {}) => _setState(prev_state => ({ ...prev_state, ...new_state }))
 
-    const [socket, setSocket] = useState<Socket>()
+    const [socket, setSocket] = useState<Socket>(getSocket())
 
     useEffect(() => {
         const checkToken = async (token: string) => {
@@ -63,13 +64,8 @@ const Home: NextPage = (): JSX.Element => {
             checkToken(token)
         }
 
-        if (!socket) {
-            const { SOCKETIO_URI } = getConfig().publicRuntimeConfig;
-            setSocket(io(SOCKETIO_URI, { path: "/socketio/socket.io" }));
-        }
-
         return () => {
-            if (socket) socket.disconnect()
+            // cleanup
         }
     }, [])
 
