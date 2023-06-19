@@ -5,8 +5,6 @@ import styles from '../../styles/Messenger.module.css'
 import { Types } from 'mongoose'
 import { Socket } from 'socket.io-client'
 
-import getConfig from "next/config"
-
 const Messenger = (props: { convo_id: Types.ObjectId, socket: Socket }): JSX.Element => {
 
     const [draft, setDraft] = useState("")
