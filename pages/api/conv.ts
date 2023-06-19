@@ -95,20 +95,18 @@ async function appendMessageToConvo(req: NextApiRequest, res: NextApiResponse, t
     const { SOCKETIO_URI } = getConfig().publicRuntimeConfig
     const socket = io(SOCKETIO_URI, { path: "/socketio/socket.io" })
 
-    logger.info(`1 ${SOCKETIO_URI}: status: ${socket.connected}`)
-
     socket.on("connect", () => {
-        logger.info(`2 ${SOCKETIO_URI}: status: ${socket.connected}`)
+        logger.info(`${SOCKETIO_URI}: status: ${socket.connected}`)
+        socket.emit("joinRoom", req.body.convo_id)
+        socket.emit("roomMessage", { convo_id: req.body.convo_id, content: JSON.stringify(message) })
+        socket.emit("leaveRoom", req.body.convo_id)
+        socket.disconnect()
+        return res.status(200).json(message)
     })
 
     socket.on("connect_error", error => {
         logger.error(error)
     })
 
-    socket.emit("joinRoom", req.body.convo_id)
-    socket.emit("roomMessage", { convo_id: req.body.convo_id, content: JSON.stringify(message) })
-    socket.emit("leaveRoom", req.body.convo_id)
-    socket.disconnect()
 
-    return res.status(200).json(message)
 }
