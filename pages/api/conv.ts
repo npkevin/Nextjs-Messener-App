@@ -95,7 +95,7 @@ async function appendMessageToConvo(req: NextApiRequest, res: NextApiResponse, t
     const { SOCKETIO_URI } = getConfig().publicRuntimeConfig
     const socket = io(SOCKETIO_URI, { path: "/socketio/socket.io" })
 
-    socket.emit("joinRoom", req.body.convo_id, function ({ ok }: { ok: boolean }) {
+    socket.emit("joinRoom", req.body.convo_id, (ok: boolean) => {
 
         logger.info(ok)
 

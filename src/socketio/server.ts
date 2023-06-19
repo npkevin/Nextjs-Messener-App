@@ -26,19 +26,19 @@ io.on('connection', (socket: Socket) => {
     socket.on("joinRoom", (room, callback) => {
         socket.join(room)
         console.log(`${socket.id} has joined room ${room}`)
-        callback({ ok: true })
+        callback(true)
     })
 
     socket.on("leaveRoom", (room, callback) => {
         socket.leave(room)
         console.log(`${socket.id} has left room ${room}`)
-        callback({ ok: true })
+        callback(true)
     })
 
     socket.on('roomMessage', ({ convo_id, content }, callback) => {
         io.to(convo_id.toString()).emit("roomMessage", content)
         console.log(`${socket.id} sends message to room: ${convo_id.toString()}\n"${content}"`)
-        callback({ ok: true })
+        callback(true)
     })
 
     socket.on('disconnect', () => {
