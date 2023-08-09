@@ -25,7 +25,7 @@ const Authentication = (): JSX.Element => {
     useEffect(() => {
         const credInvalid = (email === "") || (password === "")
         setBtnSignInDisable(credInvalid || firstname !== "" || lastname !== "")
-    })
+    }, [email, password, firstname, lastname])
 
     const SignUp = async () => {
         if (btnSignUpDisable === true) {

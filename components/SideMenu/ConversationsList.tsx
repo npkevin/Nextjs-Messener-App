@@ -3,6 +3,7 @@ import { AppStateCtx } from "../../pages"
 import { Types } from "mongoose"
 
 import styles from '../../styles/SideMenu.module.css'
+import Image from 'next/image'
 import { CreateUserInput } from "../../src/schema/user.schema"
 import { ConvoDocument } from "../../src/models/convo.model"
 import { MessageDocument } from "../../src/models/message.model"
@@ -81,7 +82,7 @@ const ConversationList = (): JSX.Element => {
                 {users.map(user =>
                     <li className={styles.convo} key={user._id.toString()} onClick={() => selectUserHandler(user)}>
                         <div className={styles.profile_pic}>
-                            <img src="profile.png" alt="" />
+                            <Image src="profile.png" alt="" />
                         </div>
                         <div className={styles.glance}>
                             <span>{`${user.name.first} ${user.name.last}`.toUpperCase()}</span>
@@ -92,7 +93,7 @@ const ConversationList = (): JSX.Element => {
                 {convos.map(convo =>
                     <li className={styles.convo} key={convo.id.toString()}>
                         <div className={styles.profile_pic}>
-                            <img src="profile.png" alt="" />
+                            <Image src="profile.png" alt="" />
                         </div>
                         <div className={styles.glance}>
                             <span>convo name</span>

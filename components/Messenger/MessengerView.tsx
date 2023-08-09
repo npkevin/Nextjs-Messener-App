@@ -3,6 +3,7 @@ import { AppStateCtx } from '../../pages'
 import { Socket } from 'socket.io-client'
 import mongoose from 'mongoose'
 
+import Image from 'next/image'
 import MessageHistory from './MessageHistory'
 import Messenger from './Messenger'
 
@@ -25,7 +26,7 @@ const MessengerView = (props: { socket: Socket }): JSX.Element => {
                 setMessages([])
             }
         }
-    }, [state.convo])
+    }, [state.convo, props.socket])
 
     const newMessageHandler = (new_message_string: string) => {
         let message_doc = JSON.parse(new_message_string) as MessageDocument
@@ -53,7 +54,7 @@ const RecipientGlance = ({ display_name }: { display_name: string }): JSX.Elemen
     return (
         <div className={styles["RecipientGlance"]}>
             <div className={styles["RecipientGlance__profilepic"]}>
-                <img
+                <Image
 
                     src="profile.png" alt=""
                     draggable={false}

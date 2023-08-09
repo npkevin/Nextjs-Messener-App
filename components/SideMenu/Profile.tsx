@@ -2,6 +2,7 @@
 import { useContext } from 'react'
 import { AppStateCtx } from '../../pages'
 import styles from '../../styles/SideMenu.module.css'
+import Image from 'next/image'
 
 
 const Profile = (): JSX.Element => {
@@ -13,7 +14,7 @@ const Profile = (): JSX.Element => {
     return (
         <div className={styles.user_card}>
             <div className={styles.user_pic_container}>
-                <img
+                <Image
                     src="profile.png" alt=""
                     draggable={false}
                     onDragStart={e => e.preventDefault()} // Firefox support
