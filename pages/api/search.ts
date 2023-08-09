@@ -4,7 +4,7 @@ import cookie from 'cookie'
 import { validateToken } from "../../src/service/user.service";
 
 // TODO: Properly implement searching, just returns all users at the moment
-export default async (req: NextApiRequest, res: NextApiResponse) => {
+const handleSearchRequest =  async (req: NextApiRequest, res: NextApiResponse) => {
 
     const { token } = cookie.parse(req.headers.cookie || '')
     if (!token) res.status(400).send("Invalid Request: Token Required")
@@ -19,6 +19,8 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
         // 2. Search by token > convo contents
     }
 }
+
+export default handleSearchRequest
 
 // Returns 5 most recently registered users
 async function demo_getRecentUsers(req: NextApiRequest, res: NextApiResponse, token: string) {

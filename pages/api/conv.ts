@@ -12,7 +12,7 @@ import { createMessage } from "../../src/service/message.service"
 import { getConvoByUser, getUserConvos } from "../../src/service/convo.service"
 import getConfig from "next/config"
 
-export default async (req: NextApiRequest, res: NextApiResponse) => {
+const handleConversationsRequest  = async (req: NextApiRequest, res: NextApiResponse) => {
     const { token } = cookie.parse(req.headers.cookie || '')
     if (!token) res.status(400).send("Invalid Request: Token Required")
 
@@ -37,6 +37,8 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
 
     res.status(405).send('')
 }
+
+export default handleConversationsRequest 
 
 // ========================================================================================
 //                                       HANDLERS

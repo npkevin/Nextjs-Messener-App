@@ -7,7 +7,7 @@ import { createUser, createSession, validatePassword, validateToken, deleteToken
 import { createUserSchema } from "../../src/schema/user.schema"
 
 
-export default async (req: NextApiRequest, res: NextApiResponse) => {
+const handleAuthRequest = async (req: NextApiRequest, res: NextApiResponse) => {
     await connect()
 
     // Sign-In / Sign-Up
@@ -28,6 +28,8 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
     }
     return res.status(405).send('')
 }
+
+export default handleAuthRequest
 
 async function createUserHandler(req: NextApiRequest, res: NextApiResponse) {
     try {

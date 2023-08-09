@@ -50,7 +50,7 @@ const Home: NextPage = (): JSX.Element => {
     const [socket, setSocket] = useState<Socket>(getSocket())
 
     useEffect(() => {
-        const checkToken = async (token: string) => {
+        const checkCookieToken = async () => {
             const response = await fetch(`/api/auth`)
 
             if (!response.ok) cookies.remove("token")
@@ -61,13 +61,13 @@ const Home: NextPage = (): JSX.Element => {
         }
         const token = cookies.get("token")
         if (token && !state.validToken) {
-            checkToken(token)
+            checkCookieToken()
         }
 
         return () => {
             // cleanup
         }
-    }, [])
+    }, [state.validToken])
 
     return (
         <AppStateCtx.Provider value={{ state, setState }}>
