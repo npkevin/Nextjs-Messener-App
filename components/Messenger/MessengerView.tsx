@@ -51,7 +51,7 @@ const MessengerView = (): JSX.Element => {
 
     return (
         <div className={styles.container}>
-            {state.convo ? <>
+            {state.convo && socket ? <>
                 <RecipientGlance display_name={`${state.convo.user.name.first} ${state.convo.user.name.last}`.toUpperCase()} />
                 <MessageHistory sender_id={state.convo.user.id} history={state.convo.messages_history} messages={messages} />
                 <Messenger convo_id={state.convo.id} socket={socket} />
