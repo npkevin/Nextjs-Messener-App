@@ -20,9 +20,8 @@ const MessengerView = (): JSX.Element => {
 
     useEffect(() => {
         if (!state.validToken && socket?.connected) socket.disconnect()
-        if (state.validToken && (!socket || socket.disconnected)) getSocket()
-
-    }, [state.validToken, socket])
+        if (state.validToken && (!socket || socket.disconnected)) setSocket(getSocket())
+    }, [state.validToken])
 
     // Get messages when a conversation is selected
     useEffect(() => {
@@ -64,8 +63,9 @@ const RecipientGlance = ({ display_name }: { display_name: string }): JSX.Elemen
         <div className={styles["RecipientGlance"]}>
             <div className={styles["RecipientGlance__profilepic"]}>
                 <Image
-
-                    src="profile.png" alt=""
+                    src="/profile.png" alt=""
+                    width="100"
+                    height="100"
                     draggable={false}
                     onDragStart={e => e.preventDefault()} // Firefox support
                 />

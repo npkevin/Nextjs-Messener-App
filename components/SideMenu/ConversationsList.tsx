@@ -82,7 +82,7 @@ const ConversationList = (): JSX.Element => {
                 {users.map(user =>
                     <li className={styles.convo} key={user._id.toString()} onClick={() => selectUserHandler(user)}>
                         <div className={styles.profile_pic}>
-                            <Image src="profile.png" alt="" />
+                            <Image src="/profile.png" alt="" width="100" height="100"/>
                         </div>
                         <div className={styles.glance}>
                             <span>{`${user.name.first} ${user.name.last}`.toUpperCase()}</span>
@@ -93,7 +93,7 @@ const ConversationList = (): JSX.Element => {
                 {convos.map(convo =>
                     <li className={styles.convo} key={convo.id.toString()}>
                         <div className={styles.profile_pic}>
-                            <Image src="profile.png" alt="" />
+                            <Image src="/profile.png" alt="" width="100" height="100"/>
                         </div>
                         <div className={styles.glance}>
                             <span>convo name</span>

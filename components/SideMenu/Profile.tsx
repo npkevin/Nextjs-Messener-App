@@ -15,7 +15,9 @@ const Profile = (): JSX.Element => {
         <div className={styles.user_card}>
             <div className={styles.user_pic_container}>
                 <Image
-                    src="profile.png" alt=""
+                    src="/profile.png" alt=""
+                    width="100"
+                    height="100"
                     draggable={false}
                     onDragStart={e => e.preventDefault()} // Firefox support
                 />
