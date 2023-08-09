@@ -16,7 +16,13 @@ const MessengerView = (): JSX.Element => {
 
     const { state } = useContext(AppStateCtx)
     const [messages, setMessages] = useState<MessageDocument[]>([])
-    const [socket, setSocket] = useState<Socket|undefined>(getSocket())
+    const [socket, setSocket] = useState<Socket>(getSocket())
+
+    useEffect(() => {
+        if (!state.validToken && socket.connected) {
+            socket.disconnect()
+        }
+    }, [state.validToken, socket])
 
     // Get messages when a conversation is selected
     useEffect(() => {
@@ -30,14 +36,6 @@ const MessengerView = (): JSX.Element => {
             }
         }
     }, [state.convo, socket])
-
-    useEffect(() => {
-        if (state.validToken) {
-            getSocket()
-        } else {
-            socket?.disconnect()
-        }
-    }, [state.validToken, socket])
 
     const newMessageHandler = (new_message_string: string) => {
         let message_doc = JSON.parse(new_message_string) as MessageDocument
