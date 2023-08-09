@@ -69,7 +69,7 @@ const Home: NextPage = (): JSX.Element => {
         <AppStateCtx.Provider value={{ state, setState }}>
             <div className={styles.container}>
                 <SideMenu />
-                {state.validToken ? <MessengerView /> : null}
+                <MessengerView />
             </div>
         </AppStateCtx.Provider>
     )
