@@ -19,9 +19,9 @@ const MessengerView = (): JSX.Element => {
     const [socket, setSocket] = useState<Socket>(getSocket())
 
     useEffect(() => {
-        if (!state.validToken && socket.connected) {
-            socket.disconnect()
-        }
+        if (!state.validToken && socket.connected) socket.disconnect()
+        if (state.validToken && socket.disconnected) getSocket()
+
     }, [state.validToken, socket])
 
     // Get messages when a conversation is selected
