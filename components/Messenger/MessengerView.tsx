@@ -16,11 +16,11 @@ const MessengerView = (): JSX.Element => {
 
     const { state } = useContext(AppStateCtx)
     const [messages, setMessages] = useState<MessageDocument[]>([])
-    const [socket, setSocket] = useState<Socket>(getSocket())
+    const [socket, setSocket] = useState<Socket|undefined>()
 
     useEffect(() => {
-        if (!state.validToken && socket.connected) socket.disconnect()
-        if (state.validToken && socket.disconnected) getSocket()
+        if (!state.validToken && socket?.connected) socket.disconnect()
+        if (state.validToken && (!socket || socket.disconnected)) getSocket()
 
     }, [state.validToken, socket])
 
