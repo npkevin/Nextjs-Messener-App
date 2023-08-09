@@ -1,8 +1,6 @@
 import type { NextPage } from 'next'
 import { createContext, useEffect, useState } from 'react'
 import cookies from 'js-cookie'
-import getSocket from '../src/utils/socket'
-import { Socket } from 'socket.io-client'
 
 import SideMenu from '../components/SideMenu/SideMenu'
 import MessengerView from '../components/Messenger/MessengerView'
@@ -47,8 +45,6 @@ const Home: NextPage = (): JSX.Element => {
     const [state, _setState] = useState(defaultState)
     const setState = (new_state: {}) => _setState(prev_state => ({ ...prev_state, ...new_state }))
 
-    const [socket, setSocket] = useState<Socket>(getSocket())
-
     useEffect(() => {
         const checkCookieToken = async () => {
             const response = await fetch(`/api/auth`)
@@ -73,7 +69,7 @@ const Home: NextPage = (): JSX.Element => {
         <AppStateCtx.Provider value={{ state, setState }}>
             <div className={styles.container}>
                 <SideMenu />
-                {socket ? <MessengerView socket={socket} /> : null}
+                {state.validToken ? <MessengerView /> : null}
             </div>
         </AppStateCtx.Provider>
     )
