@@ -5,8 +5,10 @@ const { SOCKETIO_URI } = getConfig().publicRuntimeConfig;
 let socket: Socket;
 
 const getSocket = () => {
+    
     if (SOCKETIO_URI) {
         try {
+            if (socket && socket.connected) return socket
             if (!socket || socket.disconnected) socket = io(SOCKETIO_URI, { path: "/socketio/socket.io" })
             return socket
         } catch (err) {

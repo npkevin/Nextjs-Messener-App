@@ -1,10 +1,11 @@
 import React, { useContext, useEffect, useState } from 'react'
+import Image from 'next/image'
+import mongoose from 'mongoose'
+
 import { AppStateCtx } from '../../pages'
 import { Socket } from 'socket.io-client'
 import getSocket from '../../src/utils/socket'
-import mongoose from 'mongoose'
 
-import Image from 'next/image'
 import MessageHistory from './MessageHistory'
 import Messenger from './Messenger'
 
@@ -29,6 +30,15 @@ const MessengerView = (): JSX.Element => {
             }
         }
     }, [state.convo, socket])
+
+    useEffect(() => {
+        if (state.validToken) {
+            setSocket(getSocket())
+        } else {
+            socket.disconnect()
+        }
+
+    }, [state.validToken, socket])
 
     const newMessageHandler = (new_message_string: string) => {
         let message_doc = JSON.parse(new_message_string) as MessageDocument
