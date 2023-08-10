@@ -19,6 +19,12 @@ const Messenger = (props: { convo_id: Types.ObjectId, socket: Socket }): JSX.Ele
                 content: draft
             })
         })
+        if (response.ok) {
+            props.socket.emit("roomMessage", {
+                convo_id: props.convo_id.toString(),
+                content: JSON.stringify(draft)
+            })
+        }
         setDraft("")
     }
 
