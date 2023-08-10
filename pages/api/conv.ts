@@ -109,4 +109,8 @@ async function appendMessageToConvo(req: NextApiRequest, res: NextApiResponse, t
         })
     })
 
+    socket.on("error", (error) => {
+        logger.error(`SOCKET ERROR: ${error}`)
+    })
+
 }
