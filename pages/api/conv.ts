@@ -94,16 +94,4 @@ async function appendMessageToConvo(req: NextApiRequest, res: NextApiResponse, t
     convo.save()
 
     return res.status(200).json(message)
-    // broadcast message to clients in room
-    // const { SOCKETIO_URI } = getConfig().publicRuntimeConfig
-    // const socket = io(SOCKETIO_URI, { path: "/socketio/socket.io" })
-    
-    // socket.emit("joinRoom", req.body.convo_id, () => {
-    //     socket.emit("roomMessage", { convo_id: req.body.convo_id, content: JSON.stringify(message) }, () => {
-    //         socket.emit("leaveRoom", req.body.convo_id, (ok: boolean) => {
-    //             return res.status(200).json(message)
-    //         })
-    //     })
-    // })
-
 }
