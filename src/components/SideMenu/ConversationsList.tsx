@@ -1,13 +1,12 @@
 import { useContext, useEffect, useState } from "react"
-import { AppStateCtx } from "../../pages"
+import { AppStateCtx } from "../../../pages"
 import { Types } from "mongoose"
 
-import styles from '../../styles/SideMenu.module.css'
+import styles from '../../../styles/SideMenu.module.css'
 import Image from 'next/image'
-import { CreateUserInput } from "../../src/schema/user.schema"
-import { ConvoDocument } from "../../src/models/convo.model"
-import { MessageDocument } from "../../src/models/message.model"
-import getConfig from "next/config"
+import { CreateUserInput } from "../../schema/user.schema"
+import { ConvoDocument } from "../../models/convo.model"
+import { MessageDocument } from "../../models/message.model"
 
 type User = Omit<CreateUserInput, 'password'> & { _id: Types.ObjectId }
 type Convo = { id: Types.ObjectId }
@@ -82,7 +81,7 @@ const ConversationList = (): JSX.Element => {
                 {users.map(user =>
                     <li className={styles.convo} key={user._id.toString()} onClick={() => selectUserHandler(user)}>
                         <div className={styles.profile_pic}>
-                            <Image src="/profile.png" alt="" width="100" height="100"/>
+                            <Image src="/profile.png" alt="" width="100" height="100" />
                         </div>
                         <div className={styles.glance}>
                             <span>{`${user.name.first} ${user.name.last}`.toUpperCase()}</span>
@@ -93,7 +92,7 @@ const ConversationList = (): JSX.Element => {
                 {convos.map(convo =>
                     <li className={styles.convo} key={convo.id.toString()}>
                         <div className={styles.profile_pic}>
-                            <Image src="/profile.png" alt="" width="100" height="100"/>
+                            <Image src="/profile.png" alt="" width="100" height="100" />
                         </div>
                         <div className={styles.glance}>
                             <span>convo name</span>

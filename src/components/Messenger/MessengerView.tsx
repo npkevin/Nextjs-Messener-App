@@ -2,21 +2,21 @@ import React, { useContext, useEffect, useState } from 'react'
 import Image from 'next/image'
 import mongoose from 'mongoose'
 
-import { AppStateCtx } from '../../pages'
+import { AppStateCtx } from '../../../pages'
 import { Socket } from 'socket.io-client'
-import getSocket from '../../src/utils/socket'
+import getSocket from '../../utils/socket'
 
 import MessageHistory from './MessageHistory'
 import Messenger from './Messenger'
 
-import { MessageDocument } from '../../src/models/message.model'
-import styles from '../../styles/Messenger.module.css'
+import { MessageDocument } from '../../models/message.model'
+import styles from '../../../styles/Messenger.module.css'
 
 const MessengerView = (): JSX.Element => {
 
     const { state } = useContext(AppStateCtx)
     const [messages, setMessages] = useState<MessageDocument[]>([])
-    const [socket, setSocket] = useState<Socket|undefined>()
+    const [socket, setSocket] = useState<Socket | undefined>()
 
     useEffect(() => {
         if (!state.validToken && socket?.connected) socket.disconnect()

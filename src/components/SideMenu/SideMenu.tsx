@@ -1,9 +1,9 @@
 import Authentication from './Authentication'
 import ConversationList from './ConversationsList'
 import Profile from './Profile'
-import styles from '../../styles/SideMenu.module.css'
+import styles from '../../../styles/SideMenu.module.css'
 import { useContext } from 'react'
-import { AppStateCtx } from '../../pages'
+import { AppStateCtx } from '../../../pages'
 
 const SideMenu = (): JSX.Element => {
 

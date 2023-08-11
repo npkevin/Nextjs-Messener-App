@@ -1,7 +1,7 @@
 
 import { useContext } from 'react'
-import { AppStateCtx } from '../../pages'
-import styles from '../../styles/SideMenu.module.css'
+import { AppStateCtx } from '../../../pages'
+import styles from '../../../styles/SideMenu.module.css'
 import Image from 'next/image'
 
 

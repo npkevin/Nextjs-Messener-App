@@ -1,8 +1,8 @@
 import { useContext, useEffect, useState } from 'react'
 import cookies from 'js-cookie'
 
-import styles from '../../styles/Authentication.module.css'
-import { AppStateCtx } from '../../pages'
+import styles from '../../../styles/Authentication.module.css'
+import { AppStateCtx } from '../../../pages'
 
 
 const Authentication = (): JSX.Element => {

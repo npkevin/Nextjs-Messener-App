@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 
-import styles from '../../styles/Messenger.module.css'
-import { MessageDocument } from '../../src/models/message.model'
+import styles from '../../../styles/Messenger.module.css'
+import { MessageDocument } from '../../models/message.model'
 import mongoose from 'mongoose';
 
 const MessageHistory = (props: { history: MessageDocument[], messages: MessageDocument[], sender_id: mongoose.Types.ObjectId }): JSX.Element => {

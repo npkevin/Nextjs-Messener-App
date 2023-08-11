@@ -2,8 +2,8 @@ import type { NextPage } from 'next'
 import { createContext, useEffect, useState } from 'react'
 import cookies from 'js-cookie'
 
-import SideMenu from '../components/SideMenu/SideMenu'
-import MessengerView from '../components/Messenger/MessengerView'
+import SideMenu from '../src/components/SideMenu/SideMenu'
+import MessengerView from '../src/components/Messenger/MessengerView'
 import styles from '../styles/index.module.css'
 
 import { Types } from 'mongoose'
