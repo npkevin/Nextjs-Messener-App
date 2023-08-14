@@ -162,17 +162,17 @@ const Authentication = (): JSX.Element => {
                     state={[passwordConfirmation, setPasswordConfirmation]}
                 />
             </div>
-            <div className="flex flex-row justify-between mt-3">
+            <div className="flex flex-row mt-3 justify-between gap-4">
                 <Button
                     onClick={SignUp}
                     value="Sign Up"
-                    className="w-32"
+                    className="w-full"
                     disabled={false}
                 />
                 <Button
                     onClick={SignIn}
                     value="Login"
-                    className="w-32"
+                    className="w-full"
                     disabled={btnSignInDisable}
                 />
             </div>

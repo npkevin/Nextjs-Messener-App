@@ -33,14 +33,15 @@ const Messenger = (props: {
     };
 
     return (
-        <div className="flex flex-row p-2 bg-slate-300">
+        <div className="flex flex-row p-3 rounded-b bg-slate-300">
             <textarea
-                className="w-full p-1 rounded"
+                className="text-sm w-full p-2 rounded drop-shadow focus:outline-none"
                 onChange={(e) => setDraft(e.target.value)}
+                rows={1}
                 value={draft}
             />
             <Button
-                className="w-28 mx-2"
+                className="w-1/5 ml-3 enabled:bg-green-300"
                 value="Send"
                 onClick={sendMessage}
                 disabled={draft === ""}

@@ -16,7 +16,10 @@ export const TextInput: React.FC<TextProps<string>> = ({
     disabled,
 }) => {
     const [value, setValue] = state;
-    className = `px-4 py-1 rounded-lg text-gray-700 bg-white drop-shadow focus:outline-none disabled:bg-slate-300 ${className}`;
+    className =
+        "text-sm px-4 py-1 rounded drop-shadow text-gray-700 bg-white focus:outline-none " +
+        "disabled:bg-slate-300 " +
+        className;
     return (
         <input
             className={className}
@@ -42,7 +45,11 @@ export const Button: React.FC<ButtonProps> = ({
     disabled,
     onClick,
 }) => {
-    className = `p-1 rounded-lg drop-shadow bg-slate-400 enabled:hover:bg-slate-500 enabled:cursor-pointer disabled:bg-slate-100 disabled:text-slate-300 ${className}`;
+    className =
+        "text-sm p-1 rounded drop-shadow enabled:hover:cursor-pointer bg-slate-400 enabled:hover:bg-slate-500 " +
+        "disabled:bg-slate-100 disabled:text-slate-300 " +
+        "transition duration-100 ease-in-out " +
+        className;
     return (
         <input
             className={className}

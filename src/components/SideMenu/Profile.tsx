@@ -7,15 +7,15 @@ const Profile = (): JSX.Element => {
     const { state, setState } = useContext(AppStateCtx);
 
     return (
-        <div className="flex flex-row items-center bg-slate-300 p-2 rounded-lg">
-            <PiUserBold className="w-10 h-10 p-1.5 mr-2 rounded-full bg-white" />
+        <div className="flex flex-row p-1 drop-shadow rounded items-center bg-slate-300 ">
+            <PiUserBold className="w-10 h-10 mr-2 p-1.5 rounded-full shadow bg-white" />
             <div className="flex flex-col">
-                <span>
+                <span className="text-sm">
                     {state.user
                         ? `${state.user.name.first} ${state.user.name.last}`.toUpperCase()
                         : ""}
                 </span>
-                <span className="text-sm">
+                <span className="text-xs">
                     {"Online" /* TODO: Actual status changing*/}
                 </span>
             </div>

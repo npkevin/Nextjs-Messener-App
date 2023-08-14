@@ -93,23 +93,23 @@ const UserList = ({
 }) => {
     return (
         <>
-            <span className="text-slate-900 text-sm mt-2">
+            <span className="text-slate-900 text-xs mt-2">
                 Recent/New Users
             </span>
-            <ul>
+            <ul className="">
                 {users.map((user) => (
                     <li
-                        className="rounded-lg p-2 mt-2 cursor-pointer select-none bg-slate-300 hover:bg-slate-400"
+                        className="p-1 mt-2 rounded drop-shadow cursor-pointer select-none bg-slate-300 transition duration-100 ease-in-out hover:bg-slate-400"
                         key={user._id.toString()}
                         onClick={() => onClick(user)}
                     >
-                        <div className={"flex flex-row items-center"}>
-                            <PiUserBold className="w-10 h-10 p-1.5 mr-2 rounded-full bg-white" />
-                            <div className={"flex flex-col"}>
-                                <span>
+                        <div className="flex flex-row items-center">
+                            <PiUserBold className="w-10 h-10 p-1.5 rounded-full shadow bg-white" />
+                            <div className="flex flex-col ml-2">
+                                <span className="text-sm">
                                     {`${user.name.first} ${user.name.last}`.toUpperCase()}
                                 </span>
-                                <span className="text-sm">
+                                <span className="text-xs">
                                     {
                                         "Offline" /* TODO: Actual status changing*/
                                     }
@@ -125,14 +125,9 @@ const UserList = ({
                         key={convo.id.toString()}
                     >
                         <div className="">
-                            <Image
-                                src="/profile.png"
-                                alt=""
-                                width="100"
-                                height="100"
-                            />
+                            <PiUserBold className="w-10 h-10 p-1.5 rounded-full shadow bg-white" />
                         </div>
-                        <div className="">
+                        <div className="flex flex-col ml-2">
                             <span>convo name</span>
                             <span>last message</span>
                         </div>
