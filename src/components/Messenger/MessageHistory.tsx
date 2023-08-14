@@ -9,7 +9,7 @@ const MessageHistory = (props: {
     sender_id: mongoose.Types.ObjectId;
 }): JSX.Element => {
     return (
-        <div className="flex flex-col-reverse h-fill p-3 overflow-y-auto bg-slate-100">
+        <div className="flex flex-col-reverse h-fill p-3 overflow-y-auto bg-slate-200">
             {props.messages.map((message) => {
                 const sender = !props.sender_id.equals(message.sender_id);
                 return (

@@ -10,6 +10,7 @@ import cookies from "js-cookie";
 
 import { TextInput, Button } from "../UI/Input";
 import { PiXBold } from "react-icons/pi";
+import { IoSend } from "react-icons/io5";
 
 const Authentication = (): JSX.Element => {
     const { state, setState } = useContext(AppStateCtx);
@@ -193,7 +194,11 @@ const Authentication = (): JSX.Element => {
         </div>
     ) : (
         <div className="flex h-full items-end">
-            <Button value="Sign Out" className="w-full" onClick={SignOut} />
+            <Button
+                value={"Sign Out"}
+                className="w-full bg-red-400 enabled:hover:bg-red-500 "
+                onClick={SignOut}
+            />
         </div>
     );
 };

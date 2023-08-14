@@ -49,7 +49,7 @@ const MessengerView = (): JSX.Element => {
     };
 
     return (
-        <div className="flex flex-col w-full max-h-full min-h-full ml-3 rounded drop-shadow">
+        <div className="flex flex-col grow max-h-full min-h-full ml-3 rounded drop-shadow">
             {state.convo && socket ? (
                 <>
                     <RecipientGlance
@@ -73,8 +73,8 @@ const RecipientGlance = ({
     display_name: string;
 }): JSX.Element => {
     return (
-        <div className="flex flex-row p-3 items-center rounded-t bg-slate-300">
-            <PiUserBold className="w-10 h-10 p-1.5 mr-2 rounded-full shadow bg-white" />
+        <div className="flex flex-row p-3 items-center rounded-t shadow bg-slate-300 ">
+            <PiUserBold className="w-10 h-10 p-1.5 mr-2 rounded-full shadow bg-white " />
             <div className="flex flex-col">
                 <span className="text-sm">{display_name}</span>
                 <span className="text-xs">{"Offline" /* TODO: status*/}</span>

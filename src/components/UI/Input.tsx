@@ -1,4 +1,5 @@
 import { Dispatch, MouseEventHandler, SetStateAction } from "react";
+import { IconType } from "react-icons";
 
 interface TextProps<T> {
     type?: string;
@@ -48,8 +49,9 @@ export const Button: React.FC<ButtonProps> = ({
     className =
         "text-sm p-1 rounded drop-shadow enabled:hover:cursor-pointer bg-slate-400 enabled:hover:bg-slate-500 " +
         "disabled:bg-slate-100 disabled:text-slate-300 " +
-        "transition duration-100 ease-in-out " +
+        "transition " +
         className;
+
     return (
         <input
             className={className}

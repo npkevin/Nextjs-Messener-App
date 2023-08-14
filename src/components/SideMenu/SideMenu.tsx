@@ -10,7 +10,7 @@ const SideMenu = (): JSX.Element => {
     const { state, setState } = useContext(AppStateCtx);
 
     return (
-        <div className="flex flex-col w-1/3 h-full p-3 bg-slate-200 rounded drop-shadow">
+        <div className="flex flex-col w-80 min-w max-w-md h-full p-3 bg-slate-200 rounded drop-shadow">
             <Banner />
             {state.validToken ? <Profile /> : null}
             {state.validToken ? <ConversationList /> : null}

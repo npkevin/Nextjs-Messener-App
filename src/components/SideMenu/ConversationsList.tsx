@@ -99,7 +99,7 @@ const UserList = ({
             <ul className="">
                 {users.map((user) => (
                     <li
-                        className="p-1 mt-2 rounded drop-shadow cursor-pointer select-none bg-slate-300 transition duration-100 ease-in-out hover:bg-slate-400"
+                        className="p-1 mt-2 rounded drop-shadow cursor-pointer select-none bg-slate-300 transition hover:bg-slate-400"
                         key={user._id.toString()}
                         onClick={() => onClick(user)}
                     >
