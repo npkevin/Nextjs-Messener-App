@@ -1,7 +1,6 @@
 import { useState } from 'react'
 
 import TextareaAutosize from 'react-textarea-autosize'
-import styles from '../../../styles/Messenger.module.css'
 import { Types } from 'mongoose'
 import { Socket } from 'socket.io-client'
 

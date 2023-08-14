@@ -1,6 +1,5 @@
 import React, { useState } from 'react'
 
-import styles from '../../../styles/Messenger.module.css'
 import { MessageDocument } from '../../models/message.model'
 import mongoose from 'mongoose';
 

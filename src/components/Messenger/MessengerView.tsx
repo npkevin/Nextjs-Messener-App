@@ -10,7 +10,6 @@ import MessageHistory from './MessageHistory'
 import Messenger from './Messenger'
 
 import { MessageDocument } from '../../models/message.model'
-import styles from '../../../styles/Messenger.module.css'
 
 const MessengerView = (): JSX.Element => {
 
