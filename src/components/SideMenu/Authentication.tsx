@@ -9,6 +9,7 @@ import { AppStateCtx } from "../../../pages";
 import cookies from "js-cookie";
 
 import { TextInput, Button } from "../UI/Input";
+import { PiXBold } from "react-icons/pi";
 
 const Authentication = (): JSX.Element => {
     const { state, setState } = useContext(AppStateCtx);
@@ -118,20 +119,23 @@ const Authentication = (): JSX.Element => {
 
     const warningHide = warning.show
         ? "ease-in duration-200 opacity-100"
-        : "opacity-0 select-none pointer-events-none";
+        : "display-none opacity-0 select-none pointer-events-none";
 
     return !state.validToken ? (
         <div className="flex flex-col">
             <div className={"flex flex-col " + signUpHide}>
                 <TextInput
+                    className="mt-2"
                     placeholder="First name"
                     state={[firstname, setFirstname]}
                 />
                 <TextInput
+                    className="mt-2"
                     placeholder="Middle name (optional)"
                     state={[middlename, setMiddlename]}
                 />
                 <TextInput
+                    className="mt-2"
                     placeholder="Last name"
                     state={[lastname, setLastname]}
                 />
@@ -139,11 +143,13 @@ const Authentication = (): JSX.Element => {
             <div className="flex flex-col">
                 <TextInput
                     type="email"
+                    className="mt-2"
                     placeholder="Email"
                     state={[email, setEmail]}
                 />
                 <TextInput
                     type="password"
+                    className="mt-2"
                     placeholder="Password"
                     state={[password, setPassword]}
                 />
@@ -151,37 +157,44 @@ const Authentication = (): JSX.Element => {
             <div className={"flex flex-col " + signUpHide}>
                 <TextInput
                     type="password"
+                    className="mt-2"
                     placeholder="Confirm Password"
                     state={[passwordConfirmation, setPasswordConfirmation]}
                 />
             </div>
-            <div className="flex flex-row justify-between">
-                <Button onClick={SignUp} value="Sign Up" />
+            <div className="flex flex-row justify-between mt-3">
+                <Button
+                    onClick={SignUp}
+                    value="Sign Up"
+                    className="w-32"
+                    disabled={false}
+                />
                 <Button
                     onClick={SignIn}
                     value="Login"
+                    className="w-32"
                     disabled={btnSignInDisable}
                 />
             </div>
             <div
                 className={
-                    "flex flex-col w-full mt-4 p-2 rounded-lg bg-amber-300 " +
+                    "flex flex-col mt-3 p-2 rounded-lg bg-amber-300 " +
                     warningHide
                 }
             >
-                <button
-                    className="self-end"
+                <PiXBold
+                    className="self-end cursor-pointer"
                     onClick={() =>
                         setWarning({ show: false, message: warning.message })
                     }
-                >
-                    🞬
-                </button>
+                />
                 <span>{warning.message}</span>
             </div>
         </div>
     ) : (
-        <button onClick={SignOut}>Sign Out</button>
+        <div className="flex h-full items-end">
+            <Button value="Sign Out" className="w-full" onClick={SignOut} />
+        </div>
     );
 };
 

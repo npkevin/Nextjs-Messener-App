@@ -2,10 +2,13 @@ import { useContext, useEffect, useState } from "react";
 import { AppStateCtx } from "../../../pages";
 import { Types } from "mongoose";
 
-import Image from "next/image";
 import { CreateUserInput } from "../../schema/user.schema";
 import { ConvoDocument } from "../../models/convo.model";
 import { MessageDocument } from "../../models/message.model";
+
+import { PiUserBold } from "react-icons/pi";
+import { TextInput } from "../UI/Input";
+import { Seperator } from "./SideMenu";
 
 type User = Omit<CreateUserInput, "password"> & { _id: Types.ObjectId };
 type Convo = { id: Types.ObjectId };
@@ -28,7 +31,6 @@ const ConversationList = (): JSX.Element => {
                 }
             })
             .catch();
-        return; // () => { clean-up code }
     }, []);
 
     const searchConvos = async (search_string: string) => {};
@@ -70,46 +72,59 @@ const ConversationList = (): JSX.Element => {
     };
 
     return (
-        <div className={/* styles.convo_container */ ""}>
-            <input
-                type="text"
+        <div className={"flex flex-col"}>
+            <Seperator />
+            <TextInput
                 placeholder="Search"
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
+                state={[search, setSearch]}
                 disabled={true}
             />
-            <span style={{ color: "white", fontSize: "0.8em" }}>
+            <UserList onClick={selectUserHandler} users={users} />
+        </div>
+    );
+};
+
+const UserList = ({
+    onClick,
+    users,
+}: {
+    onClick: (user: User) => Promise<void>;
+    users: User[];
+}) => {
+    return (
+        <>
+            <span className="text-slate-900 text-sm mt-2">
                 Recent/New Users
             </span>
-            <ul className={/* styles.convo_list */ ""}>
+            <ul>
                 {users.map((user) => (
                     <li
-                        className={/* styles.convo */ ""}
+                        className="rounded-lg p-2 mt-2 cursor-pointer select-none bg-slate-300 hover:bg-slate-400"
                         key={user._id.toString()}
-                        onClick={() => selectUserHandler(user)}
+                        onClick={() => onClick(user)}
                     >
-                        <div className={/* styles.profile_pic */ ""}>
-                            <Image
-                                src="/profile.png"
-                                alt=""
-                                width="100"
-                                height="100"
-                            />
-                        </div>
-                        <div className={/* styles.glance */ ""}>
-                            <span>
-                                {`${user.name.first} ${user.name.last}`.toUpperCase()}
-                            </span>
-                            {/* <span>Offline</span> */}
+                        <div className={"flex flex-row items-center"}>
+                            <PiUserBold className="w-10 h-10 p-1.5 mr-2 rounded-full bg-white" />
+                            <div className={"flex flex-col"}>
+                                <span>
+                                    {`${user.name.first} ${user.name.last}`.toUpperCase()}
+                                </span>
+                                <span className="text-sm">
+                                    {
+                                        "Offline" /* TODO: Actual status changing*/
+                                    }
+                                </span>
+                            </div>
                         </div>
                     </li>
                 ))}
-                {convos.map((convo) => (
+                {/* TODO: Get recent conversations
+                convos.map((convo) => (
                     <li
-                        className={/* styles.convo */ ""}
+                        className=""
                         key={convo.id.toString()}
                     >
-                        <div className={/* styles.profile_pic */ ""}>
+                        <div className="">
                             <Image
                                 src="/profile.png"
                                 alt=""
@@ -117,14 +132,14 @@ const ConversationList = (): JSX.Element => {
                                 height="100"
                             />
                         </div>
-                        <div className={/* styles.glance */ ""}>
+                        <div className="">
                             <span>convo name</span>
                             <span>last message</span>
                         </div>
                     </li>
-                ))}
+                ))*/}
             </ul>
-        </div>
+        </>
     );
 };
 

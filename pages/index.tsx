@@ -78,7 +78,7 @@ const Home: NextPage = (): JSX.Element => {
             <link rel="stylesheet" href="https://rsms.me/inter/inter.css" />
             <div className="flex flex-row">
                 <SideMenu />
-                {/* <MessengerView /> */}
+                <MessengerView />
             </div>
         </AppStateCtx.Provider>
     );

@@ -5,6 +5,7 @@ interface TextProps<T> {
     placeholder: string;
     className?: string;
     state: [T, Dispatch<SetStateAction<T>>];
+    disabled?: boolean;
 }
 
 export const TextInput: React.FC<TextProps<string>> = ({
@@ -12,18 +13,18 @@ export const TextInput: React.FC<TextProps<string>> = ({
     type,
     placeholder,
     state,
+    disabled,
 }) => {
-    const defaultStyle =
-        "mt-4 px-4 py-1 rounded-lg text-gray-700 drop-shadow focus:outline-none";
-    const style = !className ? defaultStyle : className;
     const [value, setValue] = state;
+    className = `px-4 py-1 rounded-lg text-gray-700 bg-white drop-shadow focus:outline-none disabled:bg-slate-300 ${className}`;
     return (
         <input
-            className={style}
+            className={className}
             type={!type ? "text" : type}
             placeholder={placeholder}
             value={value}
             onChange={(e) => setValue(e.target.value)}
+            disabled={!!disabled}
         />
     );
 };
@@ -41,12 +42,10 @@ export const Button: React.FC<ButtonProps> = ({
     disabled,
     onClick,
 }) => {
-    const defaultStyle =
-        "w-32 mt-4 p-1 rounded-lg drop-shadow cursor-pointer bg-blue-300 hover:bg-blue-400";
-    const style = !className ? defaultStyle : className;
+    className = `p-1 rounded-lg drop-shadow bg-slate-400 enabled:hover:bg-slate-500 enabled:cursor-pointer disabled:bg-slate-100 disabled:text-slate-300 ${className}`;
     return (
         <input
-            className={style}
+            className={className}
             type="button"
             value={value}
             disabled={!!disabled}
