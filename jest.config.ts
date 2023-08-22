@@ -26,6 +26,11 @@ const config = {
     // Handle module aliases
     '^@/pages/(.*)$':'<rootDir>/pages/$1',
     '^@/components/(.*)$': '<rootDir>/src/components/$1',
+
+    '^@/models/(.*)$': '<rootDir>/src/models/$1',
+    '^@/schema/(.*)$': '<rootDir>/src/schema/$1',
+    '^@/service/(.*)$': '<rootDir>/src/service/$1',
+    '^@/utils/(.*)$': '<rootDir>/src/utils/$1',
   },
   // Add more setup options before each test is run
   // setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],

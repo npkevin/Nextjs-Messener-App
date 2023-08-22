@@ -3,7 +3,11 @@
     "baseUrl": ".",
     "paths": {
       "@/pages/*": ["pages/*"],
-      "@/components/*": ["src/components/*"]
+      "@/components/*": ["src/components/*"],
+      "@/models/*": ["src/models/*"],
+      "@/schema/*": ["src/schema/*"],
+      "@/service/*": ["src/service/*"],
+      "@/utils/*": ["src/utils/*"],
     },
     "target": "ES5",
     "lib": [
