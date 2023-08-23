@@ -1,11 +1,11 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useContext, useEffect, useState } from "react";
 import mongoose from "mongoose";
-
-import { AppStateCtx } from "../../../pages";
 import { Socket } from "socket.io-client";
-import getSocket from "../../utils/socket";
-import { MessageDocument } from "../../models/message.model";
+
+import { AppStateCtx } from "@/pages/index";
+import getSocket from "@/utils/socket";
+import { MessageDocument } from "@/models/message.model";
 
 import MessageHistory from "./MessageHistory";
 import Messenger from "./Messenger";
@@ -49,7 +49,10 @@ const MessengerView = (): JSX.Element => {
     };
 
     return (
-        <div className="flex flex-col grow max-h-full min-h-full ml-3 rounded drop-shadow">
+        <div
+            data-testid="messenger_view"
+            className="flex flex-col grow max-h-full min-h-full ml-3 rounded drop-shadow"
+        >
             {state.convo && socket ? (
                 <>
                     <RecipientGlance

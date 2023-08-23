@@ -1,5 +1,5 @@
-import MessageModel, { MessageDocument } from "../models/message.model"
-import { CreateMessageInput } from "../schema/message.schema"
+import MessageModel, { MessageDocument } from "@/models/message.model"
+import { CreateMessageInput } from "@/schema/message.schema"
 
 export async function createMessage(input: CreateMessageInput): Promise<MessageDocument> {
     try {

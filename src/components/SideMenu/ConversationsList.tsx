@@ -1,14 +1,14 @@
 import { useContext, useEffect, useState } from "react";
-import { AppStateCtx } from "../../../pages";
 import { Types } from "mongoose";
 
-import { CreateUserInput } from "../../schema/user.schema";
-import { ConvoDocument } from "../../models/convo.model";
-import { MessageDocument } from "../../models/message.model";
+import { AppStateCtx } from "@/pages/index";
+import { ConvoDocument } from "@/models/convo.model";
+import { MessageDocument } from "@/models/message.model";
+import { CreateUserInput } from "@/schema/user.schema";
 
-import { PiUserBold } from "react-icons/pi";
+import { Seperator } from "@/components/SideMenu/SideMenu";
 import { TextInput } from "../UI/Input";
-import { Seperator } from "./SideMenu";
+import { PiUserBold } from "react-icons/pi";
 
 type User = Omit<CreateUserInput, "password"> & { _id: Types.ObjectId };
 type Convo = { id: Types.ObjectId };

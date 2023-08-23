@@ -2,11 +2,11 @@ import type { NextPage } from "next";
 import { createContext, useEffect, useState } from "react";
 import cookies from "js-cookie";
 
-import SideMenu from "../src/components/SideMenu/SideMenu";
-import MessengerView from "../src/components/Messenger/MessengerView";
+import SideMenu from "@/components/SideMenu/SideMenu";
+import MessengerView from "@/components/Messenger/MessengerView";
 
 import { Types } from "mongoose";
-import { MessageDocument } from "../src/models/message.model";
+import { MessageDocument } from "@/models/message.model";
 
 interface IdefaultState {
     validToken: boolean;

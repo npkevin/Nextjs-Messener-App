@@ -1,8 +1,9 @@
-import Authentication from "./Authentication";
-import ConversationList from "./ConversationsList";
-import Profile from "./Profile";
 import { useContext } from "react";
-import { AppStateCtx } from "../../../pages";
+import { AppStateCtx } from "@/pages/index";
+
+import Profile from "./Profile";
+import Authentication from "@/components/SideMenu/Authentication";
+import ConversationList from "@/components/SideMenu/ConversationsList";
 
 import { PiChatsTeardropDuotone } from "react-icons/pi";
 
@@ -10,7 +11,10 @@ const SideMenu = (): JSX.Element => {
     const { state, setState } = useContext(AppStateCtx);
 
     return (
-        <div className="flex flex-col w-80 min-w max-w-md h-full p-3 bg-slate-200 rounded drop-shadow">
+        <div
+            data-testid="side_menu"
+            className="flex flex-col w-80 min-w max-w-md h-full p-3 bg-slate-200 rounded drop-shadow"
+        >
             <Banner />
             {state.validToken ? <Profile /> : null}
             {state.validToken ? <ConversationList /> : null}

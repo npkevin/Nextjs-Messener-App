@@ -1,5 +1,5 @@
 import { useContext } from "react";
-import { AppStateCtx } from "../../../pages";
+import { AppStateCtx } from "@/pages/index";
 
 import { PiUserBold } from "react-icons/pi";
 

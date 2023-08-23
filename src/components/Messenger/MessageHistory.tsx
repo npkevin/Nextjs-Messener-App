@@ -1,7 +1,7 @@
 import React from "react";
 
 import mongoose from "mongoose";
-import { MessageDocument } from "../../models/message.model";
+import { MessageDocument } from "@/models/message.model";
 
 const MessageHistory = (props: {
     history: MessageDocument[];

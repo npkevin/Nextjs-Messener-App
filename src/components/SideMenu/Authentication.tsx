@@ -1,16 +1,9 @@
-import {
-    Dispatch,
-    SetStateAction,
-    useContext,
-    useEffect,
-    useState,
-} from "react";
+import { useContext, useEffect, useState } from "react";
 import { AppStateCtx } from "../../../pages";
 import cookies from "js-cookie";
 
 import { TextInput, Button } from "../UI/Input";
 import { PiXBold } from "react-icons/pi";
-import { IoSend } from "react-icons/io5";
 
 const Authentication = (): JSX.Element => {
     const { state, setState } = useContext(AppStateCtx);

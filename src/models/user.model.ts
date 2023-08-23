@@ -2,7 +2,7 @@ import mongoose, { Schema } from "mongoose"
 import getConfig from "next/config"
 import bcrypt from 'bcrypt'
 
-import { CreateUserInput } from "../schema/user.schema"
+import { CreateUserInput } from "@/schema/user.schema"
 
 export interface UserDocument extends CreateUserInput, mongoose.Document {
     comparePassword(candidatePassword: string): Promise<Boolean>

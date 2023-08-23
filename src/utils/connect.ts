@@ -1,5 +1,5 @@
 import mongoose from "mongoose"
-import logger from '../utils/logger'
+import logger from './logger'
 import getConfig from "next/config"
 
 mongoose.set('strictQuery', false) // prepare for mongoose 7 change

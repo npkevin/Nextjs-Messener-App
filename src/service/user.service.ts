@@ -1,10 +1,10 @@
 import getConfig from "next/config"
 import jwt from "jsonwebtoken"
-import logger from "../utils/logger"
+import logger from "@/utils/logger"
 
-import UserModel, { UserDocument } from "../models/user.model"
-import SessionModel, { IPayload, SessionDocument } from "../models/sessions.model"
-import { CreateUserInput } from "../schema/user.schema"
+import UserModel, { UserDocument } from "@/models/user.model"
+import SessionModel, { IPayload, SessionDocument } from "@/models/sessions.model"
+import { CreateUserInput } from "@/schema/user.schema"
 
 export const createUser = async (input: CreateUserInput): Promise<UserDocument> => {
     try {

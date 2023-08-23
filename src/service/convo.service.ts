@@ -3,8 +3,8 @@ import mongoose from "mongoose"
 import jwt from 'jsonwebtoken'
 
 import { IPayload } from "../models/sessions.model"
-import ConvoModel, { ConvoDocument } from "../models/convo.model"
-import { CreateConvoInput } from "../schema/convo.schema"
+import ConvoModel, { ConvoDocument } from "@/models/convo.model"
+import { CreateConvoInput } from "@/schema/convo.schema"
 
 
 export async function createConvo(input: CreateConvoInput): Promise<ConvoDocument> {

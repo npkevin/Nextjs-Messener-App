@@ -3,7 +3,6 @@ import mongoose, { Schema, Document } from "mongoose"
 import jwt from "jsonwebtoken"
 
 import { UserDocument } from "./user.model"
-import logger from "../utils/logger"
 
 export interface SessionDocument extends Document {
     user: mongoose.Types.ObjectId | UserDocument,

@@ -2,7 +2,7 @@ import { useState } from "react";
 
 import { Types } from "mongoose";
 import { Socket } from "socket.io-client";
-import { Button } from "../UI/Input";
+import { Button } from "@/components/UI/Input";
 
 const Messenger = (props: {
     convo_id: Types.ObjectId;
