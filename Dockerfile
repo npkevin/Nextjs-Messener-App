@@ -10,7 +10,7 @@ RUN npm ci --only=production
 # Source
 COPY pages ./pages
 COPY public ./public
-COPY style ./style
+COPY styles ./styles
 COPY src/components ./src/components
 COPY src/models ./src/models
 COPY src/schema ./src/schema
