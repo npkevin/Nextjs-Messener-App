@@ -1,8 +1,17 @@
 version: '3'
 
 services:
-  socketio:
+  messenger:
     build: .
+    container_name: msg_messenger
+    networks:
+      - nginx_network
+    ports:
+      - 3000:3000
+
+  socketio:
+    build: ./src/socketio
+    container_name: msg_socketio
     volumes:
       - /home/kevin/server/certbot/conf/archive/kevnp.com-0001/:/app/ssl/:ro
     networks:
@@ -13,6 +22,7 @@ services:
   mongodb:
     image: mongo
     restart: always
+    container_name: msg_mongodb
     environment:
       MONGO_INITDB_ROOT_USERNAME: mongo
       MONGO_INITDB_ROOT_PASSWORD: knguyen
