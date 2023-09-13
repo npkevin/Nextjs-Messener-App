@@ -1,11 +1,8 @@
 import defaultTheme from "tailwindcss/defaultTheme";
-import type { Config } from 'tailwindcss'
+import type { Config } from "tailwindcss";
 
 const tailwind_config: Config = {
-    content: [
-        "./pages/**/*.{js,ts,jsx,tsx,mdx}",
-        "./src/**/*.{js,ts,jsx,tsx,mdx}",
-    ],
+    content: ["./pages/**/*.{js,ts,jsx,tsx,mdx}", "./src/**/*.{js,ts,jsx,tsx,mdx}"],
     theme: {
         extend: {
             fontFamily: {

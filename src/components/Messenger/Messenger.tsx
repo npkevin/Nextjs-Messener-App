@@ -4,10 +4,7 @@ import { Types } from "mongoose";
 import { Socket } from "socket.io-client";
 import { Button } from "@/components/UI/Input";
 
-const Messenger = (props: {
-    convo_id: Types.ObjectId;
-    socket: Socket;
-}): JSX.Element => {
+const Messenger = (props: { convo_id: Types.ObjectId; socket: Socket }): JSX.Element => {
     const [draft, setDraft] = useState("");
 
     const sendMessage = async () => {
@@ -26,7 +23,7 @@ const Messenger = (props: {
                     convo_id: props.convo_id.toString(),
                     content: JSON.stringify(await response.json()),
                 },
-                () => {}
+                () => {},
             );
         }
         setDraft("");

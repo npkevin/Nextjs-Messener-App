@@ -13,11 +13,7 @@ const MessageHistory = (props: {
             {props.messages.map((message) => {
                 const sender = !props.sender_id.equals(message.sender_id);
                 return (
-                    <Message
-                        key={message._id}
-                        date={message.createdAt}
-                        sender={sender}
-                    >
+                    <Message key={message._id} date={message.createdAt} sender={sender}>
                         {message.content}
                     </Message>
                 );
@@ -25,11 +21,7 @@ const MessageHistory = (props: {
             {props.history.map((message) => {
                 const sender = !props.sender_id.equals(message.sender_id);
                 return (
-                    <Message
-                        key={message._id}
-                        date={message.createdAt}
-                        sender={sender}
-                    >
+                    <Message key={message._id} date={message.createdAt} sender={sender}>
                         {message.content}
                     </Message>
                 );
@@ -38,16 +30,11 @@ const MessageHistory = (props: {
     );
 };
 
-const Message = (props: {
-    date: Date;
-    sender: boolean;
-    children: string;
-}): JSX.Element => {
+const Message = (props: { date: Date; sender: boolean; children: string }): JSX.Element => {
     const senderStyle = props.sender
         ? "rounded-br-none self-end bg-green-300 "
         : "rounded-bl-none self-start bg-slate-300 ";
-    const className =
-        "flex flex-col w-fit mt-3 p-1.5 rounded-xl drop-shadow " + senderStyle;
+    const className = "flex flex-col w-fit mt-3 p-1.5 rounded-xl drop-shadow " + senderStyle;
     return (
         <div className={className}>
             <span className="text-sm">{props.children}</span>

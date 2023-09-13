@@ -40,12 +40,7 @@ interface ButtonProps {
     onClick: MouseEventHandler<HTMLInputElement>;
 }
 
-export const Button: React.FC<ButtonProps> = ({
-    className,
-    value,
-    disabled,
-    onClick,
-}) => {
+export const Button: React.FC<ButtonProps> = ({ className, value, disabled, onClick }) => {
     className =
         "text-sm p-1 rounded drop-shadow enabled:hover:cursor-pointer bg-slate-400 enabled:hover:bg-slate-500 " +
         "disabled:bg-slate-100 disabled:text-slate-300 " +

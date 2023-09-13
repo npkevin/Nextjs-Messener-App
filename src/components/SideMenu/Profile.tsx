@@ -15,9 +15,7 @@ const Profile = (): JSX.Element => {
                         ? `${state.user.name.first} ${state.user.name.last}`.toUpperCase()
                         : ""}
                 </span>
-                <span className="text-xs">
-                    {"Online" /* TODO: Actual status changing*/}
-                </span>
+                <span className="text-xs">{"Online" /* TODO: Actual status changing*/}</span>
             </div>
         </div>
     );

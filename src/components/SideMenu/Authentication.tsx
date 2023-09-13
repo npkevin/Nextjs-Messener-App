@@ -10,8 +10,7 @@ const Authentication = (): JSX.Element => {
 
     const [email, setEmail] = useState<string>("");
     const [password, setPassword] = useState<string>("");
-    const [passwordConfirmation, setPasswordConfirmation] =
-        useState<string>("");
+    const [passwordConfirmation, setPasswordConfirmation] = useState<string>("");
 
     const [firstname, setFirstname] = useState<string>("");
     const [middlename, setMiddlename] = useState<string>("");
@@ -157,12 +156,7 @@ const Authentication = (): JSX.Element => {
                 />
             </div>
             <div className="flex flex-row mt-3 justify-between gap-4">
-                <Button
-                    onClick={SignUp}
-                    value="Sign Up"
-                    className="w-full"
-                    disabled={false}
-                />
+                <Button onClick={SignUp} value="Sign Up" className="w-full" disabled={false} />
                 <Button
                     onClick={SignIn}
                     value="Login"
@@ -170,17 +164,10 @@ const Authentication = (): JSX.Element => {
                     disabled={btnSignInDisable}
                 />
             </div>
-            <div
-                className={
-                    "flex flex-col mt-3 p-2 rounded-lg bg-amber-300 " +
-                    warningHide
-                }
-            >
+            <div className={"flex flex-col mt-3 p-2 rounded-lg bg-amber-300 " + warningHide}>
                 <PiXBold
                     className="self-end cursor-pointer"
-                    onClick={() =>
-                        setWarning({ show: false, message: warning.message })
-                    }
+                    onClick={() => setWarning({ show: false, message: warning.message })}
                 />
                 <span>{warning.message}</span>
             </div>

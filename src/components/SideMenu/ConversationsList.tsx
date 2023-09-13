@@ -43,19 +43,14 @@ const ConversationList = (): JSX.Element => {
 
             if (response.ok) {
                 const convo_doc = (await response.json()) as ConvoDocument;
-                const messages_history =
-                    convo_doc.messages as MessageDocument[];
-                const messages_history_casted = messages_history.map(
-                    (message) => {
-                        message.sender_id = new Types.ObjectId(
-                            message.sender_id
-                        );
-                        message.convo_id = new Types.ObjectId(message.convo_id);
-                        message.createdAt = new Date(message.createdAt);
-                        message.updatedAt = new Date(message.updatedAt);
-                        return message;
-                    }
-                );
+                const messages_history = convo_doc.messages as MessageDocument[];
+                const messages_history_casted = messages_history.map((message) => {
+                    message.sender_id = new Types.ObjectId(message.sender_id);
+                    message.convo_id = new Types.ObjectId(message.convo_id);
+                    message.createdAt = new Date(message.createdAt);
+                    message.updatedAt = new Date(message.updatedAt);
+                    return message;
+                });
                 // console.log(convo_doc)
                 setState({
                     convo: {
@@ -74,11 +69,7 @@ const ConversationList = (): JSX.Element => {
     return (
         <div className={"flex flex-col"}>
             <Seperator />
-            <TextInput
-                placeholder="Search"
-                state={[search, setSearch]}
-                disabled={true}
-            />
+            <TextInput placeholder="Search" state={[search, setSearch]} disabled={true} />
             <UserList onClick={selectUserHandler} users={users} />
         </div>
     );
@@ -93,9 +84,7 @@ const UserList = ({
 }) => {
     return (
         <>
-            <span className="text-slate-900 text-xs mt-2">
-                Recent/New Users
-            </span>
+            <span className="text-slate-900 text-xs mt-2">Recent/New Users</span>
             <ul className="">
                 {users.map((user) => (
                     <li
@@ -110,9 +99,7 @@ const UserList = ({
                                     {`${user.name.first} ${user.name.last}`.toUpperCase()}
                                 </span>
                                 <span className="text-xs">
-                                    {
-                                        "Offline" /* TODO: Actual status changing*/
-                                    }
+                                    {"Offline" /* TODO: Actual status changing*/}
                                 </span>
                             </div>
                         </div>

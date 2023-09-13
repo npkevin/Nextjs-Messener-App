@@ -8,8 +8,7 @@ const getSocket = () => {
     if (SOCKETIO.URI) {
         try {
             if (socket && socket.connected) return socket;
-            if (!socket || socket.disconnected)
-                socket = io(SOCKETIO.URI, { path: SOCKETIO.PATH });
+            if (!socket || socket.disconnected) socket = io(SOCKETIO.URI, { path: SOCKETIO.PATH });
             return socket;
         } catch (err) {
             console.error("Client failed to connect to Socketio Server");

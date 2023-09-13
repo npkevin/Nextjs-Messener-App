@@ -1,48 +1,51 @@
-import getConfig from "next/config"
-import mongoose, { Schema, Document } from "mongoose"
-import jwt from "jsonwebtoken"
+import getConfig from "next/config";
+import mongoose, { Schema, Document } from "mongoose";
+import jwt from "jsonwebtoken";
 
-import { UserDocument } from "./user.model"
+import { UserDocument } from "./user.model";
 
 export interface SessionDocument extends Document {
-    user: mongoose.Types.ObjectId | UserDocument,
-    sessions: mongoose.Types.Array<String> // Type depends on how we generate sessions
+    user: mongoose.Types.ObjectId | UserDocument;
+    sessions: mongoose.Types.Array<String>; // Type depends on how we generate sessions
 
-    createdAt: Date,
-    updatedAt: Date,
+    createdAt: Date;
+    updatedAt: Date;
 
-    removeSession(session: string): Promise<void>,
-    addSession(): Promise<string>
+    removeSession(session: string): Promise<void>;
+    addSession(): Promise<string>;
 }
 
 // Define Mongoose Schema
-const sessionSchema = new Schema<SessionDocument>({
-    user: { type: Schema.Types.ObjectId, ref: "User", required: true, unique: true },
-    sessions: { type: [String], required: true, default: [] }
-}, {
-    timestamps: true,
-})
+const sessionSchema = new Schema<SessionDocument>(
+    {
+        user: { type: Schema.Types.ObjectId, ref: "User", required: true, unique: true },
+        sessions: { type: [String], required: true, default: [] },
+    },
+    {
+        timestamps: true,
+    },
+);
 
 export interface IPayload {
-    user_id: mongoose.Types.ObjectId,
-    name_first: string,
-    name_middle: string,
-    name_last: string,
-    email: string,
-    iat: number,
+    user_id: mongoose.Types.ObjectId;
+    name_first: string;
+    name_middle: string;
+    name_last: string;
+    email: string;
+    iat: number;
     // TODO: maybe browserinfo?
 }
 
 sessionSchema.methods.removeSession = async function (token: string) {
-    const session = this as SessionDocument
-    session.sessions.pull(token)
-    await session.save()
-}
+    const session = this as SessionDocument;
+    session.sessions.pull(token);
+    await session.save();
+};
 
 sessionSchema.methods.addSession = async function (): Promise<string> {
-    const session = this as SessionDocument
-    await session.populate("user")
-    const session_user = session.user as unknown as UserDocument
+    const session = this as SessionDocument;
+    await session.populate("user");
+    const session_user = session.user as unknown as UserDocument;
 
     const payload: IPayload = {
         user_id: session_user._id,
@@ -51,14 +54,17 @@ sessionSchema.methods.addSession = async function (): Promise<string> {
         name_last: session_user.name.last,
         email: session_user.email,
         iat: Date.now(),
-    }
-    const { serverRuntimeConfig: { jwt_secret } } = getConfig()
-    const token = jwt.sign(payload, jwt_secret)
+    };
+    const {
+        serverRuntimeConfig: { jwt_secret },
+    } = getConfig();
+    const token = jwt.sign(payload, jwt_secret);
 
-    session.sessions.push(token)
-    await session.save()
-    return token
-}
+    session.sessions.push(token);
+    await session.save();
+    return token;
+};
 
-const SessionModel = mongoose.models['Session'] || mongoose.model<SessionDocument>('Session', sessionSchema)
-export default SessionModel
+const SessionModel =
+    mongoose.models["Session"] || mongoose.model<SessionDocument>("Session", sessionSchema);
+export default SessionModel;
