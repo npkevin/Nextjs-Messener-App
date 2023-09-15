@@ -30,60 +30,50 @@ export const validatePassword = async ({
     return user;
 };
 
-export const createSession = async (user: UserDocument): Promise<string> => {
-    try {
-        // find/create session document
-        const session: SessionDocument | null = await SessionModel.findOneAndUpdate(
-            { user: user._id },
-            {},
-            { upsert: true, new: true, setDefaultsOnInsert: true },
-        );
+export const createSession = async (user: UserDocument): Promise<string | null> => {
+    // find/create session document
+    const session = await SessionModel.findOneAndUpdate(
+        { user: user._id },
+        {},
+        { upsert: true, new: true, setDefaultsOnInsert: true },
+    );
 
-        if (session == null) throw new Error("createSession: Unexpected null");
+    if (!session) return null;
 
-        const token = await session.addSession();
-        return token;
-    } catch (error: any) {
-        throw error;
-    }
+    const token = await session.addSession();
+    return token;
 };
 
-export const validateToken = async (token: string): Promise<UserDocument | null> => {
+export const validateToken = async (token: string | string[]): Promise<UserDocument | null> => {
     if (!token) return null;
-    try {
-        const {
-            serverRuntimeConfig: { jwt_secret },
-        } = getConfig();
-        const decoded_token = jwt.verify(token, jwt_secret) as IPayload;
-        const session: SessionDocument | null = await SessionModel.findOne({
-            user: decoded_token.user_id,
-            sessions: { $in: [token] },
-        });
-        if (!session) return null;
-        await session.populate("user");
-        return session.user as unknown as UserDocument;
-    } catch (error) {
-        logger.error(error);
-        return null;
-    }
+    if (Array.isArray(token)) return null;
+
+    const { jwt_secret } = getConfig().serverRuntimeConfig;
+
+    const decoded_token = jwt.verify(token, jwt_secret) as IPayload;
+    const session = await SessionModel.findOne({
+        user: decoded_token.user_id,
+        sessions: { $in: [token] },
+    });
+    if (!session) return null;
+
+    await session.populate("user");
+    return session.user as unknown as UserDocument;
 };
 
 export const deleteToken = async (token: string): Promise<boolean> => {
     if (!token) return false;
-    try {
-        const {
-            serverRuntimeConfig: { jwt_secret },
-        } = getConfig();
-        const decoded_token = jwt.verify(token, jwt_secret) as IPayload;
-        const session: SessionDocument | null = await SessionModel.findOne({
-            user: decoded_token.user_id,
-            sessions: { $in: [token] },
-        });
-        if (!session) return false;
-        session.removeSession(token);
-        return true;
-    } catch (error) {
-        logger.error(error);
-        return false;
-    }
+
+    const { jwt_secret } = getConfig().serverRuntimeConfig;
+
+    const decoded_token = jwt.verify(token, jwt_secret) as IPayload;
+    const session = await SessionModel.findOne({
+        user: decoded_token.user_id,
+        sessions: { $in: [token] },
+    });
+
+    if (!session) return false;
+
+    session.removeSession(token);
+    return true;
 };

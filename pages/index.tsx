@@ -5,8 +5,21 @@ import cookies from "js-cookie";
 import SideMenu from "@/components/SideMenu/SideMenu";
 import MessengerView from "@/components/Messenger/MessengerView";
 
-import { Types } from "mongoose";
+import mongoose from "mongoose";
 import { MessageDocument } from "@/models/message.model";
+
+export type ConvoState = {
+    id: mongoose.Types.ObjectId;
+    user: {
+        id: mongoose.Types.ObjectId;
+        name: {
+            first: string;
+            last: string;
+            middle: string;
+        };
+    };
+    messages: MessageDocument[];
+};
 
 interface IdefaultState {
     validToken: boolean;
@@ -17,18 +30,7 @@ interface IdefaultState {
             middle: string;
         };
     };
-    convo?: {
-        id: Types.ObjectId;
-        user: {
-            id: Types.ObjectId;
-            name: {
-                first: string;
-                last: string;
-                middle: string;
-            };
-        };
-        messages_history: MessageDocument[];
-    };
+    convo?: ConvoState;
 }
 const defaultState: IdefaultState = {
     validToken: false,
@@ -48,7 +50,7 @@ export const AppStateCtx = createContext<IAppState>({
 const Home: NextPage = (): JSX.Element => {
     const [state, _setState] = useState(defaultState);
     const setState = (new_state: {}) =>
-        _setState((prev_state) => ({ ...prev_state, ...new_state }));
+        _setState((prev_state: IdefaultState) => ({ ...prev_state, ...new_state }));
 
     useEffect(() => {
         const checkCookieToken = async () => {

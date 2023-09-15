@@ -12,22 +12,12 @@ export interface ConvoDocument extends mongoose.Document {
 const ConvoSchema = new Schema<ConvoDocument>(
     {
         messages: {
-            type: [
-                {
-                    type: Schema.Types.ObjectId,
-                    ref: "Message",
-                },
-            ],
+            type: [{ type: Schema.Types.ObjectId, ref: "Message" }],
             // required: true,
             default: [],
         },
         users: {
-            type: [
-                {
-                    type: Schema.Types.ObjectId,
-                    ref: "User",
-                },
-            ],
+            type: [{ type: Schema.Types.ObjectId, ref: "User" }],
             required: true,
             default: [],
         },

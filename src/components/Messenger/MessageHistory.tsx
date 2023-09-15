@@ -35,11 +35,12 @@ const Message = (props: { date: Date; sender: boolean; children: string }): JSX.
         ? "rounded-br-none self-end bg-green-300 "
         : "rounded-bl-none self-start bg-slate-300 ";
     const className = "flex flex-col w-fit mt-3 p-1.5 rounded-xl drop-shadow " + senderStyle;
+    const date = typeof props.date === "string" ? new Date(props.date) : props.date;
     return (
         <div className={className}>
             <span className="text-sm">{props.children}</span>
             <span className="text-xs">
-                {props.date.toLocaleTimeString(undefined, {
+                {date.toLocaleTimeString(undefined, {
                     hour: "2-digit",
                     minute: "2-digit",
                 })}

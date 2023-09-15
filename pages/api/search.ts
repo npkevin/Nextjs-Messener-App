@@ -1,32 +1,68 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import UserModel, { UserDocument } from "../../src/models/user.model";
+import { searchUserConvos } from "@/service/convo.service";
+import { validateToken } from "@/service/user.service";
+import UserModel, { UserDocument } from "@/models/user.model";
+import { ConvoGlance, User } from "@/components/SideMenu/ConversationsList";
 import cookie from "cookie";
-import { validateToken } from "../../src/service/user.service";
 
-// TODO: Properly implement searching, just returns all users at the moment
 const handleSearchRequest = async (req: NextApiRequest, res: NextApiResponse) => {
     const { token } = cookie.parse(req.headers.cookie || "");
     if (!token) res.status(400).send("Invalid Request: Token Required");
 
+    const client = await validateToken(token);
+    if (!client) return res.status(400).send("Invalid Request: Invalid Token");
+
     if (req.method == "GET") {
+        const { search_string } = req.query;
+        if (Array.isArray(search_string) /** || Array.isArray(other_queries) */)
+            return res.status(400).send("Invalid Request: Too many parameters");
+
         // 1. Manual search by name
-        const { search_all } = req.query;
-        if (search_all === "true") {
-            return demo_getRecentUsers(req, res, token);
+        if (search_string) {
+            await searchUserConvoHandler(res, client, search_string);
+            return;
         }
-        res.status(200).send({ test: true });
         // 2. Search by token > convo contents
+
+        // default for now
+        return demo_getRecentUsers(res, client);
     }
 };
 
 export default handleSearchRequest;
 
-// Returns 5 most recently registered users
-async function demo_getRecentUsers(req: NextApiRequest, res: NextApiResponse, token: string) {
-    const user = await validateToken(token);
-    if (!user) return res.status(400).send("Invalid Request: Invalid Token");
+// returns convoId, name and lastmessage
+const searchUserConvoHandler = async (
+    res: NextApiResponse,
+    client: UserDocument,
+    search_string: string,
+) => {
+    const convos = await searchUserConvos(client, search_string);
+    if (!convos) return res.status(200).json([]);
 
-    const recent_users = (await UserModel.find({ _id: { $ne: user._id } })
+    const result: ConvoGlance[] = [];
+    for (const convo of convos) {
+        let other_users_cleaned: User[] = [];
+        for (const user of convo.other_users) {
+            other_users_cleaned.push({
+                id: user._id,
+                name: user.name,
+            });
+        }
+
+        result.push({
+            convo_id: convo._id,
+            other_users: other_users_cleaned,
+            recent_messages: convo.recent_messages,
+            matched_messages: convo.matched_messages,
+        });
+    }
+    res.status(200).json(result);
+};
+
+// Returns 5 most recently registered users
+async function demo_getRecentUsers(res: NextApiResponse, client: UserDocument) {
+    const recent_users = (await UserModel.find({ _id: { $ne: client._id } })
         .sort({ createdAt: -1 })
         .limit(10)) as UserDocument[];
 

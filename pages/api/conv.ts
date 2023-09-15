@@ -1,5 +1,4 @@
 import type { NextApiRequest, NextApiResponse } from "next";
-import { io } from "socket.io-client";
 import logger from "../../src/utils/logger";
 import connect from "../../src/utils/connect";
 import cookie from "cookie";
@@ -8,13 +7,17 @@ import mongoose from "mongoose";
 import ConvoModel, { ConvoDocument } from "../../src/models/convo.model";
 import { CreateMessageInput, createMessageSchema } from "../../src/schema/message.schema";
 import { validateToken } from "../../src/service/user.service";
-import { createMessage } from "../../src/service/message.service";
-import { getConvoByUser, getUserConvos } from "../../src/service/convo.service";
-import getConfig from "next/config";
+import { createMessage, getMessagesByConvoId } from "../../src/service/message.service";
+import { getConvoByIds, getConvoByUser, getUserConvos } from "../../src/service/convo.service";
+import { UserDocument } from "@/models/user.model";
+import { MessageDocument } from "@/models/message.model";
 
 const handleConversationsRequest = async (req: NextApiRequest, res: NextApiResponse) => {
     const { token } = cookie.parse(req.headers.cookie || "");
     if (!token) res.status(400).send("Invalid Request: Token Required");
+
+    const client = await validateToken(token);
+    if (!client) return res.status(400).send("Invalid Request: Invalid Session Token");
 
     await connect();
 
@@ -24,15 +27,16 @@ const handleConversationsRequest = async (req: NextApiRequest, res: NextApiRespo
             return res.status(400).send("Invalid Request: Too many parameters");
 
         if (user_id) {
-            logger.info(`GET Conv by USER_ID: ${user_id}`);
-            return getConvoByUserIdHandler(req, res, token, user_id);
+            const recip_id = user_id; // query
+            logger.info(`GET Conv by USER_ID: ${recip_id}`);
+            return getConvoByUserIdHandler(res, client, recip_id);
         }
         if (convo_id) {
             logger.info(`GET Conv by CONVO_ID: ${convo_id}`);
-            return getConvoByIdHandler(req, res, token, convo_id);
+            return getMessagesByConvoIdHandler(res, client, convo_id);
         }
     }
-    if (req.method == "POST") return appendMessageToConvo(req, res, token);
+    if (req.method == "POST") return appendMessageToConvo(req, res, client);
 
     res.status(405).send("");
 };
@@ -43,54 +47,50 @@ export default handleConversationsRequest;
 //                                       HANDLERS
 // ========================================================================================
 
-async function deleteConvoHandler(req: NextApiRequest, res: NextApiResponse) {}
-
 async function getConvoByUserIdHandler(
-    req: NextApiRequest,
     res: NextApiResponse,
-    token: string,
-    other_user_id: string,
+    client: UserDocument,
+    recip_id: string,
 ) {
-    const user = await validateToken(token);
-    if (!user) return res.status(400).send("Invalid Request: Invalid Session Token");
-    if (user._id.toString() === other_user_id)
+    const client_id = client._id.toString();
+    if (client_id === recip_id)
         return res.status(400).send("Invalid Request: Cannot have a Conversation with self");
 
-    const convo_doc = await getConvoByUser(user._id, new mongoose.Types.ObjectId(other_user_id));
-    return res.status(200).json(convo_doc);
+    const convo_doc = await getConvoByUser(client_id, new mongoose.Types.ObjectId(recip_id));
+    res.status(200).json(convo_doc);
 }
 
-async function getConvoByIdHandler(
-    req: NextApiRequest,
+async function getConvoByIdsHandler(res: NextApiResponse, client: UserDocument, convo_id: string) {
+    const convo = await getConvoByIds(client._id, new mongoose.Types.ObjectId(convo_id));
+    if (convo) {
+        logger.info(convo);
+        return res.status(200).json(convo);
+    }
+    res.status(404).send("Conversation Not Found");
+}
+
+async function getMessagesByConvoIdHandler(
     res: NextApiResponse,
-    token: string,
+    client: UserDocument,
     convo_id: string,
 ) {
-    // TODO: Get convo from an existing conversation by ID
-    return res.status(404).send("Not implemented");
+    const messages = await getMessagesByConvoId(client._id, new mongoose.Types.ObjectId(convo_id));
+
+    if (!messages) res.status(404).send("Conversation Not Found");
+
+    return res.status(200).json(messages);
 }
 
-// TODO: Figure out what this was for
-async function getConvoIdsByToken(req: NextApiRequest, res: NextApiResponse, token: string) {
-    const user = await validateToken(token);
-    if (!user) return res.status(400).send("Invalid Request: Invalid Session Token");
-
-    const convos = await getUserConvos(user._id);
-    const convo_ids = convos.map((c) => {
-        return c._id;
-    });
-    return res.status(200).send(convo_ids); // can be [empty]
-}
-
-async function appendMessageToConvo(req: NextApiRequest, res: NextApiResponse, token: string) {
-    const user = await validateToken(token);
-    if (!user) return res.status(400).send("Invalid Request: Invalid Session Token");
-
+async function appendMessageToConvo(
+    req: NextApiRequest,
+    res: NextApiResponse,
+    client: UserDocument,
+) {
     // Zod
     const input: CreateMessageInput = {
         content: req.body.content,
         convo_id: req.body.convo_id,
-        sender_id: user._id.toString(),
+        sender_id: client._id.toString(),
     };
     const parse_result = createMessageSchema.safeParse(input);
     if (!parse_result.success) return res.status(403).send(parse_result.error.issues);
@@ -102,5 +102,10 @@ async function appendMessageToConvo(req: NextApiRequest, res: NextApiResponse, t
     convo.messages.push(message);
     convo.save();
 
-    return res.status(200).json(message);
+    res.status(200).json(message);
+}
+
+async function deleteConvoHandler(req: NextApiRequest, res: NextApiResponse) {
+    logger.error("Not implemented");
+    res.status(404).send("Not implemented");
 }

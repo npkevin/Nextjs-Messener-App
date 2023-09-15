@@ -1,4 +1,4 @@
-import { Dispatch, MouseEventHandler, SetStateAction } from "react";
+import { ChangeEvent, Dispatch, MouseEventHandler, SetStateAction } from "react";
 import { IconType } from "react-icons";
 
 interface TextProps<T> {
@@ -6,6 +6,7 @@ interface TextProps<T> {
     placeholder: string;
     className?: string;
     state: [T, Dispatch<SetStateAction<T>>];
+    onChange?: (e: ChangeEvent<HTMLInputElement>) => void;
     disabled?: boolean;
 }
 
@@ -13,6 +14,7 @@ export const TextInput: React.FC<TextProps<string>> = ({
     className,
     type,
     placeholder,
+    onChange,
     state,
     disabled,
 }) => {
@@ -27,7 +29,10 @@ export const TextInput: React.FC<TextProps<string>> = ({
             type={!type ? "text" : type}
             placeholder={placeholder}
             value={value}
-            onChange={(e) => setValue(e.target.value)}
+            onChange={(e) => {
+                setValue(e.target.value);
+                if (onChange) onChange(e);
+            }}
             disabled={!!disabled}
         />
     );

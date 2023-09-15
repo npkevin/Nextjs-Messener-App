@@ -9,10 +9,10 @@ import { MessageDocument } from "@/models/message.model";
 
 import MessageHistory from "./MessageHistory";
 import Messenger from "./Messenger";
-import { PiUserBold } from "react-icons/pi";
+import { PiUserBold, PiXBold } from "react-icons/pi";
 
 const MessengerView = (): JSX.Element => {
-    const { state } = useContext(AppStateCtx);
+    const { state, setState } = useContext(AppStateCtx);
     const [messages, setMessages] = useState<MessageDocument[]>([]);
     const [socket, setSocket] = useState<Socket | undefined>();
 
@@ -43,6 +43,10 @@ const MessengerView = (): JSX.Element => {
         setMessages((prev_message_docs) => [message_doc, ...prev_message_docs]);
     };
 
+    const closeConvo = () => {
+        setState({ convo: undefined });
+    };
+
     return (
         <div
             data-testid="messenger_view"
@@ -52,10 +56,11 @@ const MessengerView = (): JSX.Element => {
                 <>
                     <RecipientGlance
                         display_name={`${state.convo.user.name.first} ${state.convo.user.name.last}`.toUpperCase()}
+                        closeHandler={closeConvo}
                     />
                     <MessageHistory
                         sender_id={state.convo.user.id}
-                        history={state.convo.messages_history}
+                        history={state.convo.messages}
                         messages={messages}
                     />
                     <Messenger convo_id={state.convo.id} socket={socket} />
@@ -65,14 +70,24 @@ const MessengerView = (): JSX.Element => {
     );
 };
 
-const RecipientGlance = ({ display_name }: { display_name: string }): JSX.Element => {
+const RecipientGlance = ({
+    display_name,
+    closeHandler,
+}: {
+    display_name: string;
+    closeHandler: () => void;
+}): JSX.Element => {
     return (
         <div className="flex flex-row p-3 items-center rounded-t shadow bg-slate-300 ">
             <PiUserBold className="w-10 h-10 p-1.5 mr-2 rounded-full shadow bg-white " />
-            <div className="flex flex-col">
+            <div className="flex flex-col grow">
                 <span className="text-sm">{display_name}</span>
                 <span className="text-xs">{"Offline" /* TODO: status*/}</span>
             </div>
+            <PiXBold
+                className="w-10 h-10 p-2.5 rounded-full cursor-pointer"
+                onClick={closeHandler}
+            />
         </div>
     );
 };

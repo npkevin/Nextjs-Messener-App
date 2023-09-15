@@ -27,7 +27,7 @@ const Banner = (): JSX.Element => {
     return (
         <div className="flex flex-row items-center mb-3 ">
             <PiChatsTeardropDuotone className="w-10 h-10 text-slate-900" />
-            <span className="ml-4 text-2xl text-slate-900 select-none">messenger</span>
+            <span className="ml-4 text-2xl text-slate-900 select-none">mockingbird</span>
         </div>
     );
 };
