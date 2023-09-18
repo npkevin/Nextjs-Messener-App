@@ -61,7 +61,7 @@ export async function searchUserConvos(client: UserDocument, search_string: stri
     const convos = await ConvoModel.aggregate([
         // Get Convos client is in
         {
-            $match: { users: { $in: [client._id] } },
+            $match: { users: { $all: [client._id] } },
         },
         {
             // get recent_messages
@@ -111,6 +111,6 @@ export async function searchUserConvos(client: UserDocument, search_string: stri
             $match: { "messages.content": { $regex: search_string, $options: "i" } },
         },
     ]);
-
+    logger.info(convos);
     return convos;
 }

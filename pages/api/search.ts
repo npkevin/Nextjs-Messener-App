@@ -2,8 +2,10 @@ import { NextApiRequest, NextApiResponse } from "next";
 import { searchUserConvos } from "@/service/convo.service";
 import { validateToken } from "@/service/user.service";
 import UserModel, { UserDocument } from "@/models/user.model";
-import { ConvoGlance, User } from "@/components/SideMenu/ConversationsList";
+import { User } from "@/pages/index";
+import { ConvoGlance } from "@/components/SideMenu/ConversationsList";
 import cookie from "cookie";
+import logger from "@/utils/logger";
 
 const handleSearchRequest = async (req: NextApiRequest, res: NextApiResponse) => {
     const { token } = cookie.parse(req.headers.cookie || "");
@@ -19,6 +21,7 @@ const handleSearchRequest = async (req: NextApiRequest, res: NextApiResponse) =>
 
         // 1. Manual search by name
         if (search_string) {
+            logger.info(`Searching: ${search_string}`);
             await searchUserConvoHandler(res, client, search_string);
             return;
         }
@@ -57,6 +60,7 @@ const searchUserConvoHandler = async (
             matched_messages: convo.matched_messages,
         });
     }
+    logger.info(result);
     res.status(200).json(result);
 };
 

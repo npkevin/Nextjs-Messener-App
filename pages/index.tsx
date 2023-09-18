@@ -9,16 +9,18 @@ import mongoose from "mongoose";
 import { MessageDocument } from "@/models/message.model";
 
 export type ConvoState = {
-    id: mongoose.Types.ObjectId;
-    user: {
-        id: mongoose.Types.ObjectId;
-        name: {
-            first: string;
-            last: string;
-            middle: string;
-        };
-    };
+    id: string;
+    user: User;
     messages: MessageDocument[];
+};
+
+export type User = {
+    id: string;
+    name: {
+        first: string;
+        middle?: string;
+        last: string;
+    };
 };
 
 interface IdefaultState {

@@ -59,11 +59,14 @@ const MessengerView = (): JSX.Element => {
                         closeHandler={closeConvo}
                     />
                     <MessageHistory
-                        sender_id={state.convo.user.id}
+                        sender_id={new mongoose.Types.ObjectId(state.convo.user.id)}
                         history={state.convo.messages}
                         messages={messages}
                     />
-                    <Messenger convo_id={state.convo.id} socket={socket} />
+                    <Messenger
+                        convo_id={new mongoose.Types.ObjectId(state.convo.id)}
+                        socket={socket}
+                    />
                 </>
             ) : null}
         </div>

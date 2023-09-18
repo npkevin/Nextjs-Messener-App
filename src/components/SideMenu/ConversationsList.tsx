@@ -1,15 +1,12 @@
 import { useContext, useEffect, useState } from "react";
 import mongoose from "mongoose";
 
-import { AppStateCtx, ConvoState } from "@/pages/index";
-import { CreateUserInput } from "@/schema/user.schema";
+import { AppStateCtx, ConvoState, User } from "@/pages/index";
 import { MessageDocument } from "@/models/message.model";
 
 import { Seperator } from "@/components/SideMenu/SideMenu";
 import { Button, TextInput } from "../UI/Input";
 import { PiUserBold, PiChatTeardropDotsBold } from "react-icons/pi";
-import { UserDocument } from "@/models/user.model";
-import { ConvoDocument } from "@/models/convo.model";
 
 export type ConvoGlance = {
     convo_id: string;
@@ -21,15 +18,6 @@ export type ConvoGlance = {
 export type UserGlance = {
     other_user: User;
     recent_messages: MessageDocument[];
-};
-
-export type User = {
-    id: string;
-    name: {
-        first: string;
-        middle?: string;
-        last: string;
-    };
 };
 
 const ConversationList = (): JSX.Element => {
@@ -86,16 +74,15 @@ const ConversationList = (): JSX.Element => {
         if (response.ok) {
             const { convo_id, messages } = await response.json();
             const other_user = g.other_user;
-            setState({
-                convo: {
-                    id: new mongoose.Types.ObjectId(convo_id),
-                    user: {
-                        id: new mongoose.Types.ObjectId(other_user.id),
-                        name: other_user.name,
-                    },
-                    messages: messages as MessageDocument[],
+            const convo_state: ConvoState = {
+                id: convo_id,
+                user: {
+                    id: other_user.id,
+                    name: other_user.name,
                 },
-            });
+                messages: messages as MessageDocument[],
+            };
+            setState({ convo: convo_state });
         }
     };
 
@@ -106,16 +93,15 @@ const ConversationList = (): JSX.Element => {
         if (response.ok) {
             const messages = await response.json();
             const other_user = g.other_users[0];
-            setState({
-                convo: {
-                    id: new mongoose.Types.ObjectId(g.convo_id),
-                    user: {
-                        id: new mongoose.Types.ObjectId(other_user.id),
-                        name: other_user.name,
-                    },
-                    messages: messages as MessageDocument[],
+            const convo_state: ConvoState = {
+                id: g.convo_id,
+                user: {
+                    id: other_user.id,
+                    name: other_user.name,
                 },
-            });
+                messages: messages as MessageDocument[],
+            };
+            setState({ convo: convo_state });
         }
     };
 
@@ -172,15 +158,13 @@ const ConversationList = (): JSX.Element => {
                 />
                 <Button className="rounded-l-none w-8" value={"X"} onClick={clearSearch} />
             </div>
-            <span className="text-slate-900 text-xs mt-2">Recent/New Users</span>
-            <ul>
-                {/* TODO: Swap list on select option */}
-                {users.map((u) => (
-                    <LI_UserGlance glance={u} key={u.other_user.id} />
-                ))}
-                {convos.map((g) => (
-                    <LI_ConvoGlance glance={g} key={g.convo_id.toString()} />
-                ))}
+            <ul className="mt-2">
+                <span className="text-slate-900 text-xs mt-2">
+                    {convos.length > 0 ? "Search Results" : "Recent/New Users"}
+                </span>
+                {convos.length > 0
+                    ? convos.map((g) => <LI_ConvoGlance glance={g} key={g.convo_id} />)
+                    : users.map((g) => <LI_UserGlance glance={g} key={g.other_user.id} />)}
             </ul>
         </div>
     );
