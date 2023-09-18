@@ -7,10 +7,13 @@ import mongoose from "mongoose";
 import ConvoModel, { ConvoDocument } from "../../src/models/convo.model";
 import { CreateMessageInput, createMessageSchema } from "../../src/schema/message.schema";
 import { validateToken } from "../../src/service/user.service";
-import { createMessage, getMessagesByConvoId } from "../../src/service/message.service";
+import {
+    createMessage,
+    getMessagesByConvoId,
+    getMessagesByUserId,
+} from "../../src/service/message.service";
 import { getConvoByIds, getConvoByUser, getUserConvos } from "../../src/service/convo.service";
 import { UserDocument } from "@/models/user.model";
-import { MessageDocument } from "@/models/message.model";
 
 const handleConversationsRequest = async (req: NextApiRequest, res: NextApiResponse) => {
     const { token } = cookie.parse(req.headers.cookie || "");
@@ -26,10 +29,12 @@ const handleConversationsRequest = async (req: NextApiRequest, res: NextApiRespo
         if (Array.isArray(user_id) || Array.isArray(convo_id) || (user_id && convo_id))
             return res.status(400).send("Invalid Request: Too many parameters");
 
+        logger.info(req.query);
+
         if (user_id) {
             const recip_id = user_id; // query
             logger.info(`GET Conv by USER_ID: ${recip_id}`);
-            return getConvoByUserIdHandler(res, client, recip_id);
+            return getMessagesByUserIdHandler(res, client, recip_id);
         }
         if (convo_id) {
             logger.info(`GET Conv by CONVO_ID: ${convo_id}`);
@@ -60,7 +65,22 @@ async function getConvoByUserIdHandler(
     res.status(200).json(convo_doc);
 }
 
-async function getConvoByIdsHandler(res: NextApiResponse, client: UserDocument, convo_id: string) {
+async function getMessagesByUserIdHandler(
+    res: NextApiResponse,
+    client: UserDocument,
+    recip_id: string,
+) {
+    const query = await getMessagesByUserId(client._id, new mongoose.Types.ObjectId(recip_id));
+    if (!query) res.status(404).send("Conversation Not Found");
+
+    return res.status(200).json(query);
+}
+
+async function getConvoByConvoIdHandler(
+    res: NextApiResponse,
+    client: UserDocument,
+    convo_id: string,
+) {
     const convo = await getConvoByIds(client._id, new mongoose.Types.ObjectId(convo_id));
     if (convo) {
         logger.info(convo);
@@ -74,11 +94,11 @@ async function getMessagesByConvoIdHandler(
     client: UserDocument,
     convo_id: string,
 ) {
-    const messages = await getMessagesByConvoId(client._id, new mongoose.Types.ObjectId(convo_id));
+    const query = await getMessagesByConvoId(client._id, new mongoose.Types.ObjectId(convo_id));
 
-    if (!messages) res.status(404).send("Conversation Not Found");
+    if (!query) res.status(404).send("Conversation Not Found");
 
-    return res.status(200).json(messages);
+    return res.status(200).json(query);
 }
 
 async function appendMessageToConvo(

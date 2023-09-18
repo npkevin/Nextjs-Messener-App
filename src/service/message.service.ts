@@ -17,10 +17,23 @@ export async function getMessagesByConvoId(
 ): Promise<MessageDocument[]> {
     const convo = await ConvoModel.findOne<ConvoDocument>({
         _id: convo_id,
-        users: { $in: [client_id] },
+        users: { $all: [client_id] },
     });
     if (!convo) return [];
 
     await convo.populate({ path: "messages", options: { sort: { createdAt: -1 } } });
     return convo.messages as MessageDocument[];
+}
+
+export async function getMessagesByUserId(
+    client_id: mongoose.Types.ObjectId,
+    recip_id: mongoose.Types.ObjectId,
+): Promise<{ convo_id: mongoose.Types.ObjectId; messages: MessageDocument[] } | null> {
+    const convo = await ConvoModel.findOne<ConvoDocument>({
+        users: { $all: [client_id, recip_id] },
+    });
+    if (!convo) return null;
+
+    await convo.populate({ path: "messages", options: { sort: { createdAt: -1 } } });
+    return { convo_id: convo._id, messages: convo.messages as MessageDocument[] };
 }

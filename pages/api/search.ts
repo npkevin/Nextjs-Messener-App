@@ -34,7 +34,7 @@ export default handleSearchRequest;
 // returns convoId, name and lastmessage
 const searchUserConvoHandler = async (
     res: NextApiResponse,
-    client: UserDocument,
+    client: UserDocument, // from token
     search_string: string,
 ) => {
     const convos = await searchUserConvos(client, search_string);
@@ -68,10 +68,9 @@ async function demo_getRecentUsers(res: NextApiResponse, client: UserDocument) {
 
     if (!recent_users) return res.status(404).send([]);
 
-    // type User_trimmed = Omit<CreateUserInput, 'password'> & { _id: ObjectId }
     const recent_users_trimmed = recent_users.map((user) => {
-        const { _id, name, email } = user;
-        return { _id, name, email };
+        const { _id, name } = user;
+        return { other_user: { id: _id, name: name } };
     });
     return res.status(200).send(recent_users_trimmed);
 }

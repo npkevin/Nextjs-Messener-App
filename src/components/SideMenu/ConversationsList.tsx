@@ -13,9 +13,14 @@ import { ConvoDocument } from "@/models/convo.model";
 
 export type ConvoGlance = {
     convo_id: string;
-    other_users: UserDocument[];
+    other_users: User[];
     recent_messages: MessageDocument[];
     matched_messages: MessageDocument[];
+};
+
+export type UserGlance = {
+    other_user: User;
+    recent_messages: MessageDocument[];
 };
 
 export type User = {
@@ -29,7 +34,7 @@ export type User = {
 
 const ConversationList = (): JSX.Element => {
     const { state, setState } = useContext(AppStateCtx);
-    const [users, setUsers] = useState<UserDocument[]>([]);
+    const [users, setUsers] = useState<UserGlance[]>([]);
     const [convos, setConvos] = useState<ConvoGlance[]>([]);
     const [search, setSearch] = useState<string>("");
     const [TO, setTO] = useState<NodeJS.Timeout | undefined>(undefined);
@@ -74,41 +79,32 @@ const ConversationList = (): JSX.Element => {
         setTO(TO_id);
     };
 
-    const selectUserHandler = async (user: UserDocument) => {
-        let url_params = new URLSearchParams();
-        url_params.set("user_id", user._id.toString());
+    const selectUserHandler = async (g: UserGlance) => {
+        const url_params = new URLSearchParams();
+        url_params.set("user_id", g.other_user.id.toString());
         const response = await fetch(`/api/conv?${url_params}`);
         if (response.ok) {
-            const convo_doc = (await response.json()) as ConvoDocument;
-            const messages_history = convo_doc.messages as MessageDocument[];
-            const messages_history_casted = messages_history.map((message) => {
-                message.sender_id = new mongoose.Types.ObjectId(message.sender_id);
-                message.convo_id = new mongoose.Types.ObjectId(message.convo_id);
-                message.createdAt = new Date(message.createdAt);
-                message.updatedAt = new Date(message.updatedAt);
-                return message;
-            });
-            console.log(convo_doc);
+            const { convo_id, messages } = await response.json();
+            const other_user = g.other_user;
             setState({
                 convo: {
-                    id: new mongoose.Types.ObjectId(convo_doc._id),
+                    id: new mongoose.Types.ObjectId(convo_id),
                     user: {
-                        id: new mongoose.Types.ObjectId(user._id),
-                        name: user.name,
+                        id: new mongoose.Types.ObjectId(other_user.id),
+                        name: other_user.name,
                     },
-                    messages: messages_history_casted,
+                    messages: messages as MessageDocument[],
                 },
             });
         }
     };
 
-    // mostly just type casting
     const selectConvoHandler = async (g: ConvoGlance) => {
-        let url_params = new URLSearchParams();
+        const url_params = new URLSearchParams();
         url_params.set("convo_id", g.convo_id.toString());
         const response = await fetch(`/api/conv?${url_params}`);
         if (response.ok) {
-            const messages = (await response.json()) as MessageDocument[];
+            const messages = await response.json();
             const other_user = g.other_users[0];
             setState({
                 convo: {
@@ -117,17 +113,18 @@ const ConversationList = (): JSX.Element => {
                         id: new mongoose.Types.ObjectId(other_user.id),
                         name: other_user.name,
                     },
-                    messages: messages,
+                    messages: messages as MessageDocument[],
                 },
             });
         }
     };
 
-    const LI_UserGlance = ({ user }: { user: UserDocument }): JSX.Element => {
+    const LI_UserGlance = ({ glance }: { glance: UserGlance }): JSX.Element => {
+        const user = glance.other_user;
         return (
             <li
                 className="p-1 mt-2 rounded drop-shadow cursor-pointer select-none bg-slate-300 transition hover:bg-slate-400"
-                onClick={() => selectUserHandler(user)}
+                onClick={() => selectUserHandler(glance)}
             >
                 <div className="flex flex-row items-center">
                     <PiUserBold className="w-10 h-10 p-1.5 rounded-full shadow bg-white" />
@@ -179,7 +176,7 @@ const ConversationList = (): JSX.Element => {
             <ul>
                 {/* TODO: Swap list on select option */}
                 {users.map((u) => (
-                    <LI_UserGlance user={u} key={u._id} />
+                    <LI_UserGlance glance={u} key={u.other_user.id} />
                 ))}
                 {convos.map((g) => (
                     <LI_ConvoGlance glance={g} key={g.convo_id.toString()} />
