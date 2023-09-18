@@ -29,8 +29,6 @@ const handleConversationsRequest = async (req: NextApiRequest, res: NextApiRespo
         if (Array.isArray(user_id) || Array.isArray(convo_id) || (user_id && convo_id))
             return res.status(400).send("Invalid Request: Too many parameters");
 
-        logger.info(req.query);
-
         if (user_id) {
             const recip_id = user_id; // query
             logger.info(`GET Conv by USER_ID: ${recip_id}`);
@@ -71,7 +69,7 @@ async function getMessagesByUserIdHandler(
     recip_id: string,
 ) {
     const query = await getMessagesByUserId(client._id, new mongoose.Types.ObjectId(recip_id));
-    if (!query) res.status(404).send("Conversation Not Found");
+    if (!query) return res.status(404).send("Conversation Not Found");
 
     return res.status(200).json(query);
 }
@@ -82,11 +80,9 @@ async function getConvoByConvoIdHandler(
     convo_id: string,
 ) {
     const convo = await getConvoByIds(client._id, new mongoose.Types.ObjectId(convo_id));
-    if (convo) {
-        logger.info(convo);
-        return res.status(200).json(convo);
-    }
-    res.status(404).send("Conversation Not Found");
+    if (convo) return res.status(404).send("Conversation Not Found");
+
+    res.status(200).json(convo);
 }
 
 async function getMessagesByConvoIdHandler(

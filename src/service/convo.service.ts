@@ -8,7 +8,9 @@ import logger from "@/utils/logger";
 
 export async function createConvo(input: CreateConvoInput): Promise<ConvoDocument> {
     try {
-        return await ConvoModel.create(input);
+        const convo = await ConvoModel.create(input);
+        logger.info(`Created new convo: ${convo._id}`);
+        return convo;
     } catch (error: any) {
         throw new Error(error);
     }
@@ -111,6 +113,5 @@ export async function searchUserConvos(client: UserDocument, search_string: stri
             $match: { "messages.content": { $regex: search_string, $options: "i" } },
         },
     ]);
-    logger.info(convos);
     return convos;
 }

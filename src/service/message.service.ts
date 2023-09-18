@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 import { CreateMessageInput } from "@/schema/message.schema";
 import MessageModel, { MessageDocument } from "@/models/message.model";
 import ConvoModel, { ConvoDocument } from "@/models/convo.model";
+import { createConvo } from "./convo.service";
 
 export async function createMessage(input: CreateMessageInput): Promise<MessageDocument> {
     try {
@@ -29,10 +30,11 @@ export async function getMessagesByUserId(
     client_id: mongoose.Types.ObjectId,
     recip_id: mongoose.Types.ObjectId,
 ): Promise<{ convo_id: mongoose.Types.ObjectId; messages: MessageDocument[] } | null> {
-    const convo = await ConvoModel.findOne<ConvoDocument>({
+    let convo = await ConvoModel.findOne<ConvoDocument>({
         users: { $all: [client_id, recip_id] },
     });
-    if (!convo) return null;
+    // if (!convo) return null;
+    if (!convo) convo = await createConvo({ users: [client_id.toString(), recip_id.toString()] });
 
     await convo.populate({ path: "messages", options: { sort: { createdAt: -1 } } });
     return { convo_id: convo._id, messages: convo.messages as MessageDocument[] };
